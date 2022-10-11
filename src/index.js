@@ -14,10 +14,9 @@ app.use(bodyParser.urlencoded({
 }))
 
 app.get('/', (req, res) => {
-    res.send('hello world')
+    res.render("input")
   })
-
-  
+ 
 app.get('/input', (req, res) => {
   res.render("input")
 })
@@ -30,7 +29,7 @@ app.get("/output", (req, res) => {
 app.post("/sendinput", (req, res) => {
   console.log(req.body.inputfield)
   status[req.body.inputfield] = req.body.inputfield
-  res.redirect("/input")
+  res.redirect("/")
 })
 
 app.listen(port, () => {
