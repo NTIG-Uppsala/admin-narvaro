@@ -10,7 +10,14 @@
 
 </head>
 <body>
-    <h1>Output</h1>
-    <a href="input.html">input</a>
+    <h1>Status</h1>
+    <div>
+        <% for (const key in status) { %>
+            <%  if (Object.hasOwnProperty.call(status, key)) { %>
+                <h2><%= status[key] %></h2>
+            <% } %>
+        <% } %>
+    </div>
+    <a href="/input">Sätt status</a>
 </body>
 </html>

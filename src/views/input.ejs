@@ -9,14 +9,13 @@
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-    <h1>Input</h1>
-    <form action="input.html" method="post">
-        <input type="text" id="inputfield">
+    <h1>Ange din status</h1>
+    <form action="/sendinput" method="post">
+        <input type="text" id="inputfield" name="inputfield">
+        <input type="submit" value="submit" id="send">
     </form>
 
-    <input type="submit" value="submit" id="send">
-
     
-    <a href="output.html">output</a>
+    <a href="/output">Status</a>
 </body>
 </html>
