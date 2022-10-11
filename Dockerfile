@@ -18,6 +18,6 @@ RUN npm install
 COPY . .
 
 EXPOSE 8000
-
-CMD ["cd src/", "&&", "node", "index.js" ]
+WORKDIR src/
+CMD ["node", "index.js" ]
 
