@@ -10,7 +10,6 @@ class testPageTitle(unittest.TestCase):
 
     website_url = "http://localhost:8000/" # Standard url
 
-    # Check if "Florist Blåklinten" is in the <title> of the page
     @classmethod
     def setUpClass(self):
         service = Service(executable_path=ChromeDriverManager().install())
