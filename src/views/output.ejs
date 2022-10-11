@@ -12,12 +12,14 @@
 <body>
     <h1>Status</h1>
     <div>
-        <% for (const key in status) { %>
-            <%  if (Object.hasOwnProperty.call(status, key)) { %>
-                <h2><%= status[key] %></h2>
-            <% } %>
-        <% } %>
+        <% status.forEach(statusObject => { %>
+            <div style="display: flex; flex-direction:row; align-items:center; gap: 50px;">
+                <p style="font-weight: bold; font-size:25px;"><%= statusObject?.status_text %></p>
+                <span style="font-size: 15px;"><%= statusObject?.current_hour %></span>
+            </div>
+            
+        <% }) %>
     </div>
-    <a href="/input">Sätt status</a>
+    <a href="/">Sätt status</a>
 </body>
 </html>
