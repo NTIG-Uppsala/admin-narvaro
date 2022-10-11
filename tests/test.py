@@ -26,7 +26,7 @@ class testPageTitle(unittest.TestCase):
     def test(self):
         test_str = "test input text"
 
-        self.driver.get(self.website_url + "input.html")
+        self.driver.get(self.website_url + "input")
 
         input_field = self.driver.find_element(By.ID, "inputfield")
 
@@ -34,7 +34,7 @@ class testPageTitle(unittest.TestCase):
 
         self.driver.find_element(By.ID, "send").click
 
-        self.driver.get(self.website_url + "output.html")
+        self.driver.get(self.website_url + "output")
 
         body_text = self.driver.find_element(By.TAG_NAME, "body").text
 
