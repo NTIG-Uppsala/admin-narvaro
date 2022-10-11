@@ -32,7 +32,7 @@ class testPageTitle(unittest.TestCase):
 
         input_field.send_keys(test_str)
 
-        self.driver.find_element(By.ID, "send").click
+        self.driver.find_element(By.ID, "statusform").submit()
 
         self.driver.get(self.website_url + "output")
 
