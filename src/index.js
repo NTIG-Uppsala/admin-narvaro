@@ -13,8 +13,8 @@ app.use(bodyParser.urlencoded({
   extended: true
 }))
 
-io.on('connection', () => { 
-  console.log('A user connected');
+io.on('connection', (socket) => { 
+  console.log('A user connected', socket.handshake.address);
 });
 
 app.get('/', (req, res) => {
@@ -44,19 +44,18 @@ app.post("/sendinput", (req, res) => {
         return res.redirect("/", {error: "Ett fel har inträffat. Vänligen försök igen :)"})
     }
 
-    
-
     status.push(content)
+    
+    try {
+      io.emit("status update", content)
+    } catch (error) {
+      throw error
+    }  
 
     console.log(status)
   } catch (error) {
-    return res.redirect("/", {error: "Ett fel har inträffat. Vänligen försök igen :)"})
-  }
-  
-  try {
-    io.emit("status update", content)
-  } catch (error) {
     throw error
+    // return res.redirect("/", {error: "Ett fel har inträffat. Vänligen försök igen :)"})
   }
 
   res.redirect("/")

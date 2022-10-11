@@ -11,7 +11,7 @@
 </head>
 <body>
     <h1>Status</h1>
-    <div>
+    <div id="messageDiv">
         <% status.forEach(statusObject => { %>
             <div style="display: flex; flex-direction:row; align-items:center; gap: 50px;">
                 <p style="font-weight: bold; font-size:25px;"><%= statusObject?.status_text %></p>
@@ -23,10 +23,24 @@
     <a href="/">Sätt status</a>
 
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="assets/javascript/purify.min.js"></script>
     <script>
         const socket = io();
+        const messageDivElement = document.getElementById("messageDiv")
         socket.on("status update", (data) => {
             console.log(data);
+
+            for (const key in data) {
+                if (Object.hasOwnProperty.call(data, key)) {
+                    data[key] = DOMPurify.sanitize(data[key])
+                }
+            }
+            messageDivElement.innerHTML += `
+            <div style="display: flex; flex-direction:row; align-items:center; gap: 50px;">
+                <p style="font-weight: bold; font-size:25px;">${data?.status_text}</p>
+                <span style="font-size: 15px;">${data?.current_hour}</span>
+            </div>
+            `
         })
     </script>
 </body>
