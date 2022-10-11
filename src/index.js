@@ -27,6 +27,10 @@ app.get("/output", (req, res) => {
 app.post("/sendinput", (req, res) => {
   try {
     console.log(req.body.inputfield)
+    if (req.body.inputfield.length < 0) {
+        return res.redirect("/", {error: "Ett fel har inträffat. Vänligen försök igen :)"})
+    }
+
     date = new Date()
     Cdate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`
 
@@ -37,7 +41,7 @@ app.post("/sendinput", (req, res) => {
 
     console.log(status)
   } catch (error) {
-
+    return res.redirect("/", {error: "Ett fel har inträffat. Vänligen försök igen :)"})
   }
   
   res.redirect("/")
