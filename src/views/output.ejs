@@ -11,14 +11,13 @@
 </head>
 <body>
     <h1>Status</h1>
-    <div id="messageDiv">
-        <% status.forEach(statusObject => { %>
+    <div id="statusDiv">
+        <% statusObject.forEach(person => { %>
             <div class="message-container">
-                <p style="font-weight: bold; font-size:25px;"><%= statusObject.status_text %></p>
-                <span style="font-size: 15px;"><%= statusObject.current_date %></span>
+                <p><%= person.name %></p>
+                <span><%= (person.status == true) ? "tillgänglig" : "ej tillgänglig"; %></span>
             </div>
-            
-        <% }) %>
+        <% }); %>
     </div>
     <a href="/">Sätt status</a>
     <noscript>
@@ -27,6 +26,8 @@
     </noscript>
 
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
-    <script src="/assets/javascript/main.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script src="/assets/javascript/output.js"></script>
 </body>
 </html>
