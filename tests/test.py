@@ -25,9 +25,9 @@ class testPageTitle(unittest.TestCase):
     def test(self):
         test_str = "test input text"
 
-        self.driver.get(self.website_url + "input")
+        self.driver.get(self.website_url)
 
-        input_field = self.driver.find_element(By.ID, "inputfield")
+        input_field = self.driver.find_element(By.XPATH, '//*[@id="statusfield"]')
 
         input_field.send_keys(test_str)
 
