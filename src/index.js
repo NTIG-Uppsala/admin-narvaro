@@ -18,45 +18,45 @@ app.use(bodyParser.urlencoded({
 let status = [
     {
         name: "Mathias Laveno",
-        title: "Rektor",
+        role: "Rektor",
         locked: false,
-        status: null
+        status: false
     },
     {
         name: "Henrik Jonsson",
-        title: "biträdande rektor",
+        role: "biträdande rektor",
         locked: false,
-        status: null
+        status: false
     },
     {
         name: "Sara Hagberg",
-        title: "biträdande rektor",
+        role: "biträdande rektor",
         locked: false,
-        status: null
+        status: false
     },
     {
         name: "Maud Enbom",
-        title: "Skolsköterska",
+        role: "Skolsköterska",
         locked: false,
-        status: null
+        status: false
     },
     {
         name: "Therese Ekman",
-        title: "Administratör",
+        role: "Administratör",
         locked: false,
-        status: null
+        status: false
     },
     {
         name: "Vincent Persson",
-        title: "Tekniker",
+        role: "Tekniker",
         locked: false,
-        status: null
+        status: false
     },
     {
         name: "Megan Gallagher Sundström",
-        title: "Kurator",
+        role: "Kurator",
         locked: false,
-        status: null
+        status: false
     }
 ]
 
@@ -69,18 +69,40 @@ io.on('connection', (socket) => {
     
     let date = new Date()
 
-    let latest_change = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${((date.getMinutes() < 10) ? '0' : '') + date.getMinutes()}`
-    // dataArray["latest_change"] = latest_change
-    status = dataArray
-    console.log(dataArray)
+    let latest_change = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${((date.getMinutes() < 10) ? '0' : '') + date.getMinutes()}:${((date.getSeconds() < 10) ? '0' : '') + date.getSeconds()}`
+    
+    /* Update status array */
+    for (const key in status) {
+        let index = key;
+        let status_object = status[key];
+
+        for (const key in dataArray) {
+            let key_name = key;
+            let input_object = dataArray[key];
+            
+            if (status_object.name == input_object.name) {
+                /* Only update if change */
+                if (status_object.status != input_object.status) {
+                    status_object.status = input_object.status;
+                    status_object["latest_change"] = latest_change;
+                }
+
+                if (status_object.locked != input_object.locked) {
+                    status_object.locked = input_object.locked;
+                    status_object["latest_change"] = latest_change;
+                }    
+            }
+
+            
+        }
+    }
+    console.log(status)
     /* Status change */
-    io.emit("status update", dataArray)
+    io.emit("status update", status)
 
   });
 
 });
-
-
 
 /* Shows input page on root */
 app.get('/', (req, res) => {
@@ -90,39 +112,6 @@ app.get('/', (req, res) => {
 /* Shows output page on /output */
 app.get("/output", (req, res) => {
   res.render("output", {statusObject: status})
-})
-
-app.post("/sendinput", (req, res) => {
-  let date = new Date()
-  let cDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${((date.getMinutes() < 10) ? '0' : '') + date.getMinutes()}`
-    
-  let content = {
-      status_text: req.body.inputfield,
-      current_date: cDate
-  }
-
-  try {
-    //  Check if input is empty
-    if (req.body.inputfield.length < 1) {
-        // just return to the input page
-        return res.redirect('/')
-    }
-
-    //  Add the content to the status array
-    status.push(content)
-    
-    //  Send the content to the client socket
-    try {
-      io.emit("status update", content)
-    } catch (error) {
-      throw error
-    }  
-
-  } catch (error) {
-    throw error
-  }
-  console.log(status)
-  return res.redirect("/")
 })
 
 
