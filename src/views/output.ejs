@@ -21,9 +21,12 @@
         <% }) %>
     </div>
     <a href="/">Sätt status</a>
+    <noscript>
+        <h4>JavaScript är avstängt</h4>
+        <p>För att uppdatera innehållet på sidan, ladda om sidan</p>
+    </noscript>
 
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="assets/javascript/purify.min.js"></script>
     <script>
         // https://stackoverflow.com/questions/30661497/xss-prevention-and-innerhtml
         function escapeHTML(unsafe_str) {
