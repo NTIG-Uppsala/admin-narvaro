@@ -15,9 +15,8 @@
         <% statusObject.forEach(person => { %>
             <div class="message-container" name="personDiv">
                 <p name="personName"><%= person.name %></p>
-                <span><%= person.status %></span>
                 <div>
-                    <input type="checkbox" name="avaliableCheckbox" id="avaliable" <%= (person.locked) ? "disabled" : ''; %>>
+                    <input type="checkbox" name="avaliableCheckbox" id="avaliable" <%= (person.locked) ? "disabled" : ''; %> >
                     <span>tillgänglig</span>
                 </div>
                 <div>
