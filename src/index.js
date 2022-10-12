@@ -3,66 +3,69 @@ const app = express()
 const bodyParser = require('body-parser')
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
-let status = []
 
+/* Sets ejs as view engine */
 app.set('view engine', 'ejs')
 
+/* middleware */
 app.use(express.static('public'))
-
 app.use(bodyParser.urlencoded({
   extended: true
 }))
 
+/* notifies console when someone connects to server socket */
 io.on('connection', (socket) => { 
   console.log('A user connected', socket.handshake.address);
 });
 
+/* Shows input page on root */
 app.get('/', (req, res) => {
     res.render("input")
-  })
- 
-app.get('/input', (req, res) => {
-  res.render("input")
 })
 
+/* Shows output page on /output */
 app.get("/output", (req, res) => {
   res.render("output", {status: status})
 })
 
+
+/* Handles a POST request to /sendinput */
+let status = []
 app.post("/sendinput", (req, res) => {
   let date = new Date()
-  let Cdate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`
+  let _current_date = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`
     
   let content = {
       status_text: req.body.inputfield,
-      current_hour: Cdate
+      current_date: _current_date
   }
 
   try {
-    console.log(req.body.inputfield)
-    if (req.body.inputfield.length < 0) {
-        return res.redirect("/", {error: "Ett fel har inträffat. Vänligen försök igen :)"})
+    //  Check if input is empty
+    if (req.body.inputfield.length < 1) {
+        // just return to the input page
+        return res.redirect('/')
     }
 
+    //  Add the content to the status array
     status.push(content)
     
+    //  Send the content to the client socket
     try {
       io.emit("status update", content)
     } catch (error) {
       throw error
     }  
 
-    console.log(status)
   } catch (error) {
     throw error
-    // return res.redirect("/", {error: "Ett fel har inträffat. Vänligen försök igen :)"})
   }
 
-  res.redirect("/")
+  return res.redirect("/")
 })
 
-const serverPort = 8000
 
+const serverPort = 8000
 server.listen(serverPort, () => {
     console.log(`Närvaroadmin körs på port ${serverPort}`)
 })

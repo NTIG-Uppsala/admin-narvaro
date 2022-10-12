@@ -27,29 +27,6 @@
     </noscript>
 
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
-    <script>
-        // https://stackoverflow.com/questions/30661497/xss-prevention-and-innerhtml
-        function escapeHTML(unsafe_str) {
-            return unsafe_str
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/\"/g, '&quot;')
-                .replace(/\'/g, '&#39;')
-                .replace(/\//g, '&#x2F;')
-        }
-
-        const socket = io();
-        const messageDivElement = document.getElementById("messageDiv")
-        socket.on("status update", (data) => {
-            console.log(data);
-            messageDivElement.innerHTML += `
-                <div style="display: flex; flex-direction:row; align-items:center; gap: 50px;">
-                    <p style="font-weight: bold; font-size:25px;">${escapeHTML(data?.status_text)}</p>
-                    <span style="font-size: 15px;">${escapeHTML(data?.current_hour)}</span>
-                </div>
-            `
-        })
-    </script>
+    <script src="assets/javascript/main.js"></script>
 </body>
 </html>
