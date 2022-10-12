@@ -7,3 +7,21 @@ body  {
     align-items: center;
     flex-direction: column;
 }
+
+.message-container{
+    display: flex; 
+    flex-direction: row; 
+    align-items: center; 
+    justify-content: center;
+    gap: 50px;
+    width: auto;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-break: break-all;
+}
+
+.message-container > p {
+    width: 25%;
+}
