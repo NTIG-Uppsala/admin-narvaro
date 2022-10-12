@@ -11,7 +11,7 @@
 </head>
 <body>
     <h1>Status</h1>
-    <div>
+    <div id="messageDiv">
         <% status.forEach(statusObject => { %>
             <div style="display: flex; flex-direction:row; align-items:center; gap: 50px;">
                 <p style="font-weight: bold; font-size:25px;"><%= statusObject?.status_text %></p>
@@ -21,5 +21,12 @@
         <% }) %>
     </div>
     <a href="/">Sätt status</a>
+    <noscript>
+        <h4>JavaScript är avstängt</h4>
+        <p>För att uppdatera innehållet på sidan, ladda om sidan</p>
+    </noscript>
+
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
+    <script src="assets/javascript/main.js"></script>
 </body>
 </html>
