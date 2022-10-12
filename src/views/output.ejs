@@ -14,8 +14,8 @@
     <div id="messageDiv">
         <% status.forEach(statusObject => { %>
             <div style="display: flex; flex-direction:row; align-items:center; gap: 50px;">
-                <p style="font-weight: bold; font-size:25px;"><%= statusObject?.status_text %></p>
-                <span style="font-size: 15px;"><%= statusObject?.current_hour %></span>
+                <p style="font-weight: bold; font-size:25px;"><%= statusObject.status_text %></p>
+                <span style="font-size: 15px;"><%= statusObject.current_date %></span>
             </div>
             
         <% }) %>
