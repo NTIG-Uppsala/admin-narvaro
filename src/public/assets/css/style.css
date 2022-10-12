@@ -1,11 +1,47 @@
+:root {
+  --main-text-color: white;
+}
+
 * {
     box-sizing: border-box;
 }
 
 body  {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
+    margin: 0;
+    overflow: hidden;
+    color: var(--main-text-color);
+}
+
+.backgroundImage {
+  position: absolute;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+}
+
+.backgroundImage > img {
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+}
+
+.message-container-wrapper {
+  width: 40vw;
+  min-height: 80vh;
+  height: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex; 
+  flex-direction: column; 
+  justify-content: center;
+  text-align: center;
+  background-color: rgb(0, 0, 0, 0.65);
+  border-radius: 15px;
+  border: 5px solid var(--main-text-color);
+  font-size: 3em;
+  padding: 50px;
 }
 
 .message-container{
@@ -13,15 +49,86 @@ body  {
     flex-direction: row; 
     align-items: center; 
     justify-content: center;
+    text-align: center;
     gap: 50px;
-    width: auto;
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
-    word-break: break-all;
+    width: 100%;
+}
+
+.message-container > div {
+  width: 33%;
 }
 
 .message-container > p {
-  max-width: 25vw;
+  width: 33%;
+}
+
+/* Output page */
+
+#message-containerOutput > p {
+  text-align: left;
+  width: 33%;
+}
+
+#message-containerOutput > span {
+  text-align: right;
+  width: 33%;
+}
+
+/* Checkbox */
+
+.switch {
+  display: inline-block;
+  height: 34px;
+  position: relative;
+  width: 60px;
+}
+
+.switch input {
+  display:none;
+}
+
+.slider {
+  background-color: red;
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: .4s;
+}
+
+.slider:before {
+  background-color: #fff;
+  bottom: 4px;
+  content: "";
+  height: 26px;
+  left: 4px;
+  position: absolute;
+  transition: .4s;
+  width: 26px;
+}
+
+input:checked + .slider {
+  background-color: #66bb6a;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+.switch input:disabled + .slider:before {
+  background-color: lightgray;
+}
+
+.switch input:disabled + .slider {
+  filter: grayscale(60%);
 }

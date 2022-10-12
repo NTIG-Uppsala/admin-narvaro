@@ -9,25 +9,36 @@
     <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
-    <h1>Ange din status</h1>
 
-    <div name="main">
-        <% statusObject.forEach(person => { %>
-            <div class="message-container" name="personDiv">
-                <p name="personName"><%= person.name %></p>
-                <div>
-                    <input type="checkbox" name="avaliableCheckbox" id="avaliable" <%= (person.locked) ? "disabled" : ''; %> >
-                    <span>tillgänglig</span>
-                </div>
-                <div>
-                    <input type="checkbox" name="lockCheckbox" id="statusLock">
-                    <span>lås</span>
-                </div>
-            </div>
-        <% }); %>
+    <div class="backgroundImage">
+      <img src="/assets/images/backgroundNTI.jpg">
     </div>
-    
-    <a href="/output">Status</a>
+
+    <div class="message-container-wrapper">
+      <div name="main">
+          <h1>Ange din status</h1>
+          <% let id = 0;%>
+          <% statusObject.forEach(person => { %>
+            <% id++ %>
+              <div class="message-container" name="personDiv">
+                  <p name="personName"><%= person.name %></p>
+                  <div class="container">
+                      <label class="switch" for="avaliable-<%=id%>">
+                          <input type="checkbox" name="avaliableCheckbox" id="avaliable-<%=id%>" <%= (person.locked) ? "disabled" : ''; %> <%= (person.status) ? "checked" : ''; %> >
+                          <div class="slider round"></div>
+                      </label>
+                  </div>
+                  <div>
+                      <input type="checkbox" name="lockCheckbox" id="statusLock" <%= (person.locked) ? "checked" : ''; %>>
+                      <span>lås</span>
+                  </div>
+              </div>
+          <% }); %>
+      </div>
+
+      <a href="/output">Status</a>
+
+    </div>    
     
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
     

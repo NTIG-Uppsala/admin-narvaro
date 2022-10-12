@@ -10,20 +10,27 @@
 
 </head>
 <body>
-    <h1>Status</h1>
-    <div id="statusDiv">
-        <% statusObject.forEach(person => { %>
-            <div class="message-container">
-                <p><%= person.name %></p>
-                <span><%= (person.status == true) ? "tillgänglig" : "ej tillgänglig"; %></span>
-            </div>
-        <% }); %>
+
+    <div class="backgroundImage">
+      <img src="/assets/images/backgroundNTI.jpg">
     </div>
-    <a href="/">Sätt status</a>
-    <noscript>
-        <h4>JavaScript är avstängt</h4>
-        <p>För att uppdatera innehållet på sidan, ladda om sidan</p>
-    </noscript>
+
+    <div class="message-container-wrapper">
+      <h1>Status</h1>
+      <div id="statusDiv">
+          <% statusObject.forEach(person => { %>
+              <div class="message-container" id="message-containerOutput">
+                  <p><%= person.name %></p>
+                  <span><%= (person.status == true) ? "tillgänglig" : "ej tillgänglig"; %></span>
+              </div>
+          <% }); %>
+      </div>
+      <a href="/">Sätt status</a>
+      <noscript>
+          <h4>JavaScript är avstängt</h4>
+          <p>För att uppdatera innehållet på sidan, ladda om sidan</p>
+      </noscript>
+    </div>
 
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
 
