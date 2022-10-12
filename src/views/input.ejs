@@ -10,6 +10,24 @@
 </head>
 <body>
     <h1>Ange din status</h1>
+
+    <div name="main">
+        <% statusObject.forEach(person => { %>
+            <div class="message-container" name="personDiv">
+                <p name="personName"><%= person.name %></p>
+                <span><%= person.status %></span>
+                <div>
+                    <input type="checkbox" name="avaliableCheckbox" id="avaliable">
+                    <span>tillgänglig</span>
+                </div>
+                <div>
+                    <input type="checkbox" name="lockCheckbox" id="statusLock">
+                    <span>lås</span>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+        
     <form action="/sendinput" method="post" id="statusform">
         <input type="text" id="statusfield" name="inputfield" placeholder="Skriv din status här...">
         <input type="submit" value="submit" id="send">
@@ -17,5 +35,11 @@
 
     
     <a href="/output">Status</a>
+    
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
+    
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script src="/assets/javascript/input.js"></script>
+
 </body>
 </html>
