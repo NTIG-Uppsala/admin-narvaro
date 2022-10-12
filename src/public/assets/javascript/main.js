@@ -18,8 +18,8 @@ socket.on("status update", (data) => {
     console.log(data);
     messageDivElement.innerHTML += `
         <div style="display: flex; flex-direction:row; align-items:center; gap: 50px;">
-            <p style="font-weight: bold; font-size:25px;">${escapeHTML(data?.status_text)}</p>
-            <span style="font-size: 15px;">${escapeHTML(data?.current_hour)}</span>
+            <p style="font-weight: bold; font-size:25px;">${escapeHTML(data.status_text)}</p>
+            <span style="font-size: 15px;">${escapeHTML(data.current_date)}</span>
         </div>
     `
 })

@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const { log } = require('console');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
@@ -33,11 +34,11 @@ app.get("/output", (req, res) => {
 let status = []
 app.post("/sendinput", (req, res) => {
   let date = new Date()
-  let _current_date = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`
+  let cDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`
     
   let content = {
       status_text: req.body.inputfield,
-      current_date: _current_date
+      current_date: cDate
   }
 
   try {
@@ -60,7 +61,7 @@ app.post("/sendinput", (req, res) => {
   } catch (error) {
     throw error
   }
-
+  console.log(status)
   return res.redirect("/")
 })
 
