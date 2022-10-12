@@ -22,22 +22,18 @@ class testPageTitle(unittest.TestCase):
     def tearDownClass(self):
         self.driver.quit()
     
-    def test(self):
-        test_str = "test input text"
-
+    def test_click_checkbox(self):
         self.driver.get(self.website_url)
+        test_switch = self.driver.find_element(By.XPATH, '/html/body/div[2]/div/div[4]/div[1]/label')
+        test_switch.click()
 
-        input_field = self.driver.find_element(By.XPATH, '//*[@id="statusfield"]')
-
-        input_field.send_keys(test_str)
-
-        self.driver.find_element(By.ID, "statusform").submit()
 
         self.driver.get(self.website_url + "output")
 
-        body_text = self.driver.find_element(By.TAG_NAME, "body").text
+        avaliable_text = self.driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/span").text
+        
 
-        self.assertIn(test_str, body_text)
+        self.assertEquals("tillgänglig", avaliable_text)
 
 
 
