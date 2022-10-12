@@ -12,6 +12,32 @@ body  {
     color: var(--main-text-color);
 }
 
+a:link {
+  color: var(--main-text-color);
+  text-decoration: none;
+}
+
+/* visited link */
+a:visited {
+  color: var(--main-text-color);
+}
+
+/* mouse over link */
+a:hover {
+  color: red;
+}
+
+/* selected link */
+a:active {
+  color: var(--main-text-color);
+}
+
+#logo {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+}
+
 .backgroundImage {
   position: absolute;
   z-index: -1;
@@ -23,6 +49,8 @@ body  {
   width: 100vw;
   height: 100vh;
   object-fit: cover;
+  pointer-events: none;
+  user-select: none;
 }
 
 .message-container-wrapper {
@@ -75,6 +103,10 @@ body  {
 }
 
 /* Checkbox */
+
+input[type=checkbox]:hover {
+  cursor: pointer;
+}
 
 .switch {
   display: inline-block;
