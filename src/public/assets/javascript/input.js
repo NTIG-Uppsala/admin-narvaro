@@ -19,14 +19,21 @@ $(document).ready( () => {
         /* Loop through every child of main */
         $("div[name='main']").children().each((index, element) => {
             /* Get values from all people */
-            let person = $(element).find("p[name='personName']").text();
-            let status = $(element).find('input[name="avaliableCheckbox"]').is(':checked')
-            let locked = $(element).find('input[name="lockCheckbox"]').is(':checked')
+            let person_element = $(element).find("p[name='personName']");
+            let status_element = $(element).find('input[name="avaliableCheckbox"]')
+            let locked_element = $(element).find('input[name="lockCheckbox"]')
+
+            if (locked_element.is(':checked')) {
+                status_element.attr('disabled','disabled')
+            }
+            else {
+                status_element.removeAttr('disabled')
+            }
 
             let data = {
-                name: person,
-                status: status,
-                locked: locked
+                name: person_element.text(),
+                status: status_element.is(':checked'),
+                locked: locked_element.is(':checked')
             }
     
             console.log(data)
