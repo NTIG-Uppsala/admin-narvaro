@@ -23,5 +23,5 @@ body  {
 }
 
 .message-container > p {
-    width: 25%;
+  max-width: 25vw;
 }

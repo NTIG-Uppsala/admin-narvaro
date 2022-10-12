@@ -34,7 +34,7 @@ app.get("/output", (req, res) => {
 let status = []
 app.post("/sendinput", (req, res) => {
   let date = new Date()
-  let cDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`
+  let cDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${((date.getMinutes() < 10) ? '0' : '') + date.getMinutes()}`
     
   let content = {
       status_text: req.body.inputfield,
