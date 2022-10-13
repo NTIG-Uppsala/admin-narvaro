@@ -12,57 +12,115 @@ app.set('view engine', 'ejs')
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({
   extended: true
-}))
+}));
+
+/* Function which returns the current date in preferred format */
+const current_date = () => {
+    let date = new Date()
+    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${((date.getMinutes() < 10) ? '0' : '') + date.getMinutes()}:${((date.getSeconds() < 10) ? '0' : '') + date.getSeconds()}`
+}
+
+/* Handles a POST request to /sendinput */
+let statusArray = [
+    {
+        name: "Mathias Laveno",
+        role: "Rektor",
+        locked: false,
+        status: false,
+        latest_change: current_date()
+    },
+    {
+        name: "Henrik Jonsson",
+        role: "biträdande rektor",
+        locked: false,
+        status: false,
+        latest_change: current_date()
+    },
+    {
+        name: "Sara Hagberg",
+        role: "biträdande rektor",
+        locked: false,
+        status: false,
+        latest_change: current_date()
+    },
+    {
+        name: "Maud Enbom",
+        role: "Skolsköterska",
+        locked: false,
+        status: false,
+        latest_change: current_date()
+    },
+    {
+        name: "Therese Ekman",
+        role: "Administratör",
+        locked: false,
+        status: false,
+        latest_change: current_date()
+    },
+    {
+        name: "Vincent Persson",
+        role: "Tekniker",
+        locked: false,
+        status: false,
+        latest_change: current_date()
+    },
+    {
+        name: "Megan Gallagher Sundström",
+        role: "Kurator",
+        locked: false,
+        status: false,
+        latest_change: current_date()
+    }
+]
 
 /* notifies console when someone connects to server socket */
 io.on('connection', (socket) => { 
   console.log('A user connected', socket.handshake.address);
+
+  /* A event for changes to the status */
+  socket.on('status change', (dataArray) => { 
+    console.log("STATUS CHANGE")
+    /* Update status array */
+    for (const key in statusArray) {
+        let index = key;
+        let status_object = statusArray[key];
+
+        for (const key in dataArray) {
+            let key_name = key;
+            let input_object = dataArray[key];
+            
+            /* Prevent duplicate names */
+            if (status_object.name == input_object.name) {
+                /* Only update if change */
+                if (status_object.status != input_object.status) {
+                    status_object.status = input_object.status;
+                    status_object["latest_change"] = current_date();
+                }
+
+                if (status_object.locked != input_object.locked) {
+                    status_object.locked = input_object.locked;
+                }    
+            }
+
+            
+        }
+    }
+    console.log(statusArray)
+    /* Status change */
+    io.emit("status update", statusArray)
+
+  });
+
 });
 
 /* Shows input page on root */
-app.get('/', (req, res) => {
-    res.render("input")
+app.get('/setstatus', (req, res) => {
+    res.render("input", {statusObject: statusArray})
 })
 
 /* Shows output page on /output */
-app.get("/output", (req, res) => {
-  res.render("output", {status: status})
-})
-
-
-/* Handles a POST request to /sendinput */
-let status = []
-app.post("/sendinput", (req, res) => {
-  let date = new Date()
-  let cDate = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${((date.getMinutes() < 10) ? '0' : '') + date.getMinutes()}`
-    
-  let content = {
-      status_text: req.body.inputfield,
-      current_date: cDate
-  }
-
-  try {
-    //  Check if input is empty
-    if (req.body.inputfield.length < 1) {
-        // just return to the input page
-        return res.redirect('/')
-    }
-
-    //  Add the content to the status array
-    status.push(content)
-    
-    //  Send the content to the client socket
-    try {
-      io.emit("status update", content)
-    } catch (error) {
-      throw error
-    }  
-
-  } catch (error) {
-    throw error
-  }
-  console.log(status)
-  return res.redirect("/")
+app.get("/", (req, res) => {
+  res.render("output", {statusObject: statusArray})
 })
 
 

@@ -10,23 +10,45 @@
 
 </head>
 <body>
-    <h1>Status</h1>
-    <div id="messageDiv">
-        <% status.forEach(statusObject => { %>
-            <div class="message-container">
-                <p style="font-weight: bold; font-size:25px;"><%= statusObject.status_text %></p>
-                <span style="font-size: 15px;"><%= statusObject.current_date %></span>
-            </div>
-            
-        <% }) %>
+
+    <div class="backgroundImage">
+      <img src="/assets/images/backgroundNTI.jpg">
     </div>
-    <a href="/">Sätt status</a>
-    <noscript>
-        <h4>JavaScript är avstängt</h4>
-        <p>För att uppdatera innehållet på sidan, ladda om sidan</p>
-    </noscript>
+    
+    <img id="logo" src="assets/images/nti_logo_footer.svg" alt="">
+
+    <div class="message-container-wrapper">
+      <h1>Status</h1>
+      <div id="statusDiv">
+        <% let id = 0;%>
+          <% statusObject.forEach(person => { %>
+            <% id++ %>
+              <div class="message-container <%= (id%2==0) ? 'gray-color': ''; %>" id="message-containerOutput">
+                 <div class="name">
+                    <span><%= person.name %></span>
+                    <span class="role"><%= person.role %> </span>
+                  </div>
+                  <div class="status">
+                    <span style="color: <%= (person.status == true) ? '#66bb6a' : 'red'; %>"><%= (person.status == true) ? "Tillgänglig" : "Ej tillgänglig"; %></span>
+                    <span class="latest-update"><%= person.latest_change %> </span>
+                  </div>    
+                </div>
+          <% }); %>
+      </div>
+      <!--
+      <div>
+        <a href="/setstatus">Sätt status</a>
+      </div>
+      -->
+      <noscript>
+          <h4>JavaScript är avstängt</h4>
+          <p>För att uppdatera innehållet på sidan, ladda om sidan</p>
+      </noscript>
+    </div>
 
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>
-    <script src="/assets/javascript/main.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+    <script src="/assets/javascript/output.js"></script>
 </body>
 </html>
