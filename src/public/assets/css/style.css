@@ -90,10 +90,15 @@ a:active {
   text-align: center;
   gap: 50px;
   width: 100%;
+  padding: 15px 5px;
+}
+
+.gray-color{
+  background-color: rgb(128, 128, 128, .65)
 }
 
 .message-container > div {
-  width: 33%;
+  width: 33%; 
 }
 
 .message-container > p {
@@ -102,14 +107,32 @@ a:active {
 
 /* Output page */
 
-#message-containerOutput > p {
+#message-containerOutput > .name {
   text-align: left;
-  width: 33%;
+  width: 100%;
 }
 
-#message-containerOutput > span {
+#message-containerOutput > .status  {
   text-align: right;
-  width: 33%;
+  width: 100%;
+}
+
+.name {
+  display: flex;
+  flex-direction: column;
+}
+
+.status {
+  display: flex;
+  flex-direction: column;
+}
+
+.latest-update {
+  font-size: 15px;
+}
+
+.role {
+  font-size: 15px;
 }
 
 /* Checkbox */
