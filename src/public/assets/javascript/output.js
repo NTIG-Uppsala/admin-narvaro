@@ -5,7 +5,7 @@ $(document).ready(function() {
     /* On a satus update event from the server, create new element with data */
     socket.on("status update", (dataArray) => {
         /* Set innerhtml of statusDiv */
-        console.log("status update", dataArray);
+        console.log("Detected change of status", dataArray);
         newHTML = "";
         let id = 0;
         dataArray.forEach((person) => {

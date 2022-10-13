@@ -3,7 +3,7 @@ $(document).ready( () => {
     const socket = io();
     /* listen on updates from other users */
     socket.on("status update", (dataArray) => {
-        console.log("status update", dataArray);
+        console.log("Detected remote change", dataArray);
 
         /* Update checkboxses */
         dataArray.forEach((person) => {
