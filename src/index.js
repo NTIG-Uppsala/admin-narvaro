@@ -31,14 +31,14 @@ let statusArray = [
     },
     {
         name: "Henrik Jonsson",
-        role: "biträdande rektor",
+        role: "Biträdande rektor",
         locked: false,
         status: false,
         latest_change: current_date()
     },
     {
         name: "Sara Hagberg",
-        role: "biträdande rektor",
+        role: "Biträdande rektor",
         locked: false,
         status: false,
         latest_change: current_date()
@@ -65,7 +65,7 @@ let statusArray = [
         latest_change: current_date()
     },
     {
-        name: "Megan Gallagher Sundström",
+        name: "Megan Sundström",
         role: "Kurator",
         locked: false,
         status: false,
