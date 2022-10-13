@@ -13,7 +13,7 @@ $(document).ready(function() {
             console.log(person)
             if (person.name.length > 0) {
                 newHTML += `
-                <div class="message-container ${(id%2==0) ? 'gray-color': ''}" id="message-containerOutput">
+                <div class="message-containerOutput message-container ${(id%2==0) ? 'gray-color': ''}">
                     <div class="name">
                         <span>${person.name }</span>
                         <span class="role">${ person.role }</span>

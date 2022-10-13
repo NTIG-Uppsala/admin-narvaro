@@ -107,12 +107,12 @@ a:active {
 
 /* Output page */
 
-#message-containerOutput > .name {
+.message-containerOutput > .name {
   text-align: left;
   width: 100%;
 }
 
-#message-containerOutput > .status  {
+.message-containerOutput > .status  {
   text-align: right;
   width: 100%;
 }

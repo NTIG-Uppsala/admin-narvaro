@@ -11,11 +11,11 @@
 </head>
 <body>
 
-    <div class="backgroundImage">
-      <img src="/assets/images/backgroundNTI.jpg">
-    </div>
-    
-    <img id="logo" src="assets/images/nti_logo_footer.svg" alt="">
+  <div class="backgroundImage">
+    <img src="/assets/images/backgroundNTI.jpg" alt="background image of webpage containing purple blobs and stripes">
+  </div>
+
+  <img id="logo" src="assets/images/nti_logo_footer.svg" alt="Logo of NTI school">
 
     <div class="message-container-wrapper">
       <h1>Status</h1>
@@ -23,7 +23,7 @@
         <% let id = 0;%>
           <% statusObject.forEach(person => { %>
             <% id++ %>
-              <div class="message-container <%= (id%2==0) ? 'gray-color': ''; %>" id="message-containerOutput">
+              <div class="message-containerOutput message-container <%= (id%2==0) ? 'gray-color': ''; %>">
                  <div class="name">
                     <span><%= person.name %></span>
                     <span class="role"><%= person.role %> </span>

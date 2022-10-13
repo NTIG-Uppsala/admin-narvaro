@@ -7,9 +7,9 @@ $(document).ready( () => {
 
         /* Update checkboxses */
         dataArray.forEach((person) => {
-            $("div[name='main']").children().each((index, element) => {
+            $("div[id='main']").children().each((index, element) => {
 
-                let person_element = $(element).find("span[name='personName']");
+                let person_element = $(element).find("span[class='personName']");
                 let status_element = $(element).find('input[name="avaliableCheckbox"]')
                 let locked_element = $(element).find('input[name="lockCheckbox"]')
 
@@ -35,12 +35,12 @@ $(document).ready( () => {
 
     });
 
-    $("div[name='main']").change(() => {
+    $("div[id='main']").change(() => {
         let status_array = []
         /* Loop through every child of main */
-        $("div[name='main']").children().each((index, element) => {
+        $("div[id='main']").children().each((index, element) => {
             /* Get values from all people */
-            let person_element = $(element).find("span[name='personName']");
+            let person_element = $(element).find("span[class='personName']");
             let status_element = $(element).find('input[name="avaliableCheckbox"]')
             let locked_element = $(element).find('input[name="lockCheckbox"]')
 

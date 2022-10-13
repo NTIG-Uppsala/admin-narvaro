@@ -11,25 +11,25 @@
 <body>
 
     <div class="backgroundImage">
-      <img src="/assets/images/backgroundNTI.jpg">
+      <img src="/assets/images/backgroundNTI.jpg" alt="background image of webpage containing purple blobs and stripes">
     </div>
 
-    <img id="logo" src="assets/images/nti_logo_footer.svg" alt="">
+    <img id="logo" src="assets/images/nti_logo_footer.svg" alt="Logo of NTI school">
     
     <div class="message-container-wrapper">
-      <div name="main">
+      <div id="main">
           <h1>Ange din status</h1>
           <% let id = 0;%>
           <% statusObject.forEach(person => { %>
             <% id++ %>
-              <div class="message-container <%= (id%2==0) ? 'gray-color': ''; %>" name="personDiv">
+              <div class="message-container <%= (id%2==0) ? 'gray-color': ''; %>">
                   <div class="name">
-                    <span name="personName"><%= person.name %></span>
+                    <span class="personName"><%= person.name %></span>
                   </div>
                   <div class="container">
                       <label class="switch" for="avaliable-<%=id%>">
                           <input type="checkbox" name="avaliableCheckbox" id="avaliable-<%=id%>" <%= (person.locked) ? "disabled" : ''; %> <%= (person.status) ? "checked" : ''; %> >
-                          <div class="slider round"></div>
+                          <span class="slider round"></span>
                       </label>
                   </div>
                   <div>
