@@ -22,8 +22,10 @@
           <% let id = 0;%>
           <% statusObject.forEach(person => { %>
             <% id++ %>
-              <div class="message-container" name="personDiv">
-                  <p name="personName"><%= person.name %></p>
+              <div class="message-container <%= (id%2==0) ? 'gray-color': ''; %>" name="personDiv">
+                  <div class="name">
+                    <span name="personName"><%= person.name %></span>
+                  </div>
                   <div class="container">
                       <label class="switch" for="avaliable-<%=id%>">
                           <input type="checkbox" name="avaliableCheckbox" id="avaliable-<%=id%>" <%= (person.locked) ? "disabled" : ''; %> <%= (person.status) ? "checked" : ''; %> >

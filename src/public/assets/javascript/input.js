@@ -7,7 +7,7 @@ $(document).ready( () => {
         /* Loop through every child of main */
         $("div[name='main']").children().each((index, element) => {
             /* Get values from all people */
-            let person_element = $(element).find("p[name='personName']");
+            let person_element = $(element).find("span[name='personName']");
             let status_element = $(element).find('input[name="avaliableCheckbox"]')
             let locked_element = $(element).find('input[name="lockCheckbox"]')
 
