@@ -23,11 +23,13 @@
           <% statusObject.forEach(person => { %>
               <div class="message-container" id="message-containerOutput">
                   <p><%= person.name %></p>
-                  <span><%= (person.status == true) ? "tillgänglig" : "ej tillgänglig"; %></span>
+                  <span style="color: <%= (person.status == true) ? '#66bb6a' : 'red'; %>"><%= (person.status == true) ? "Tillgänglig" : "Ej tillgänglig"; %></span>
               </div>
           <% }); %>
       </div>
-      <a href="/">Sätt status</a>
+      <div>
+        <a href="/setstatus">Sätt status</a>
+      </div>
       <noscript>
           <h4>JavaScript är avstängt</h4>
           <p>För att uppdatera innehållet på sidan, ladda om sidan</p>

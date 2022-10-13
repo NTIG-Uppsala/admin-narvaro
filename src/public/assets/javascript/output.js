@@ -25,7 +25,7 @@ $(document).ready(function() {
                 newHTML += `
                 <div class="message-container" id="message-containerOutput">
                     <p>${person.name}</p>
-                    <span>${(person.status == true) ? "tillgänglig" : "ej tillgänglig"}</span>
+                    <span style="color:${(person.status == true) ? "#66bb6a" : "red"}">${(person.status == true) ? "Tillgänglig" : "Ej tillgänglig"}</span>
                 </div>
             `
             }
