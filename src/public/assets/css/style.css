@@ -2,14 +2,20 @@
   --main-text-color: white;
 }
 
+@font-face {
+  font-family: Soleto;
+  src: url("/assets/fonts/Soleto.ttf");
+}
+
 * {
     box-sizing: border-box;
 }
 
 body  {
     margin: 0;
-    overflow: hidden;
+    overflow-x: hidden;
     color: var(--main-text-color);
+    font-family: Soleto;
 }
 
 a:link {
@@ -33,13 +39,13 @@ a:active {
 }
 
 #logo {
-  position: absolute;
+  position: fixed;
   top: 50px;
   left: 50px;
 }
 
 .backgroundImage {
-  position: absolute;
+  position: fixed;
   z-index: -1;
   width: 100vw;
   height: 100vh;
@@ -58,9 +64,9 @@ a:active {
   min-height: 80vh;
   height: auto;
   position: absolute;
-  top: 50%;
+  top: 10%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, 0);
   display: flex; 
   flex-direction: column; 
   justify-content: center;
@@ -68,18 +74,22 @@ a:active {
   background-color: rgb(0, 0, 0, 0.65);
   border-radius: 15px;
   border: 5px solid var(--main-text-color);
-  font-size: 3em;
+  font-size: 2em;
   padding: 50px;
 }
 
+.message-container-wrapper a {
+  width: auto;
+}
+
 .message-container{
-    display: flex; 
-    flex-direction: row; 
-    align-items: center; 
-    justify-content: center;
-    text-align: center;
-    gap: 50px;
-    width: 100%;
+  display: flex; 
+  flex-direction: row; 
+  align-items: center; 
+  justify-content: center;
+  text-align: center;
+  gap: 50px;
+  width: 100%;
 }
 
 .message-container > div {
