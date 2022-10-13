@@ -99,8 +99,6 @@ io.on('connection', (socket) => {
 
                 if (status_object.locked != input_object.locked) {
                     status_object.locked = input_object.locked;
-
-                    status_object["latest_change"] = current_date();
                 }    
             }
 
