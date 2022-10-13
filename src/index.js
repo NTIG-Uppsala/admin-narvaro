@@ -116,12 +116,12 @@ io.on('connection', (socket) => {
 });
 
 /* Shows input page on root */
-app.get('/', (req, res) => {
+app.get('/setstatus', (req, res) => {
     res.render("input", {statusObject: statusArray})
 })
 
 /* Shows output page on /output */
-app.get("/output", (req, res) => {
+app.get("/", (req, res) => {
   res.render("output", {statusObject: statusArray})
 })
 
