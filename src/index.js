@@ -53,14 +53,6 @@ let statusArray = [
         latest_change_from_now: null
     },
     {
-        name: "Maud Enbom",
-        role: "Skolsköterska",
-        locked: false,
-        status: false,
-        latest_change: current_date(),
-        latest_change_from_now: null
-    },
-    {
         name: "Therese Ekman",
         role: "Administratör",
         locked: false,
@@ -77,7 +69,15 @@ let statusArray = [
         latest_change_from_now: null
     },
     {
-        name: "Megan Gallagher Sundström",
+        name: "Maud Enbom",
+        role: "Skolsköterska",
+        locked: false,
+        status: false,
+        latest_change: current_date(),
+        latest_change_from_now: null
+    },
+    {
+        name: "Megan Sundström",
         role: "Kurator",
         locked: false,
         status: false,
