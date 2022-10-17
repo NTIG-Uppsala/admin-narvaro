@@ -20,7 +20,7 @@ $(document).ready(function() {
                     </div>
                     <div class="status">
                         <span style="color: ${(person.status == true) ? '#66bb6a' : 'red'} ">${(person.status == true) ? "Tillgänglig" : "Ej tillgänglig"}</span>
-                        <span class="latest-update">${person.latest_change}</span>
+                        <span class="latest-update">Senast uppdaterad: ${person.latest_change_from_now}</span>
                   </div>  
                 </div>
             `
