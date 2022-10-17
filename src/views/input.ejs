@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -16,33 +16,32 @@
 
     <img id="logo" src="assets/images/nti_logo_footer.svg" alt="Logo of NTI school">
     
-    <div class="message-container-wrapper">
-      <div id="main">
-          <h1>Ange din status</h1>
-          <% let id = 0;%>
-          <% statusObject.forEach(person => { %>
-            <% id++ %>
-              <div class="message-container <%= (id%2==0) ? 'gray-color': ''; %>">
-                  <div class="name">
-                    <span class="personName"><%= person.name %></span>
-                  </div>
-                  <div class="container">
-                      <label class="switch" for="avaliable-<%=id%>">
-                          <input type="checkbox" name="avaliableCheckbox" id="avaliable-<%=id%>" <%= (person.locked) ? "disabled" : ''; %> <%= (person.status) ? "checked" : ''; %> >
-                          <span class="slider round"></span>
-                      </label>
-                  </div>
-                  <div style="display:none;">
-                      <input type="checkbox" name="lockCheckbox" <%= (person.locked) ? "checked" : ''; %>>
-                      <span>lås</span>
-                  </div>
-              </div>
-          <% }); %>
+
+    <div class="grid-center">
+      <div class="message-container-wrapper">
+        <div name="main">
+            <h1>Ange din status</h1>
+            <% let id = 0;%>
+            <% statusObject.forEach(person => { %>
+              <% id++ %>
+                <div class="message-container <%= (id%2==0) ? 'gray-color': ''; %>" name="personDiv">
+                    <div class="name">
+                      <span name="personName"><%= person.name %></span>
+                    </div>
+                    <div class="container">
+                        <label class="switch" for="avaliable-<%=id%>">
+                            <input type="checkbox" name="avaliableCheckbox" id="avaliable-<%=id%>" <%= (person.locked) ? "disabled" : ''; %> <%= (person.status) ? "checked" : ''; %> >
+                            <div class="slider round"></div>
+                        </label>
+                    </div>
+                </div>
+            <% }); %>
+        </div>
+        <div>
+          <a href="/">Status</a>
+        </div>
+
       </div>
-      <div>
-        <a href="/">Status</a>
-      </div>
-      
 
     </div>    
     

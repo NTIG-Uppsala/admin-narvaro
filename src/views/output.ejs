@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sv">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -20,29 +20,31 @@
 
   <img id="logo" src="assets/images/nti_logo_footer.svg" alt="Logo of NTI school">
 
-    <div class="message-container-wrapper">
-      <h1>Status</h1>
-      <div id="statusDiv">
-        <% let id = 0;%>
-          <% statusObject.forEach(person => { %>
-            <% id++ %>
-              <div class="message-containerOutput message-container <%= (id%2==0) ? 'gray-color': ''; %>">
-                 <div class="name">
-                    <span><%= person.name %></span>
-                    <span class="role"><%= person.role %> </span>
-                  </div>
-                  <div class="status">
-                    <span style="color: <%= (person.status == true) ? '#66bb6a' : 'red'; %>"><%= (person.status == true) ? "Tillgänglig" : "Ej tillgänglig"; %></span>
-                    <span class="latest-update"><%= person.latest_change %> </span>
-                  </div>    
-                </div>
-          <% }); %>
-      </div>
+    <div class="grid-center">
+      <div class="message-container-wrapper">
+        <h1>Status</h1>
+        <div id="statusDiv">
+          <% let id = 0;%>
+            <% statusObject.forEach(person => { %>
+              <% id++ %>
+                <div class="message-container <%= (id%2==0) ? 'gray-color': ''; %>" id="message-containerOutput">
+                  <div class="name status-flex">
+                      <span><%= person.name %></span>
+                      <span class="role subheading"><%= person.role %> </span>
+                    </div>
+                    <div class="status status-flex">
+                      <span class="<%= (person.status == true) ? 'green-color' : 'red-color'; %>"><%= (person.status == true) ? "Tillgänglig" : "Ej\xa0tillgänglig"; %></span>
+                      <span class="latest-update subheading">Senast uppdaterad: <%= person.latest_change_from_now %> </span>
+                    </div>    
 
-      <noscript>
-          <h4>JavaScript är avstängt</h4>
-          <p>För att uppdatera innehållet på sidan, ladda om sidan</p>
-      </noscript>
+                  </div>
+            <% }); %>
+        </div>
+        <noscript>
+            <h4>JavaScript är avstängt</h4>
+            <p>För att uppdatera innehållet på sidan, ladda om sidan</p>
+        </noscript>
+      </div>
     </div>
 
     <script src="https://cdn.socket.io/4.5.0/socket.io.min.js" integrity="sha384-7EyYLQZgWBi67fBtVxw60/OWl1kjsfrPFcaU0pp0nAh+i8FD068QogUvg85Ewy1k" crossorigin="anonymous"></script>

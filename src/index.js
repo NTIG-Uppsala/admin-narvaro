@@ -5,6 +5,10 @@ const { log } = require('console');
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
+let moment = require('moment');
+
+moment.locale('sv')
+
 /* Sets ejs as view engine */
 app.set('view engine', 'ejs')
 
@@ -14,11 +18,13 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 
+
 /* Function which returns the current date in preferred format */
 const current_date = () => {
-    let date = new Date()
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${((date.getMinutes() < 10) ? '0' : '') + date.getMinutes()}:${((date.getSeconds() < 10) ? '0' : '') + date.getSeconds()}`
+    return new Date()
+    // return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${((date.getMinutes() < 10) ? '0' : '') + date.getMinutes()}:${((date.getSeconds() < 10) ? '0' : '') + date.getSeconds()}`
 }
+
 
 /* Handles a POST request to /sendinput */
 let statusArray = [
@@ -27,52 +33,68 @@ let statusArray = [
         role: "Rektor",
         locked: false,
         status: false,
-        latest_change: current_date()
+        latest_change: current_date(),
+        latest_change_from_now: null
     },
     {
         name: "Henrik Jonsson",
         role: "Biträdande rektor",
         locked: false,
         status: false,
-        latest_change: current_date()
+        latest_change: current_date(),
+        latest_change_from_now: null
     },
     {
-        name: "Sara Hagberg",
+        name: "Sarah Hagberg",
         role: "Biträdande rektor",
         locked: false,
         status: false,
-        latest_change: current_date()
-    },
-    {
-        name: "Maud Enbom",
-        role: "Skolsköterska",
-        locked: false,
-        status: false,
-        latest_change: current_date()
+        latest_change: current_date(),
+        latest_change_from_now: null
     },
     {
         name: "Therese Ekman",
         role: "Administratör",
         locked: false,
         status: false,
-        latest_change: current_date()
+        latest_change: current_date(),
+        latest_change_from_now: null
     },
     {
         name: "Vincent Persson",
         role: "Tekniker",
         locked: false,
         status: false,
-        latest_change: current_date()
+        latest_change: current_date(),
+        latest_change_from_now: null
+    },
+    {
+        name: "Maud Enbom",
+        role: "Skolsköterska",
+        locked: false,
+        status: false,
+        latest_change: current_date(),
+        latest_change_from_now: null
     },
     {
         name: "Megan Sundström",
         role: "Kurator",
         locked: false,
         status: false,
-        latest_change: current_date()
+        latest_change: current_date(),
+        latest_change_from_now: null
+
     }
 ]
 
+
+setInterval(function(){
+    statusArray.forEach(item => {
+        item.latest_change_from_now = moment(item.latest_change).fromNow()
+    });
+ }, 1000);
+
+ 
 /* notifies console when someone connects to server socket */
 io.on('connection', (socket) => { 
   console.log('A user connected', socket.handshake.address);
@@ -95,11 +117,12 @@ io.on('connection', (socket) => {
                 if (status_object.status != input_object.status) {
                     status_object.status = input_object.status;
                     status_object["latest_change"] = current_date();
+                    status_object["latest_change_from_now"] = moment(status_object["latest_change"]).fromNow()
                 }
 
-                if (status_object.locked != input_object.locked) {
-                    status_object.locked = input_object.locked;
-                }    
+                // if (status_object.locked != input_object.locked) {
+                //     status_object.locked = input_object.locked;
+                // }    
             }
 
             
