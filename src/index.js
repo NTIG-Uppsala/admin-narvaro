@@ -38,7 +38,7 @@ let statusArray = [
     },
     {
         name: "Henrik Jonsson",
-        role: "biträdande rektor",
+        role: "Biträdande rektor",
         locked: false,
         status: false,
         latest_change: current_date(),
