@@ -19,14 +19,14 @@
 
     <div class="grid-center">
       <div class="message-container-wrapper">
-        <div name="main">
+        <div id="main">
             <h1>Ange din status</h1>
             <% let id = 0;%>
             <% statusObject.forEach(person => { %>
               <% id++ %>
                 <div class="message-container <%= (id%2==0) ? 'gray-color': ''; %>" name="personDiv">
                     <div class="name">
-                      <span name="personName"><%= person.name %></span>
+                      <span name="personName" class="personName"><%= person.name %></span>
                     </div>
                     <div class="container">
                         <label class="switch" for="avaliable-<%=id%>">

@@ -16,7 +16,7 @@ $(document).ready(function() {
                 <div class="message-container ${(id%2==0) ? 'gray-color': ''}" id="message-containerOutput">
                     <div class="name status-flex">
 
-                        <span>${person.name }</span>
+                        <span>${person.name}</span>
                         <span class="role subheading">${ person.role }</span>
                     </div>
                     <div class="status status-flex">

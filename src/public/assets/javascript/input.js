@@ -11,17 +11,8 @@ $(document).ready( () => {
 
                 let person_element = $(element).find("span[class='personName']");
                 let status_element = $(element).find('input[name="avaliableCheckbox"]')
-                let locked_element = $(element).find('input[name="lockCheckbox"]')
 
                 if (person_element.text() == person.name) {
-                    if (person.locked) {
-                        status_element.prop('disabled', true)
-                        locked_element.prop('checked', true)
-                    }
-                    else {
-                        status_element.prop('disabled', false)
-                        locked_element.prop('checked', false)
-                    }
         
                     if (person.status) {
                         status_element.prop('checked', true)
@@ -42,19 +33,10 @@ $(document).ready( () => {
             /* Get values from all people */
             let person_element = $(element).find("span[class='personName']");
             let status_element = $(element).find('input[name="avaliableCheckbox"]')
-            let locked_element = $(element).find('input[name="lockCheckbox"]')
-
-            if (locked_element.is(':checked')) {
-                status_element.prop('disabled', true)
-            }
-            else {
-                status_element.prop('disabled', false)
-            }
 
             let data = {
                 name: person_element.text(),
-                status: status_element.is(':checked'),
-                locked: locked_element.is(':checked')
+                status: status_element.is(':checked')
             }
     
             console.log(data)
