@@ -10,17 +10,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: create data directory if no exists
+      run: mkdir -p data
     - name: get status from public api
       uses: wei/curl@v1
       with: 
-        args: https://narvaro.ntig.net/api/getstatus -o status.json 
-    - name: cat status.json
-      run: |
-       ls
-       cat status.json
-
-        # args: https://narvaro.ntig.net/api/getstatus -o status.json 
-
+        args: https://narvaro.ntig.net/api/getstatus -o data/status.json 
     - name: upload status file to data/status.json
       uses: svenstaro/upload-release-action@v2
       with:
