@@ -3,11 +3,11 @@ import React, { useState, useEffect } from "react";
 import io from 'socket.io-client';
 import moment from 'moment';
 
-moment.locale('sv')
 
 
 const Output = () => {
     const socket = io();
+    moment.locale('sv')
 
     const [statusArray, setStatusArray] = useState();
 
@@ -57,7 +57,7 @@ const Output = () => {
                     <span>{props.name}</span>
                     <span className="role subheading">{props.role} </span>
                 </div>
-                <div className="status-flex">
+                <div className="status status-flex">
                     <span className={(props.status == true) ? 'green-color' : 'red-color'}> {props.avalibility} </span>
                     <span className="latest-update subheading">Senast uppdaterad: {moment(props.latest_change).fromNow()} </span>
                 </div>    

@@ -59,7 +59,7 @@ let statusArray = [
         latest_change: current_date()
     },
     {
-        name: "Megan Gallagher Sundström",
+        name: "Megan Sundström",
         role: "Kurator",
         locked: false,
         status: false,
