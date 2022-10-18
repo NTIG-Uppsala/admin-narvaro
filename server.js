@@ -88,7 +88,26 @@ class database {
     }
 
     DEBUG_REWRITE_DB_USERS() {
+        console.log("UNCOMMENT CODE IF YOU WANT TO REWRITE DB")
+        // console.log("Connected to database DELETING ALL USERS");
+        // // databse_instance.userModel.deleteMany({}, (err) => { if (err) throw err})
+        // // let USERS = []
+        // statusArray.forEach(async (person) => {
+        //     let ny_modell = new databse_instance.userModel({
+        //         name: person.name,
+        //         role: person.role,
+        //         status: person.status,
+        //         latest_change: person.latest_change,
+        //         viktighet: -1,
+        //         privilege: null
+        //     });
+            
+        //     // USERS.push(ny_modell)
 
+        //     await ny_modell.save((err) => { if (err) throw err; console.log("Saved user to database", ny_modell.name)});
+            
+        // });
+        // databse_instance.userModel.insertMany(USERS, (err) => { if (err) throw err; console.log("Saved users to database")});
 
         // userModel.insertMany(users, (err) => { if (err) throw err});
         // ny_modell.save((err) => { if (err) throw err});
@@ -101,27 +120,6 @@ class database {
 const databse_instance = new database();
 
 nextApp.prepare().then( async () => {
-        
-    // console.log("Connected to database DELETING ALL USERS");
-    // // databse_instance.userModel.deleteMany({}, (err) => { if (err) throw err})
-    // // let USERS = []
-    // statusArray.forEach(async (person) => {
-    //     let ny_modell = new databse_instance.userModel({
-    //         name: person.name,
-    //         role: person.role,
-    //         status: person.status,
-    //         latest_change: person.latest_change,
-    //         viktighet: -1,
-    //         privilege: null
-    //     });
-        
-    //     // USERS.push(ny_modell)
-
-    //     await ny_modell.save((err) => { if (err) throw err; console.log("Saved user to database", ny_modell.name)});
-        
-    // });
-    // databse_instance.userModel.insertMany(USERS, (err) => { if (err) throw err; console.log("Saved users to database")});
-
     /* Set up body-parser */
     server.use(bodyParser.urlencoded({
         extended: true
@@ -135,10 +133,6 @@ nextApp.prepare().then( async () => {
                 console.log("Could not retrive data from database", err)
                 return res.json(statusArray)
             }
-            console.log(result)
-            result.forEach((element, index) => {
-                console.log(element.viktighet)
-            });
             /* Sort result array after priority key */
             let sorted_result = result.sort((a, b) => {
                 return a.viktighet - b.viktighet
@@ -163,8 +157,6 @@ nextApp.prepare().then( async () => {
 
     await mongoose.connect(databse_instance.db_url, (err) => {
         if (err) throw err;
-
-       
 
         return console.log("Connected to database");
     });
