@@ -2,9 +2,6 @@ import Link from 'next/link';
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import io from 'socket.io-client';
-import moment from 'moment';
-
-moment.locale('sv')
 
 
 const Input = () => {
@@ -60,10 +57,9 @@ const Input = () => {
 
     const Person = (props) => {
         return (
-            <div className="message-container" name="personDiv">
-
+            <div className="message-container">
                 <div className="name">
-                    <span name="personName">{props.name}</span>
+                    <span>{props.name}</span>
                 </div>
                 <div className="container">
                     <label className="switch" htmlFor={'avaliable-' + props.name.replace(" ", "-")}>
@@ -77,8 +73,6 @@ const Input = () => {
                     </label>
                 </div>
             </div>
-
-            
         )
 
     }
@@ -91,19 +85,20 @@ const Input = () => {
   
         <img id="logo" src="images/nti_logo_footer.svg" alt="" />
         
-        <div className="message-container-wrapper">
-          <div name="main">
-              <h1>Ange din status</h1>
-                {statusArray}
-          </div>
-          <div>
-            <Link href="/">
-                <a>statis</a>
-            </Link>
-          </div>
-          
-  
-        </div> 
+        <div className="grid-center">
+            <div className="message-container-wrapper">
+            <div id="main">
+                <h1>Ange din status</h1>
+                    {statusArray}
+            </div>
+            <div>
+                <Link href="/">
+                    <a>Visa Status</a>
+                </Link>
+            </div>
+            </div> 
+        </div>
+        
       </>
          
     );

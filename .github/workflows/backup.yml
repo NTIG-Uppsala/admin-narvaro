@@ -1,0 +1,31 @@
+
+name: Backups status of people
+on: 
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+jobs:  
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: get status from public api
+      uses: wei/curl@v1
+      with: 
+        args: http://localhost:8000/api/getstatus -o status.json 
+    - name: cat status.json
+      run: |
+       ls
+       cat status.json
+
+        # args: https://narvaro.ntig.net/api/getstatus -o status.json 
+
+    - name: upload status file to data/status.json
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: data/status.json
+        tag: ${{ github.ref }}
+        overwrite: true
+        file_glob: true
