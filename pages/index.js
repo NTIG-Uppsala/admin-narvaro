@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import io from 'socket.io-client';
 import moment from 'moment';
-
+import 'moment/locale/sv';
 
 
 const Output = () => {
