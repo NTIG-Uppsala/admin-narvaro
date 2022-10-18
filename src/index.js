@@ -146,6 +146,11 @@ app.get("/", (req, res) => {
   res.render("output", {statusObject: statusArray})
 })
 
+app.get('/api/getstatus', (req, res) => {
+    res.json(statusArray)
+})
+
+
 
 const serverPort = 8000
 server.listen(serverPort, () => {
