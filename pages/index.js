@@ -22,7 +22,10 @@ const Output = () => {
 
         socket.on('status update', (response) => {
             console.log("STATUS UPDATE: \n", response)
-            return render_people(response)
+            axios.get('/api/getstatus').then(res => {
+                console.log("data gotten from api: \n", res.data)
+                return render_people(res.data)
+            });
         });
 
     }, []);
