@@ -18,6 +18,8 @@ RUN npm install
 COPY . .
 
 EXPOSE 8000
-WORKDIR src/
-CMD ["node", "index.js" ]
+
+RUN npm run build
+
+CMD ["npm", "run", "start" ]
 

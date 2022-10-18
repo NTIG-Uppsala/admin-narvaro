@@ -9,7 +9,7 @@
 
 @font-face {
   font-family: Soleto;
-  src: url("/assets/fonts/Soleto.ttf");
+  src: url("./fonts/Soleto.ttf");
 }
 
 * {

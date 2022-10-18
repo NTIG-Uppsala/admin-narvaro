@@ -24,7 +24,7 @@ Python 3.10.6
 All tests are located in the `test` folder and are named `test_*.py`. To install necessary dependencies run `pip install -r requirements.txt` in the root folder of the project. To run a test run `python test/<filename> <url to be tested>`
 
 ## Run project
-To run the project, installation of the dependencies is required. To install the dependencies run `npm install` in the root folder of the project. To run the project run `cd src && node index.js` in the root folder of the project. The project will then be available at `localhost:8000` in the browser
+To run the project, installation of the dependencies is required. To install the dependencies run `npm install` in the root folder of the project. To run the project run `node server.js` in the root folder of the project. The project will then be available at `localhost:8000` in the browser as a development version. If you want to run the project as production, run `npm run build` and `npm run start` in the root directory of the project.
 
 ## Run project with docker
 To run the project with docker. The Docker engine needs to be installed and the dependencies that comes with docker.

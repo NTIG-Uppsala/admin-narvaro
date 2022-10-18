@@ -1,0 +1,38 @@
+
+name: Backups status of people
+on: 
+  push:
+    branches: [ "main", "dev" ]
+  pull_request:
+    branches: [ "main", "dev" ]
+jobs:  
+  backup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ steps.extract_branch.outputs.branch }}
+
+    - name: create data directory if no exists
+      run: mkdir -p data
+
+    - name: get status from public api
+      uses: wei/curl@v1
+      with: 
+        args: https://narvaro.ntig.net/api/getstatus -o data/status.json 
+
+    - name: upload status file to data/status.json
+      run: |
+          git config --global user.email "actions@ntig.net"
+          git config --global user.name "NTIG auto backup"
+          git commit data/status.json -m "Update status.json"
+          git push
