@@ -32,5 +32,7 @@ jobs:
 
     - name: upload status file to data/status.json
       run: |
+          git config --global user.email "actions@ntig.net"
+          git config --global user.name "NTIG auto backup"
           git commit -m "Update status.json"
           git push
