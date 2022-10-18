@@ -13,8 +13,9 @@ const dev = process.env.NODE_ENV !== 'production'
 const nextApp = next({dev})
 const nextHandler = nextApp.getRequestHandler()
 
+const mongoose = require('mongoose');
 
-
+require('dotenv').config()
 
 /* Function which returns the current date in preferred format */
 const current_date = () => {
@@ -67,22 +68,60 @@ let statusArray = [
     }
 ]
 
-nextApp.prepare().then(() => {
-    /* Check if folder /data exists */
-    if (!fs.existsSync('./data'))
-        fs.mkdirSync('./data')
-
-    /* Check if status.json exists */
-    if (!fs.existsSync('./data/status.json'))
-    {   
-        /* Create file if not */
-        fs.writeFileSync('./data/status.json', JSON.stringify(statusArray))
-    } else {
-
-        /* Read file if it does */
-        statusArray = JSON.parse(fs.readFileSync('./data/status.json'))
-    }
+class database {
+    constructor() {
+        this.test;
+        this.db_url = `mongodb+srv://${process.env.DB_USER}:${encodeURIComponent(process.env.DB_PASSWORD)}@admin-narvaro.o11easj.mongodb.net/users`;
+        this.userModel = new mongoose.model("atendences", {
+            name: String,
+            role: String,
+            status: Boolean,
+            latest_change: Date,
+            viktighet: Number,
+            privilege: mongoose.Types.ObjectId
+        });
         
+        this.privilegeModel = new mongoose.model("privileges", {
+            name: String,
+            uri: String
+        });
+    }
+
+    DEBUG_REWRITE_DB_USERS() {
+
+
+        // userModel.insertMany(users, (err) => { if (err) throw err});
+        // ny_modell.save((err) => { if (err) throw err});
+
+    }
+    
+
+}
+
+const databse_instance = new database();
+
+nextApp.prepare().then( async () => {
+        
+    // console.log("Connected to database DELETING ALL USERS");
+    // // databse_instance.userModel.deleteMany({}, (err) => { if (err) throw err})
+    // // let USERS = []
+    // statusArray.forEach(async (person) => {
+    //     let ny_modell = new databse_instance.userModel({
+    //         name: person.name,
+    //         role: person.role,
+    //         status: person.status,
+    //         latest_change: person.latest_change,
+    //         viktighet: -1,
+    //         privilege: null
+    //     });
+        
+    //     // USERS.push(ny_modell)
+
+    //     await ny_modell.save((err) => { if (err) throw err; console.log("Saved user to database", ny_modell.name)});
+        
+    // });
+    // databse_instance.userModel.insertMany(USERS, (err) => { if (err) throw err; console.log("Saved users to database")});
+
     /* Set up body-parser */
     server.use(bodyParser.urlencoded({
         extended: true
@@ -90,7 +129,25 @@ nextApp.prepare().then(() => {
 
     /* API to retrive current status */
     server.get('/api/getstatus', (req, res) => {
-        res.json(statusArray)
+        databse_instance.userModel.find({}, (err, result) => { 
+            // console.log(result); 
+            if (err) {
+                console.log("Could not retrive data from database", err)
+                return res.json(statusArray)
+            }
+            console.log(result)
+            result.forEach((element, index) => {
+                console.log(element.viktighet)
+            });
+            /* Sort result array after priority key */
+            let sorted_result = result.sort((a, b) => {
+                return a.viktighet - b.viktighet
+            })
+
+            return res.json(sorted_result)
+
+            // return res.json(result); 
+        });
     });
     
     /* Handle all requests through next */
@@ -103,6 +160,14 @@ nextApp.prepare().then(() => {
         if (err) throw err
         console.log("Server is running on port 8000")
     });
+
+    await mongoose.connect(databse_instance.db_url, (err) => {
+        if (err) throw err;
+
+       
+
+        return console.log("Connected to database");
+    });
 });
 
  
@@ -114,32 +179,29 @@ io.on('connection', (socket) => {
 
     /* A event for changes to the status */
     socket.on('status change', (response) => { 
-    console.log(response)
-    console.log("STATUS CHANGE")
-    /* Update status array */
-    for (const key in statusArray) {
-        let index = key;
-        let status_object = statusArray[key];
+        console.log(response)
+        console.log("STATUS CHANGE")
+        /* Update status array */
 
-        /* Prevent duplicate names */
-        if (status_object.name == response.name) {
-            /* Only update if change */
-            if (status_object.status != response.status) {
-                status_object.status = response.status;
-                status_object["latest_change"] = current_date();
+        databse_instance.userModel.findOne({name: response.name }, (err, result) => { 
+            if (err) throw err;
+
+           if (result)  {
+                result.status = response.status;
+                result.latest_change = current_date();
+                
+                result.save((err) => {
+                    if (err) throw err;
+                    console.log("Updated in database")
+                });
             }
-
-            // if (status_object.locked != input_object.locked) {
-            //     status_object.locked = input_object.locked;
-            // }    
-        }
-
             
-    }
-    console.log(statusArray)
-    /* Status change */
-    io.emit("status update", statusArray)
-    
-});
+            io.emit("status update")
+            
+        });
+
+        /* Status change */
+        
+    });
 
 });

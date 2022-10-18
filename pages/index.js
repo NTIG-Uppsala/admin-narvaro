@@ -28,7 +28,7 @@ const Output = () => {
     }, []);
 
     /* Used to update content on page */
-    function render_people (person_object) {
+    function render_people(person_object) {
         let people_elements = [];
         person_object.forEach((item, index) => {
             // console.log("forloop")
@@ -72,7 +72,7 @@ const Output = () => {
             </div>
         
             <img id="logo" src="images/nti_logo_footer.svg" alt=""/>
-            <div class="grid-center">
+            <div className="grid-center">
                 <div className="message-container-wrapper">
                     <h1>Status</h1>
                     <div id="statusDiv">

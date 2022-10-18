@@ -8,7 +8,7 @@ const Input = () => {
     const socket = io();
     
     const [statusArray, setStatusArray] = useState([]);
-
+    const [checkboxes, setCheckbox] = useState();
     // fetch('http://localhost:3000/api/persons')
     useEffect(() => {
         console.log("i fire once");
@@ -18,10 +18,12 @@ const Input = () => {
             return render_people(res.data)
         });
 
-        socket.on('status update', (response) => {
-            console.log(response)
+        socket.on('status update', () => {
             console.log("STATUS UPDATE")
-            return render_people(response)
+            axios.get('/api/getstatus').then(res => {
+                console.log(res.data)
+                return render_people(res.data)
+            });
         });
     }, []);
 
@@ -30,6 +32,16 @@ const Input = () => {
             name: event.target.name,
             status: event.target.checked
         }
+
+        // setCheckbox(prevState => {
+        //     let checkbox = Object.assign({}, prevState.name);  // creating copy of state variable jasper
+        //     checkbox.name = event.target.name;             
+        //     checkbox.chacked = event.target.checked        // update the name property, assign a new value                 
+        //     return { checkbox };                                 // return new object jasper object
+        // })
+
+        // console.log("checkbox", checkboxes)
+
         socket.emit("status change", return_value)
         
     }
@@ -64,12 +76,14 @@ const Input = () => {
                 </div>
                 <div className="container">
                     <label className="switch" htmlFor={'avaliable-' + props.name.replace(" ", "-")}>
-                        {(props.status == true) ? 
-                            <input type="checkbox" name={props.name} id={'avaliable-' + props.name.replace(" ", "-")} onChange={handleCheckboxChange} checked={props.status}/>
-                        : 
-                            <input type="checkbox" name={props.name} id={'avaliable-' + props.name.replace(" ", "-")} onChange={handleCheckboxChange} checked={props.status} />
-                        }
-                        
+                            <input 
+                                type="checkbox" 
+                                name={props.name} 
+                                id={'avaliable-' + props.name.replace(" ", "-")} 
+                                onChange={handleCheckboxChange} 
+                                checked={props.status}
+                            />
+
                         <div className="slider round"></div>
                     </label>
                 </div>
