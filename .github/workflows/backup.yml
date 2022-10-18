@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        ref: ${GITHUB_REF##*/}
+        ref: ${{GITHUB_REF##*/}}
 
     - name: create data directory if no exists
       run: mkdir -p data
