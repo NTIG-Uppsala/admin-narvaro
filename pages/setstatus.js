@@ -45,6 +45,7 @@ const Input = () => {
             people_elements.push(
             <Person
                 key={index}
+                id={index+1}
                 name={item.name}
                 status={item.status}
             />)
@@ -57,7 +58,7 @@ const Input = () => {
 
     const Person = (props) => {
         return (
-            <div className="message-container">
+            <div className={"message-container" + ((props.id % 2 == 0) ? ' gray-color' : '')}>
                 <div className="name">
                     <span>{props.name}</span>
                 </div>
