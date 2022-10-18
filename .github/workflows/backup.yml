@@ -8,19 +8,24 @@ on:
 jobs:  
   backup:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${GITHUB_REF##*/}
+
     - name: create data directory if no exists
       run: mkdir -p data
+
     - name: get status from public api
       uses: wei/curl@v1
       with: 
         args: https://narvaro.ntig.net/api/getstatus -o data/status.json 
+
     - name: upload status file to data/status.json
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: data/status.json
-        tag: ${{ github.ref }}
-        overwrite: true
-        file_glob: true
+      run: |
+          git commit -m "Update status.json"
+          git push
