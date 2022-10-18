@@ -23,17 +23,16 @@ class testPageTitle(unittest.TestCase):
         self.driver.quit()
     
     def test_click_checkbox(self):
-        self.driver.get(self.website_url)
-        test_switch = self.driver.find_element(By.XPATH, '/html/body/div[2]/div/div[4]/div[1]/label')
+        self.driver.get(self.website_url + "setstatus")
+        test_switch = self.driver.find_element(By.XPATH, '/html/body/div[2]/div[1]/div[1]/div[2]/label')
         test_switch.click()
 
 
-        self.driver.get(self.website_url + "output")
+        self.driver.get(self.website_url)
 
-        avaliable_text = self.driver.find_element(By.XPATH, "/html/body/div[2]/div/div[4]/span").text
+        avaliable_text = self.driver.find_element(By.XPATH, "/html/body/div[2]/div/div[1]/div[2]/span[1]").text
         
-
-        self.assertEquals("tillgänglig", avaliable_text)
+        self.assertEqual("Tillgänglig", avaliable_text)
 
 
 
