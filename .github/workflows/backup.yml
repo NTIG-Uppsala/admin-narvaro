@@ -2,9 +2,9 @@
 name: Backups status of people
 on: 
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
 jobs:  
   backup:
     runs-on: ubuntu-latest
@@ -13,7 +13,7 @@ jobs:
     - name: get status from public api
       uses: wei/curl@v1
       with: 
-        args: http://localhost:8000/api/getstatus -o status.json 
+        args: https://narvaro.ntig.net/api/getstatus -o status.json 
     - name: cat status.json
       run: |
        ls
