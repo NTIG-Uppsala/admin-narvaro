@@ -89,7 +89,8 @@ const Input = () => {
             <div className="message-container-wrapper">
             <div id="main">
                 <h1>Ange din status</h1>
-                    {statusArray}
+                    {(statusArray === undefined) ? 
+                        <h1>Laddar innehållet..</h1> : statusArray }
             </div>
             <div>
                 <Link href="/">

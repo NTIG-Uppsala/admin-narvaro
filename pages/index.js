@@ -44,7 +44,6 @@ const Output = () => {
             />
             people_elements.push(new_element)
 
-            console.log(item.name)
         });
 
         setStatusArray(people_elements)
