@@ -13,9 +13,14 @@ jobs:
       pull-requests: write
 
     steps:
+    - name: Extract branch name
+      shell: bash
+      run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch
+
     - uses: actions/checkout@v3
       with:
-        ref: ${{GITHUB_REF##*/}}
+        ref: ${{ steps.extract_branch.outputs.branch }}
 
     - name: create data directory if no exists
       run: mkdir -p data
