@@ -113,17 +113,45 @@ class database {
         // ny_modell.save((err) => { if (err) throw err});
 
     }
+
+    regenerate_uris() {
+        const makeid = (length) => {
+            var result           = '';
+            var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var charactersLength = characters.length;
+            for ( var i = 0; i < length; i++ ) {
+                result += characters.charAt(Math.floor(Math.random() * charactersLength));
+            }
+            return result;
+        }
+        
+        this.privilegeModel.find({}, (err, privilage_result) => {
+            
+            privilage_result.forEach((privilege) => {
+                console.log("Found privilege", privilege.name, "with uri", privilege.uri);
+                privilege.uri = makeid(10);
+                privilege.save((err) => { 
+                    if (err) throw err; 
+                    console.log("Saved privilege", privilege.name, "with uri", privilege.uri)
+                });
+            })
+        
+        })
+        
+    }
     
 
 }
 
 const databse_instance = new database();
 
+
 nextApp.prepare().then( async () => {
     /* Set up body-parser */
     server.use(bodyParser.urlencoded({
         extended: true
     }));
+    server.use(express.json());
 
     /* API to retrive current status */
     server.get('/api/getstatus', (req, res) => {
@@ -142,6 +170,80 @@ nextApp.prepare().then( async () => {
 
             // return res.json(result); 
         });
+    });
+
+    server.post('/api/verifyurl', (req, res) => {
+        let uri = req.body.uri;
+
+        databse_instance.privilegeModel.findOne({uri: uri}, (err, privilage_result) => {
+            
+            if (err) {
+                console.log("Could not retrive data from database", err)
+                return res.json({verified: false, users: null});
+            }
+
+            /* If privilage is returned search for user with privilage id */
+            if (privilage_result) {
+                let privilege_id = privilage_result._id;
+                let privilege_name = privilage_result.name;
+                
+                console.log(privilage_result)
+                if (privilege_name == "admin") {
+                    databse_instance.userModel.find({}, (err, user_result) => {
+                        if (err) {
+                            console.log("Could not retrive data from database", err)
+                            return res.json({
+                                verified: false, 
+                                privilege: null, 
+                                users: null
+                            });
+                        }
+
+                        let sorted_result = user_result.sort((a, b) => {
+                            return a.viktighet - b.viktighet
+                        })
+
+                        return res.json({
+                            verified: true, 
+                            privilege: privilege_name, 
+                            users: sorted_result
+                        });
+                    })
+                } else {
+
+                    databse_instance.userModel.find({privilege: privilege_id}, (err, user_result) => {
+                        if (err) {
+                            console.log("Could not retrive data from database", err);
+                            return res.json({
+                                verified: false, 
+                                privilege: null, 
+                                users: null
+                            });
+                        }
+                        /* if users has privilage return users */
+                        if (user_result) {
+                            return res.json({
+                                verified: true, 
+                                privilege: privilege_name, 
+                                users: user_result
+                            });
+                        }
+                        
+                    });
+
+                }
+            }
+            else {
+                return res.json({
+                    verified: false, 
+                    privilege: null, 
+                    users: null
+                });
+            }
+            
+        });
+
+        
     });
     
     /* Handle all requests through next */

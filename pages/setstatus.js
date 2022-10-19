@@ -2,30 +2,43 @@ import Link from 'next/link';
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import io from 'socket.io-client';
-
+import { useRouter } from 'next/router'
 
 const Input = () => {
     const socket = io();
     
     const [statusArray, setStatusArray] = useState([]);
-    const [checkboxes, setCheckbox] = useState();
+    const [verified, setVerified] = useState(false);
+
+    const router = useRouter()
+
+
     // fetch('http://localhost:3000/api/persons')
-    useEffect(() => {
-        console.log("i fire once");
+    useEffect( () => {
+        if (router.isReady) {
 
-        axios.get('/api/getstatus').then(res => {
-            console.log(res.data)
-            return render_people(res.data)
-        });
+            console.log("i fire once");
+            console.log("router.query: ", router.query.auth);
 
-        socket.on('status update', () => {
-            console.log("STATUS UPDATE")
-            axios.get('/api/getstatus').then(res => {
+            
+            axios.post('/api/verifyurl', {uri: router.query.auth}).then(res => {
                 console.log(res.data)
-                return render_people(res.data)
+                setVerified(res.data.verified)
+                render_people(res.data.users)
             });
-        });
-    }, []);
+
+
+            socket.on('status update', () => {
+                console.log("STATUS UPDATE")
+                axios.post('/api/verifyurl', {uri: router.query.auth}).then(res => {
+                    console.log(res.data)
+                    setVerified(res.data.verified)
+                    render_people(res.data.users)
+                });
+            });
+        }
+
+    }, [router.isReady]);
 
     const handleCheckboxChange = (event) => {
         let return_value = {
@@ -61,11 +74,12 @@ const Input = () => {
                 name={item.name}
                 status={item.status}
             />)
-            
         
         });
 
         setStatusArray(people_elements)
+        console.log("Status array::::", statusArray)
+
     }
 
     const Person = (props) => {
@@ -91,6 +105,7 @@ const Input = () => {
         )
 
     }
+    
 
     return (
       <>
@@ -102,11 +117,16 @@ const Input = () => {
         
         <div className="grid-center">
             <div className="message-container-wrapper">
-            <div id="main">
-                <h1>Ange din status</h1>
+
+            {(verified) ? 
+                <div id="main">
+                    <h1>Ange din status</h1>
                     {(statusArray === undefined) ? 
                         <h1>Laddar innehållet..</h1> : statusArray }
-            </div>
+                </div>
+            : <h1>Unverified</h1>
+            }
+            
             <div>
                 <Link href="/">
                     <a>Visa Status</a>
