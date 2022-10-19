@@ -9,6 +9,7 @@ const Input = () => {
     
     const [statusArray, setStatusArray] = useState([]);
     const [verified, setVerified] = useState(false);
+    const [privilegeDropdown, setPrivilegeDropdown] = useState(false);
 
     const router = useRouter()
 
@@ -26,6 +27,16 @@ const Input = () => {
                 setVerified((res.data.privilege == "admin"))
                 render_people(res.data.users)
             });
+
+            axios.get('/api/getprivileges').then((res) => {
+                let test = []
+                res.data.forEach((item) => {
+                    test.push(
+                        <option value={item.name}>{item.name}</option>
+                    )
+                })
+                setPrivilegeDropdown(test)
+            })
 
 
             socket.on('status update', () => {
@@ -91,10 +102,11 @@ const Input = () => {
                 </div>
                 <div className="container">
                     <select className="dropdown-menu">
-                        <option value="volvo">Volvo</option>
-                        <option value="saab">Saab</option>
-                        <option value="fiat">Fiat</option>
-                        <option value="audi">Audi</option>
+                        {(privilegeDropdown === undefined) ? 
+                        <h1>laddar</h1>
+                        :
+                        privilegeDropdown
+                        }
                     </select>
                 </div>
             </div>

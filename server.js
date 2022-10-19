@@ -174,6 +174,11 @@ nextApp.prepare().then( async () => {
         return res.json(status_object);
     });
 
+    server.get('/api/getprivileges', async (req, res) => {
+        let bla_bla_bla = await databse_instance.get_privileges();
+        return res.json(bla_bla_bla)
+    })
+
     server.post('/api/verifyurl', async (req, res) => {
         let uri = req.body.uri;
 
