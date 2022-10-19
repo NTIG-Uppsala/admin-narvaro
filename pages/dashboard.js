@@ -23,7 +23,7 @@ const Input = () => {
             
             axios.post('/api/verifyurl', {uri: router.query.auth}).then(res => {
                 console.log(res.data)
-                setVerified(res.data.verified)
+                setVerified((res.data.privilege == "admin"))
                 render_people(res.data.users)
             });
 
@@ -32,7 +32,7 @@ const Input = () => {
                 console.log("STATUS UPDATE")
                 axios.post('/api/verifyurl', {uri: router.query.auth}).then(res => {
                     console.log(res.data)
-                    setVerified(res.data.verified)
+                    setVerified((res.data.privilege == "admin"))
                     render_people(res.data.users)
                 });
             });
@@ -87,20 +87,15 @@ const Input = () => {
         return (
             <div className={"message-container" + ((props.id % 2 == 0) ? ' gray-color' : '')}>
                 <div className="name">
-                    <span>{props.name}</span>
+                    <input type="text" required defaultValue={props.name}></input>
                 </div>
                 <div className="container">
-                    <label className="switch" htmlFor={'avaliable-' + props.name.replace(" ", "-")}>
-                            <input 
-                                type="checkbox" 
-                                name={props.name} 
-                                id={'avaliable-' + props.name.replace(" ", "-")} 
-                                onChange={handleCheckboxChange} 
-                                checked={props.status}
-                            />
-
-                        <div className="slider round"></div>
-                    </label>
+                    <select className="dropdown-menu">
+                        <option value="volvo">Volvo</option>
+                        <option value="saab">Saab</option>
+                        <option value="fiat">Fiat</option>
+                        <option value="audi">Audi</option>
+                    </select>
                 </div>
             </div>
         )
@@ -119,23 +114,24 @@ const Input = () => {
         <div className="grid-center">
             <div className="message-container-wrapper">
 
-            {(verified) ? 
-                <div id="main">
-                    <div className="title-grid">
+                {(verified) ? 
+                    <div id="main">
                         <h1>Ange din status</h1>
-                        <img src="images/edit.svg"></img>  
+                        {(statusArray === undefined) ? 
+                            <h1>Laddar innehållet..</h1> : statusArray }
                     </div>
-                    {(statusArray === undefined) ? 
-                        <h1>Laddar innehållet..</h1> : statusArray }
+                : <h1>Unverified</h1>
+                }
+                
+                <div className='center-button'>
+                    <Link href="/">
+                        <a className="save-button" onClick={console.log("clicked")}>Spara</a>
+                    </Link>
+                    <Link href={'/setstatus?auth=' + router.query.auth}>
+                        <a className="save-button red-button">Avbryt</a>
+                    </Link>
                 </div>
-            : <h1>Unverified</h1>
-            }
-            
-            <div>
-                <Link href="/">
-                    <a>Visa Status</a>
-                </Link>
-            </div>
+
             </div> 
         </div>
         
