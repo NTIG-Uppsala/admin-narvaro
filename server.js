@@ -87,34 +87,50 @@ class database {
         });
     }
 
-    DEBUG_REWRITE_DB_USERS() {
-        console.log("UNCOMMENT CODE IF YOU WANT TO REWRITE DB")
-        // console.log("Connected to database DELETING ALL USERS");
-        // // databse_instance.userModel.deleteMany({}, (err) => { if (err) throw err})
-        // // let USERS = []
-        // statusArray.forEach(async (person) => {
-        //     let ny_modell = new databse_instance.userModel({
-        //         name: person.name,
-        //         role: person.role,
-        //         status: person.status,
-        //         latest_change: person.latest_change,
-        //         viktighet: -1,
-        //         privilege: null
-        //     });
-            
-        //     // USERS.push(ny_modell)
-
-        //     await ny_modell.save((err) => { if (err) throw err; console.log("Saved user to database", ny_modell.name)});
-            
-        // });
-        // databse_instance.userModel.insertMany(USERS, (err) => { if (err) throw err; console.log("Saved users to database")});
-
-        // userModel.insertMany(users, (err) => { if (err) throw err});
-        // ny_modell.save((err) => { if (err) throw err});
-
+    get_privileges(filter) {
+        filter = filter || {};
+        return new Promise((resolve, reject) => {
+            this.privilegeModel.find(filter, (err, result) => {
+                if (err) reject(err);
+                resolve(result);
+            });
+        });
     }
 
-    regenerate_uris() {
+    get_users(filter) {
+        filter = filter || {};
+        return new Promise((resolve, reject) => {
+            this.userModel.find(filter, (err, result) => {
+                // console.log("Found", result.length, "users");
+                // console.log(result);
+                // console.log(result); 
+                if (err) {
+                    console.log("Could not retrive data from database", err)
+                    reject(err);
+                }
+                /* Sort result array after priority key and resolve promise */
+                resolve(result.sort((a, b) => {
+                    return a.viktighet - b.viktighet
+                }))
+      
+            })
+        });
+    }
+        
+    update_user(user, db_field, new_value) {
+        this.userModel.findOne({name: user}, (err, result) => { 
+            if (err) throw err;
+            if (result) {
+                result[db_field] = new_value;
+                result.save((err) => { if (err) throw err; console.log("Saved user to database", result.name)});
+            }
+
+            // return res.json(result); 
+        });
+    }
+
+    regenerate_uri(user) {
+        
         const makeid = (length) => {
             var result           = '';
             var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -125,16 +141,14 @@ class database {
             return result;
         }
         
-        this.privilegeModel.find({}, (err, privilage_result) => {
+        this.privilegeModel.findOne({name: user}, (err, privilage_result) => {
             
-            privilage_result.forEach((privilege) => {
-                console.log("Found privilege", privilege.name, "with uri", privilege.uri);
-                privilege.uri = makeid(10);
-                privilege.save((err) => { 
-                    if (err) throw err; 
-                    console.log("Saved privilege", privilege.name, "with uri", privilege.uri)
-                });
-            })
+            console.log("Found privilege", privilege.name, "with uri", privilege.uri);
+            privilege.uri = makeid(10);
+            privilege.save((err) => { 
+                if (err) throw err; 
+                console.log("Saved privilege", privilege.name, "with uri", privilege.uri)
+            });
         
         })
         
@@ -147,6 +161,7 @@ const databse_instance = new database();
 
 
 nextApp.prepare().then( async () => {
+    
     /* Set up body-parser */
     server.use(bodyParser.urlencoded({
         extended: true
@@ -154,95 +169,52 @@ nextApp.prepare().then( async () => {
     server.use(express.json());
 
     /* API to retrive current status */
-    server.get('/api/getstatus', (req, res) => {
-        databse_instance.userModel.find({}, (err, result) => { 
-            // console.log(result); 
-            if (err) {
-                console.log("Could not retrive data from database", err)
-                return res.json(statusArray)
-            }
-            /* Sort result array after priority key */
-            let sorted_result = result.sort((a, b) => {
-                return a.viktighet - b.viktighet
-            })
-
-            return res.json(sorted_result)
-
-            // return res.json(result); 
-        });
+    server.get('/api/getstatus', async (req, res) => {
+        let status_object = await databse_instance.get_users();
+        return res.json(status_object);
     });
 
-    server.post('/api/verifyurl', (req, res) => {
+    server.post('/api/verifyurl', async (req, res) => {
         let uri = req.body.uri;
 
-        databse_instance.privilegeModel.findOne({uri: uri}, (err, privilage_result) => {
-            
-            if (err) {
-                console.log("Could not retrive data from database", err)
-                return res.json({verified: false, users: null});
-            }
+        /* Initialize return object */
+        let return_object = {
+            verified: false,
+            privilege: null,
+            users: []
+        }
+        let user_result;
 
-            /* If privilage is returned search for user with privilage id */
-            if (privilage_result) {
-                let privilege_id = privilage_result._id;
-                let privilege_name = privilage_result.name;
-                
-                console.log(privilage_result)
-                if (privilege_name == "admin") {
-                    databse_instance.userModel.find({}, (err, user_result) => {
-                        if (err) {
-                            console.log("Could not retrive data from database", err)
-                            return res.json({
-                                verified: false, 
-                                privilege: null, 
-                                users: null
-                            });
-                        }
+        try {
+            let privilage = await databse_instance.get_privileges({uri: uri});
 
-                        let sorted_result = user_result.sort((a, b) => {
-                            return a.viktighet - b.viktighet
-                        })
+            if (privilage.length > 0) {
+                privilage = privilage[0];
+                console.log("Found privilege", privilage);
+                return_object.privilege = privilage.name;
 
-                        return res.json({
-                            verified: true, 
-                            privilege: privilege_name, 
-                            users: sorted_result
-                        });
-                    })
-                } else {
+                if (privilage.name == "admin") {
+                    user_result = await databse_instance.get_users();
+                }
+                else {
+                    user_result = await databse_instance.get_users({privilege: privilage._id});
+                }  
+                console.log("user_result: ", user_result)
 
-                    databse_instance.userModel.find({privilege: privilege_id}, (err, user_result) => {
-                        if (err) {
-                            console.log("Could not retrive data from database", err);
-                            return res.json({
-                                verified: false, 
-                                privilege: null, 
-                                users: null
-                            });
-                        }
-                        /* if users has privilage return users */
-                        if (user_result) {
-                            return res.json({
-                                verified: true, 
-                                privilege: privilege_name, 
-                                users: user_result
-                            });
-                        }
-                        
+                if (user_result.length > 0) {
+                    return_object.verified = true;
+                    return_object.users = user_result.sort((a, b) => {
+                        return a.viktighet - b.viktighet
                     });
-
                 }
             }
-            else {
-                return res.json({
-                    verified: false, 
-                    privilege: null, 
-                    users: null
-                });
-            }
-            
-        });
 
+            return res.status(200).json(return_object)    
+
+        } catch (error) {
+            console.log("Could not complete action", error);
+            return res.json({});
+        }
         
     });
     
