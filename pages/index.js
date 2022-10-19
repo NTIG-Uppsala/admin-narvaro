@@ -33,6 +33,7 @@ const Output = () => {
     /* Used to update content on page */
     function render_people(person_object) {
         let people_elements = [];
+
         person_object.forEach((item, index) => {
             // console.log("forloop")
             
