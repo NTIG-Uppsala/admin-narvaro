@@ -77,13 +77,19 @@ class database {
             role: String,
             status: Boolean,
             latest_change: Date,
-            viktighet: Number,
+            order: Number,
+            uri: String, 
+            group: mongoose.Types.ObjectId,
             privilege: mongoose.Types.ObjectId
         });
         
+        this.groupModel = new mongoose.model("groups", {
+            display_name: String
+        })
+
         this.privilegeModel = new mongoose.model("privileges", {
-            name: String,
-            uri: String
+            display_name: String,
+            control: Number
         });
     }
 
@@ -116,6 +122,22 @@ class database {
             })
         });
     }
+
+    get_groups(filter) {
+        filter = filter || {};
+        return new Promise((resolve, reject) => {
+            this.groupModel.find(filter, (err, result) => {
+                // console.log("Found", result.length, "users");
+                // console.log(result);
+                // console.log(result); 
+                if (err) {
+                    console.log("Could not retrive data from database", err)
+                    reject(err);
+                }
+                resolve(result)
+            })
+        });
+    }
         
     update_user(user, db_field, new_value) {
         this.userModel.findOne({name: user}, (err, result) => { 
@@ -129,7 +151,7 @@ class database {
         });
     }
 
-    regenerate_uri(user) {
+    regenerate_uri() {
         
         const makeid = (length) => {
             var result           = '';
@@ -141,24 +163,28 @@ class database {
             return result;
         }
         
-        this.privilegeModel.findOne({name: user}, (err, privilage_result) => {
-            
-            console.log("Found privilege", privilege.name, "with uri", privilege.uri);
-            privilege.uri = makeid(10);
-            privilege.save((err) => { 
-                if (err) throw err; 
-                console.log("Saved privilege", privilege.name, "with uri", privilege.uri)
-            });
-        
+        this.userModel.find({}, (err, result) => {
+            console.log(result)
+            result.forEach((person) => {
+                console.log("Found privilege", person.name, "with uri", person.uri);
+                person.uri = makeid(10);
+                person.save((err) => { 
+                    if (err) throw err; 
+                    console.log("Saved privilege", person.name, "with uri", person.uri)
+                });
+            })
+
         })
+
+
         
     }
+
     
 
 }
 
-const databse_instance = new database();
-
+const database_instance = new database();
 
 nextApp.prepare().then( async () => {
     
@@ -169,14 +195,19 @@ nextApp.prepare().then( async () => {
     server.use(express.json());
 
     /* API to retrive current status */
-    server.get('/api/getstatus', async (req, res) => {
-        let status_object = await databse_instance.get_users();
+    server.get('/api/getusers', async (req, res) => {
+        let status_object = await database_instance.get_users();
         return res.json(status_object);
     });
 
     server.get('/api/getprivileges', async (req, res) => {
-        let bla_bla_bla = await databse_instance.get_privileges();
+        let bla_bla_bla = await database_instance.get_privileges();
         return res.json(bla_bla_bla)
+    })
+
+    server.get('/api/getgroups', async (req, res) =>  {
+        let database_response = await database_instance.get_groups();
+        return res.json(database_response)
     })
 
     server.post('/api/verifyurl', async (req, res) => {
@@ -191,29 +222,38 @@ nextApp.prepare().then( async () => {
         let user_result;
 
         try {
-            let privilage = await databse_instance.get_privileges({uri: uri});
-
-            if (privilage.length > 0) {
-                privilage = privilage[0];
-                console.log("Found privilege", privilage);
-                return_object.privilege = privilage.name;
-
-                if (privilage.name == "admin") {
-                    user_result = await databse_instance.get_users();
-                }
-                else {
-                    user_result = await databse_instance.get_users({privilege: privilage._id});
-                }  
-                console.log("user_result: ", user_result)
-
-                if (user_result.length > 0) {
-                    return_object.verified = true;
-                    return_object.users = user_result.sort((a, b) => {
-                        return a.viktighet - b.viktighet
-                    });
-                }
+            user_result = await database_instance.get_users({uri: uri})
+            if (user_result.length > 0) {
+                return_object.verified = true
             }
 
+            let other_users = await new Promise((resolve, reject) => {
+                database_instance.privilegeModel.findOne({_id: user_result[0].privilege}, async (err, res) => {
+                    let tmp = [];
+                    console.log(res)
+                    switch (res.control) {
+                        case 1: // only change the person himself
+                            tmp = await database_instance.get_users({name: user_result[0].name})
+                            break;
+                        case 2: // change all people in same group
+                            tmp = await database_instance.get_users({group: user_result[0].group})
+                            break;
+                        case 3: // change all people
+                            tmp = await database_instance.get_users({})
+                            break;
+                        default:
+                            break;
+                    }
+                    console.log("WILL BE RETURNED", tmp)
+
+                    resolve(tmp)
+                })
+
+            });
+            console.log("GOT RETURNED", other_users)
+            return_object.users = return_object.users.concat(other_users)
+
+            console.log(return_object)
             return res.status(200).json(return_object)    
 
         } catch (error) {
@@ -234,7 +274,7 @@ nextApp.prepare().then( async () => {
         console.log("Server is running on port 8000")
     });
 
-    await mongoose.connect(databse_instance.db_url, (err) => {
+    await mongoose.connect(database_instance.db_url, (err) => {
         if (err) throw err;
 
         return console.log("Connected to database");
@@ -254,7 +294,7 @@ io.on('connection', (socket) => {
         console.log("STATUS CHANGE")
         /* Update status array */
 
-        databse_instance.userModel.findOne({name: response.name }, (err, result) => { 
+        database_instance.userModel.findOne({name: response.name }, (err, result) => { 
             if (err) throw err;
 
            if (result)  {

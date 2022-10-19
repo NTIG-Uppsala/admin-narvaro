@@ -13,7 +13,7 @@ const Output = () => {
 
     /* Will be runned as a client side script */
     useEffect(() => {
-        axios.get('/api/getstatus').then(res => {
+        axios.get('/api/getusers').then(res => {
             console.log("data gotten from api: \n", res.data)
 
             return render_people(res.data)
@@ -22,7 +22,7 @@ const Output = () => {
 
         socket.on('status update', (response) => {
             console.log("STATUS UPDATE: \n", response)
-            axios.get('/api/getstatus').then(res => {
+            axios.get('/api/getusers').then(res => {
                 console.log("data gotten from api: \n", res.data)
                 return render_people(res.data)
             });
