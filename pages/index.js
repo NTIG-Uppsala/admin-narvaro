@@ -15,7 +15,7 @@ const Output = () => {
     useEffect(() => {
         axios.get('/api/getusers').then(res => {
             console.log("data gotten from api: \n", res.data)
-
+    
             return render_people(res.data)
 
         });
@@ -33,7 +33,7 @@ const Output = () => {
     /* Used to update content on page */
     function render_people(person_object) {
         let people_elements = [];
-
+        console.log(person_object)
         person_object.forEach((item, index) => {
             // console.log("forloop")
             

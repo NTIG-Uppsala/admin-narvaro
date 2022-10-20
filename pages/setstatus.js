@@ -123,9 +123,9 @@ const Input = () => {
                 <div id="main">
                     <div className="title-grid">
                         <h1>Ange din status</h1>
-                        <Link href={'/dashboard?auth=' + router.query.auth}>
+                        {/* <Link href={'/dashboard?auth=' + router.query.auth}>
                             <img src="images/edit.svg"></img>  
-                        </Link>
+                        </Link> */}
                         
                     </div>
                     {(statusArray === undefined) ? 

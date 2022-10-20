@@ -116,7 +116,7 @@ class database {
                 }
                 /* Sort result array after priority key and resolve promise */
                 resolve(result.sort((a, b) => {
-                    return a.viktighet - b.viktighet
+                    return a.order - b.order
                 }))
       
             })
@@ -180,12 +180,21 @@ class database {
         
     }
 
+    print_uris() {
+        this.userModel.find({}, (err, result) => {
+            console.log(result)
+            result.forEach((person) => {
+                console.log(`${person.name} ${person.role} -> https://narvaro.ntig.net/setstatus?auth=${person.uri}`);
+            })
+        })
+    }
+
     
 
 }
 
 const database_instance = new database();
-
+database_instance.print_uris()
 nextApp.prepare().then( async () => {
     
     /* Set up body-parser */
@@ -208,6 +217,60 @@ nextApp.prepare().then( async () => {
     server.get('/api/getgroups', async (req, res) =>  {
         let database_response = await database_instance.get_groups();
         return res.json(database_response)
+    })
+
+    server.post('/api/updateusers', (req, res) => {
+        let database_values = [];
+
+        req.body.forEach(user => {
+            console.log("Updating user", user);
+            let user_in_db_values = database_values.find((item) => user.objectId == item.objectId);
+            if (user_in_db_values) {
+                console.log("user in array")
+
+                let index = database_values.indexOf(user_in_db_values);
+
+                database_values[index] = {
+                    objectId: user.objectId,
+                    name: user.name,
+                    role: user.role,
+                    group: user.group,
+                    privilege: user.privilege
+                }
+
+                console.log("user in array done")
+            }
+            else {
+                database_values.push({
+                    objectId: user.objectId,
+                    name: user.name,
+                    role: user.role,
+                    group: user.group,
+                    privilege: user.privilege
+                })
+            }
+
+        })
+
+        console.log(database_values)
+
+
+        /* Update usermodel database with new datbase values */
+        database_values.forEach((user) => {
+            database_instance.userModel.findOne({_id: user.objectId}, (err, result) => {
+                if (err) throw err;
+                if (result) {
+                    result.name = user.name;
+                    result.role = user.role;
+                    result.group = user.group;
+                    result.privilege = user.privilege;
+                    result.save((err) => { if (err) throw err; console.log("Saved user to database", result.name)});
+                }
+            })
+        })
+
+
+        return res.json({status: "ok"})
     })
 
     server.post('/api/verifyurl', async (req, res) => {
