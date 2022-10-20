@@ -78,7 +78,8 @@ a:active {
 /* Content */
 
 .message-container-wrapper {
-  width: 50vw;
+  min-width: 50vw;
+  width: auto;
   height: auto;
   display: flex; 
   flex-direction: column; 
@@ -293,6 +294,21 @@ input:checked + .slider:before {
   }
   .message-container {
     padding: 12px;
+  }
+  .message-container-flexwrap {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .container-flexwrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .name-flexwrap {
+    font-size: 22px;
+  }
+  .name > input {
+    padding: 0px;
   }
   .subheading {
     font-size: 12px;

@@ -47,17 +47,17 @@ const PrivilegeOptions = (props) => {
 
 const Person = (props) => {
     return (
-        <div className={"message-container" + ((props.id % 2 == 0) ? ' gray-color' : '')} onChange={props.onChange}>
-            <div className="name">
+        <div className={"message-container message-container-flexwrap" + ((props.id % 2 == 0) ? ' gray-color' : '')} onChange={props.onChange}>
+            <div className="name name-flexwrap">
                 <input type="text" required name="name" id={props._id} defaultValue={props.name}></input>
             </div>
-            <div className="name">
+            <div className="name name-flexwrap">
                 <input type="text" required name="role" id={props._id} defaultValue={props.role}></input>
             </div>
-            <div className="container">
+            <div className="container container-flexwrap">
                 <PrivilegeOptions name="privilege" id={props._id}  privilege_id={props.privilege_id} />
             </div>
-            <div className="container">
+            <div className="container container-flexwrap">
                 <GroupOptions  name="group" id={props._id} group_id={props.group_id}/>
             </div>
         </div>
