@@ -174,7 +174,7 @@ const Dashboard = () => {
             <div className="message-container-wrapper">
 
                 <div id="main">
-                    <h1>Ange din status</h1>
+                    <h1>Administration</h1>
                     {(people.length == 0) ? 
                         <h1>Laddar innehållet..</h1> : people }
                 </div>
