@@ -56,17 +56,21 @@ const Output = () => {
     }
 
     const Person = (props) => {
-        const [latest_change, setLatestChange] = useState(moment(props.latest_change).fromNow());
+        const [latest, setLatest] = useState(props.latest_change)
+        const [latest_change, setLatestChange] = useState(() => {return moment(props.latest_change).fromNow()});
+
+        const update_latest_change = () => {
+            return setLatestChange(moment(latest).fromNow())
+        }
 
         useEffect(() => {
+            console.log("useEffect in person")
             /* Will update the from now every minute */
-            setLatestChange(moment(props.latest_change).fromNow())
+            setLatestChange(() => {return moment(props.latest_change).fromNow()})
             
+            setInterval(update_latest_change, 60000);
 
-            setInterval(() => {
-                setLatestChange(moment(props.latest_change).fromNow())
-            }, 60000);
-        }, [])
+        }, [props.latest_change])
 
         return (
             <div className={"message-container" + ((props.id % 2 == 0) ? ' gray-color' : '')} id="message-containerOutput">
@@ -76,7 +80,7 @@ const Output = () => {
                 </div>
                 <div className="status status-flex">
                     <span className={(props.status == true) ? 'green-color' : 'red-color'}> {props.avalibility} </span>
-                    <span className="latest-update subheading">Senast uppdaterad: {latest_change} </span>
+                    <span className="latest-update subheading">Senast uppdaterad: {moment(props.latest_change).fromNow()} </span>
                 </div>    
             </div>
         )
