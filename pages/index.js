@@ -11,25 +11,30 @@ const Output = () => {
 
     const [statusArray, setStatusArray] = useState();
 
-    /* Will be runned as a client side script */
-    useEffect(() => {
-        axios.get('/api/getstatus').then(res => {
-            console.log("data gotten from api: \n", res.data)
 
+    /* Will be runned as a client side script when the page renders */
+    useEffect(() => {
+        axios.get('/api/getusers').then(res => {
+            console.log("data gotten from api: \n", res.data)
+    
             return render_people(res.data)
 
         });
 
         socket.on('status update', (response) => {
             console.log("STATUS UPDATE: \n", response)
-            return render_people(response)
+            axios.get('/api/getusers').then(res => {
+                console.log("data gotten from api: \n", res.data)
+                return render_people(res.data)
+            });
         });
 
     }, []);
 
     /* Used to update content on page */
-    function render_people (person_object) {
+    function render_people(person_object) {
         let people_elements = [];
+        console.log(person_object)
         person_object.forEach((item, index) => {
             // console.log("forloop")
             
@@ -51,6 +56,15 @@ const Output = () => {
     }
 
     const Person = (props) => {
+        const [latest_change, setLatestChange] = useState(moment(props.latest_change).fromNow());
+
+        useEffect(() => {
+            /* Will update the from now every second */
+            setInterval(() => {
+                setLatestChange(moment(props.latest_change).fromNow())
+            }, 1000);
+        }, [])
+
         return (
             <div className={"message-container" + ((props.id % 2 == 0) ? ' gray-color' : '')} id="message-containerOutput">
                 <div className="name status-flex">
@@ -59,7 +73,7 @@ const Output = () => {
                 </div>
                 <div className="status status-flex">
                     <span className={(props.status == true) ? 'green-color' : 'red-color'}> {props.avalibility} </span>
-                    <span className="latest-update subheading">Senast uppdaterad: {moment(props.latest_change).fromNow()} </span>
+                    <span className="latest-update subheading">Senast uppdaterad: {latest_change} </span>
                 </div>    
             </div>
         )
@@ -72,7 +86,7 @@ const Output = () => {
             </div>
         
             <img id="logo" src="images/nti_logo_footer.svg" alt=""/>
-            <div class="grid-center">
+            <div className="grid-center">
                 <div className="message-container-wrapper">
                     <h1>Status</h1>
                     <div id="statusDiv">

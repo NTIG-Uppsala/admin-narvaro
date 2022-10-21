@@ -2,41 +2,62 @@ import Link from 'next/link';
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import io from 'socket.io-client';
-
+import { useRouter } from 'next/router'
 
 const Input = () => {
     const socket = io();
     
     const [statusArray, setStatusArray] = useState([]);
+    const [verified, setVerified] = useState(false);
 
-    // fetch('http://localhost:3000/api/persons')
-    useEffect(() => {
-        console.log("i fire once");
+    const router = useRouter()
 
-        axios.get('/api/getstatus').then(res => {
-            console.log(res.data)
-            return render_people(res.data)
-        });
+    /* 
+        When the Page is loaded
+        - Verify the url
+        - add a socket listener for status update
+    */
+    useEffect( () => {
+        if (router.isReady) {
 
-        socket.on('status update', (response) => {
-            console.log(response)
-            console.log("STATUS UPDATE")
-            return render_people(response)
-        });
-    }, []);
+            console.log("i fire once");
+            console.log("router.query: ", router.query.auth);
+
+            
+            axios.post('/api/verifyurl', {uri: router.query.auth}).then(res => {
+                console.log(res.data)
+                setVerified(res.data.verified)
+                render_people(res.data.users)
+            });
+
+
+            socket.on('status update', () => {
+                console.log("STATUS UPDATE")
+                axios.post('/api/verifyurl', {uri: router.query.auth}).then(res => {
+                    console.log(res.data)
+                    setVerified(res.data.verified)
+                    render_people(res.data.users)
+                });
+            });
+        }
+
+    }, [router.isReady]);
 
     const handleCheckboxChange = (event) => {
         let return_value = {
             name: event.target.name,
             status: event.target.checked
         }
+
         socket.emit("status change", return_value)
         
     }
 
+    /* Render the person */
     const render_people = (person_object) => {
 
         let people_elements = [];
+        if (person_object == null) return;
 
         person_object.forEach((item, index) => {
             // console.log("forloop")
@@ -49,11 +70,12 @@ const Input = () => {
                 name={item.name}
                 status={item.status}
             />)
-            
         
         });
 
         setStatusArray(people_elements)
+        console.log("Status array::::", statusArray)
+
     }
 
     const Person = (props) => {
@@ -64,12 +86,14 @@ const Input = () => {
                 </div>
                 <div className="container">
                     <label className="switch" htmlFor={'avaliable-' + props.name.replace(" ", "-")}>
-                        {(props.status == true) ? 
-                            <input type="checkbox" name={props.name} id={'avaliable-' + props.name.replace(" ", "-")} onChange={handleCheckboxChange} checked={props.status}/>
-                        : 
-                            <input type="checkbox" name={props.name} id={'avaliable-' + props.name.replace(" ", "-")} onChange={handleCheckboxChange} checked={props.status} />
-                        }
-                        
+                            <input 
+                                type="checkbox" 
+                                name={props.name} 
+                                id={'avaliable-' + props.name.replace(" ", "-")} 
+                                onChange={handleCheckboxChange} 
+                                checked={props.status}
+                            />
+
                         <div className="slider round"></div>
                     </label>
                 </div>
@@ -77,6 +101,7 @@ const Input = () => {
         )
 
     }
+    
 
     return (
       <>
@@ -88,11 +113,22 @@ const Input = () => {
         
         <div className="grid-center">
             <div className="message-container-wrapper">
-            <div id="main">
-                <h1>Ange din status</h1>
+
+            {(verified) ? 
+                <div id="main">
+                    <div className="title-grid">
+                        <h1>Ange din status</h1>
+                        {/* <Link href={'/dashboard?auth=' + router.query.auth}>
+                            <img src="images/edit.svg"></img>  
+                        </Link> */}
+                        
+                    </div>
                     {(statusArray === undefined) ? 
                         <h1>Laddar innehållet..</h1> : statusArray }
-            </div>
+                </div>
+            : <p>Tillträde förbjuden</p>
+            }
+            
             <div>
                 <Link href="/">
                     <a>Visa Status</a>

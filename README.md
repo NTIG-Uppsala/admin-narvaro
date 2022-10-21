@@ -36,3 +36,22 @@ To run the project with docker. The Docker engine needs to be installed and the 
 `docker run -p 8080:8080 <Your name>/admin-narvaro`
 
 After the docker image has been built and run, the project can be accessed at `localhost:8080` in the browser.
+
+
+### Frontend
+The frontend is made using the javascript framework NextJs. NextJs is a framework based on ReactJs and is a SSR (Server Side Rendering) based framework.
+
+The website conists of the three pages:
+#### / (the index page)
+> The index page is the main page where the status of a person can be seen. The persons role can also be seen and when they last their status
+#### /setstatus?auth={authcode}
+> The setstatus page is where the status of a person can be set. To visit the setstatus page you need to have a valid uri and providing in the url. All people have a unique uri. The person are also given a group and a privilege. The privilege specifies if the person can only change their own status, all statuses in their group or all statuses.
+
+#### verysecretadminpanelabc123 (aka the admin panel)
+> This page is where the admin can configure all people. On the admin panel page every persons name, role, group and privilege can be seen and changes. 
+
+All pages are loacetd in `pages/<page>.js` and all scripts starting with `_` are not seen as a page that can be visited by NextJs.
+
+
+### Backend
+The server also consists of a backend running with Express.js. The backend handles all requests made to the website.
