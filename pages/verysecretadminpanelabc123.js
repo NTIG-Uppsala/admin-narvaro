@@ -7,10 +7,13 @@ const GroupOptions = (props) => {
 
     useEffect(() => {
         axios.get('/api/getgroups').then((response) => {
-            response.data.forEach((item, index) => {
+            /* For all groups create an option for it */
+            let response_data = response.data.map((item, index) => {
+                /* If the group id is the same as user group, select it */
                 let new_element = <option key={index} value={item._id} selected={props.group_id == item._id}>{item.display_name}</option>
-                setGroups(oldGroups => [...oldGroups, new_element])
+                return new_element
             });
+            setGroups(response_data);
         });
     }, []);
 
@@ -24,16 +27,17 @@ const GroupOptions = (props) => {
 }
 
 const PrivilegeOptions = (props) => {
+    /* Works the same way as group options */
     const [privileges, setPrivileges] = useState([]);
 
     useEffect(() => {
         console.log("use Effect ran")
         axios.get('/api/getprivileges').then((response) => {
-            response.data.forEach((item, index) => {
-                console.log(props.privilege_id == item._id, props.privilege_id, item._id)
+            let response_data = response.data.map((item, index) => {
                 let new_element = <option key={index}  value={item._id} selected={props.privilege_id == item._id}>{item.display_name}</option>
-                setPrivileges(oldPrivileges => [...oldPrivileges, new_element])
+                return new_element
             });
+            setPrivileges(response_data);
         });
     }, []);
 
@@ -68,11 +72,12 @@ const Person = (props) => {
 
 const Dashboard = () => {
     const [people, setPeople] = useState([]);
-
     const [formValues, setFormValues] = useState([]);
+    const [submitOk, setSubmitOk] = useState(false);
 
+    /* Called whenever a user input is changed */
     const handleInputChange = (event, person) => {
-        
+        setSubmitOk(false) /* Reset submitOk */
         let new_form_val = {
             objectId: person._id,
             name: person.name,
@@ -80,86 +85,82 @@ const Dashboard = () => {
             privilege: person.privilege,
             group: person.group
         };
-
-        console.log("handleChange")
-
-        console.log(event.target)
-
-        console.log(formValues)
-        
-
-
-        if (formValues.length == 0)
-        {
-            console.log("formValues is empty")
-            setFormValues(() => {
-                new_form_val[event.target.name] = event.target.value
-                formValues.push(new_form_val)
-                return formValues
-            })
-            return
-        }
-            
-
-        // console.log(event.target.value)
-        
+        /* 
+            If no person has been changed yet.
+            Add the new person to the array with the changed values
+        */
         setFormValues((oldFormValues) => {
+            console.log("ALL old values -> ", oldFormValues)
 
-            let form_val = formValues.find((item) => item.objectId == event.target.id)
+            /* Searches for person in values */
+            let user_found = 
+                oldFormValues.find((item) => item.objectId == event.target.id) !== undefined;
 
-            if (form_val) {
-                console.log("person in formValues", form_val)
+            console.log("Was user found in changes? -> ", user_found)
 
-                let index = formValues.indexOf(form_val)
-                formValues[index][event.target.name] = event.target.value
-                return formValues
-            } 
-            else {
+            /* If person hasn't been changed before, add the user to the list */
+            if (!user_found) {
                 new_form_val[event.target.name] = event.target.value
-                console.log("new form valu", new_form_val)
-                
+                console.log("New user change value -> ", new_form_val)
                 return [...oldFormValues, new_form_val]
-            }
+            } 
+
+            /* If person has already been changed, change its values */
+            let new_changed_value = oldFormValues.map(item => {
+                if (item.objectId !== event.target.id) {
+                    return item;
+                }
+                else {
+                    return {
+                        ...item,
+                        [event.target.name]: event.target.value,
+                    };
+                }
+                    
+            });
+
+            return [...new_changed_value]
         });
+    };
 
-
-
-    }
-
+    
+    /* When the page is rendered, get all users and create a people component */
     useEffect(() => {   
         // GARL: https: //bobbyhadz.com/blog/react-push-to-state-array
-            setPeople([])
-            setFormValues([])
-            
-            axios.get('/api/getusers').then((response) => {
-                response.data.forEach((item, index) => {
-                    setPeople(oldStatusArray => {
-                        return [...oldStatusArray, <Person
-                            key={index}
-                            id={index+1}
-                            _id={item._id}
-                            name={item.name}
-                            role={item.role}
-                            privilege_id={item.privilege}
-                            group_id={item.group}
-                            onChange={(event) => handleInputChange(event, item)}
-                        />]
-                    })
-                
-                }); 
-            })
+        /* Renders all users to the page after getting users from api */
+        axios.get("/api/getusers").then((response) => {
+            const peopleFromApi = response.data.map((item, index) => (
+                <Person
+                    key={index}
+                    _id={item._id}
+                    name={item.name}
+                    role={item.role}
+                    privilege_id={item.privilege}
+                    group_id={item.group}
+                    onChange={(event) => handleInputChange(event, item)}
+                />
+            ));
+        
+            setPeople(peopleFromApi);
+        }); 
 
     }, []);
 
     useEffect(() => {   
         console.log("CURRENT formvalues", formValues)
-    }, [formValues, setFormValues]);
+    }, [formValues]);
 
+    /* Called when the client presses the save button  */
     const submit = (values) => {
         console.log(values)
         axios.post('/api/updateusers', values).then((response) => {
             console.log(response)
+            if (response.status == 200) {
+                setFormValues([])
+                setSubmitOk(true)
+            }
         });
+    
     }
 
     return (
@@ -182,16 +183,23 @@ const Dashboard = () => {
                 
                 <div className='center-button'>
                     {
-                        (formValues.length > 0) ?
-                            <Link href="/verysecretadminpanelabc123" >
-                                <a onClick={() => submit(formValues)} className="save-button">Spara</a>
-                            </Link>
+                        (formValues.length != 0) ?
+                            <>
+                                <Link href="/verysecretadminpanelabc123" >
+                                    <a onClick={() => submit(formValues)} className="save-button">Spara</a>
+                                </Link>
+                                <Link href={'/verysecretadminpanelabc123'} >
+                                    <a onClick={() => {setFormValues([])}} className="save-button red-button">Avbryt</a>
+                                </Link>
+                            </>
                         : null
+                            
+                    }
+                    {
+                        (submitOk) ? <p>Ändring lyckades!</p> : null
                     }
                     
-                    <Link href={'/verysecretadminpanelabc123'}>
-                        <a className="save-button red-button">Avbryt</a>
-                    </Link>
+                    
                 </div>
 
             </div> 

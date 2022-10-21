@@ -12,8 +12,11 @@ const Input = () => {
 
     const router = useRouter()
 
-
-    // fetch('http://localhost:3000/api/persons')
+    /* 
+        When the Page is loaded
+        - Verify the url
+        - add a socket listener for status update
+    */
     useEffect( () => {
         if (router.isReady) {
 
@@ -46,19 +49,11 @@ const Input = () => {
             status: event.target.checked
         }
 
-        // setCheckbox(prevState => {
-        //     let checkbox = Object.assign({}, prevState.name);  // creating copy of state variable jasper
-        //     checkbox.name = event.target.name;             
-        //     checkbox.chacked = event.target.checked        // update the name property, assign a new value                 
-        //     return { checkbox };                                 // return new object jasper object
-        // })
-
-        // console.log("checkbox", checkboxes)
-
         socket.emit("status change", return_value)
         
     }
 
+    /* Render the person */
     const render_people = (person_object) => {
 
         let people_elements = [];
@@ -131,7 +126,7 @@ const Input = () => {
                     {(statusArray === undefined) ? 
                         <h1>Laddar innehållet..</h1> : statusArray }
                 </div>
-            : <h1>Unverified</h1>
+            : <p>Tillträde förbjuden</p>
             }
             
             <div>

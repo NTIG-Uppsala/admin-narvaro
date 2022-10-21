@@ -21,53 +21,6 @@ require('dotenv').config()
 const current_date = () => {
     return new Date()
 }
-
-/* Handles a POST request to /sendinput */
-let statusArray = [
-    {
-        name: "Mathias Laveno",
-        role: "Rektor",
-        locked: false,
-        status: false,
-        latest_change: current_date()
-    },
-    {
-        name: "Henrik Jonsson",
-        role: "biträdande rektor",
-        locked: false,
-        status: false,
-        latest_change: current_date()
-    },
-    {
-        name: "Sarah Hagberg",
-        role: "Biträdande rektor",
-        locked: false,
-        status: false,
-        latest_change: current_date()
-    },
-    {
-        name: "Therese Ekman",
-        role: "Administratör",
-        locked: false,
-        status: false,
-        latest_change: current_date()
-    },
-    {
-        name: "Vincent Persson",
-        role: "Tekniker",
-        locked: false,
-        status: false,
-        latest_change: current_date()
-    },
-    {
-        name: "Megan Sundström",
-        role: "Kurator",
-        locked: false,
-        status: false,
-        latest_change: current_date()
-    }
-]
-
 class database {
     constructor() {
         this.test;
@@ -182,7 +135,7 @@ class database {
 
     print_uris() {
         this.userModel.find({}, (err, result) => {
-            console.log(result)
+            console.log("person results uri", result)
             result.forEach((person) => {
                 console.log(`${person.name} ${person.role} -> https://narvaro.ntig.net/setstatus?auth=${person.uri}`);
             })
@@ -203,60 +156,30 @@ nextApp.prepare().then( async () => {
     }));
     server.use(express.json());
 
-    /* API to retrive current status */
+    /* API to retrive all users */
     server.get('/api/getusers', async (req, res) => {
         let status_object = await database_instance.get_users();
         return res.json(status_object);
     });
 
+    /* Gets all avaliable privileges */
     server.get('/api/getprivileges', async (req, res) => {
         let bla_bla_bla = await database_instance.get_privileges();
         return res.json(bla_bla_bla)
     })
 
+    /* Gets all avaliable groups */
     server.get('/api/getgroups', async (req, res) =>  {
         let database_response = await database_instance.get_groups();
         return res.json(database_response)
     })
 
+    /* Handles when users are updated on the dashboard */
     server.post('/api/updateusers', (req, res) => {
         let database_values = [];
-
         req.body.forEach(user => {
-            console.log("Updating user", user);
-            let user_in_db_values = database_values.find((item) => user.objectId == item.objectId);
-            if (user_in_db_values) {
-                console.log("user in array")
+            console.log("Updating user", user.name)
 
-                let index = database_values.indexOf(user_in_db_values);
-
-                database_values[index] = {
-                    objectId: user.objectId,
-                    name: user.name,
-                    role: user.role,
-                    group: user.group,
-                    privilege: user.privilege
-                }
-
-                console.log("user in array done")
-            }
-            else {
-                database_values.push({
-                    objectId: user.objectId,
-                    name: user.name,
-                    role: user.role,
-                    group: user.group,
-                    privilege: user.privilege
-                })
-            }
-
-        })
-
-        console.log(database_values)
-
-
-        /* Update usermodel database with new datbase values */
-        database_values.forEach((user) => {
             database_instance.userModel.findOne({_id: user.objectId}, (err, result) => {
                 if (err) throw err;
                 if (result) {
@@ -268,9 +191,8 @@ nextApp.prepare().then( async () => {
                 }
             })
         })
-
-
-        return res.json({status: "ok"})
+        io.emit("status update")
+        return res.status(200).json({status: "ok"})
     })
 
     server.post('/api/verifyurl', async (req, res) => {
@@ -279,44 +201,45 @@ nextApp.prepare().then( async () => {
         /* Initialize return object */
         let return_object = {
             verified: false,
-            privilege: null,
             users: []
         }
+
         let user_result;
 
         try {
             user_result = await database_instance.get_users({uri: uri})
             if (user_result.length > 0) {
                 return_object.verified = true
+
+                let other_users = await new Promise((resolve, reject) => {
+                    database_instance.privilegeModel.findOne({_id: user_result[0].privilege}, async (err, res) => {
+                        let tmp = [];
+                        console.log(res)
+                        switch (res.control) {
+                            case 1: // only change the person himself
+                                tmp = await database_instance.get_users({name: user_result[0].name})
+                                break;
+                            case 2: // change all people in same group
+                                tmp = await database_instance.get_users({group: user_result[0].group})
+                                break;
+                            case 3: // change all people
+                                tmp = await database_instance.get_users({})
+                                break;
+                            default:
+                                break;
+                        }
+                        console.log("WILL BE RETURNED", tmp)
+    
+                        resolve(tmp)
+                    })
+    
+                });
+                console.log("GOT RETURNED", other_users)
+                return_object.users = return_object.users.concat(other_users)
+    
+                console.log(return_object)
             }
-
-            let other_users = await new Promise((resolve, reject) => {
-                database_instance.privilegeModel.findOne({_id: user_result[0].privilege}, async (err, res) => {
-                    let tmp = [];
-                    console.log(res)
-                    switch (res.control) {
-                        case 1: // only change the person himself
-                            tmp = await database_instance.get_users({name: user_result[0].name})
-                            break;
-                        case 2: // change all people in same group
-                            tmp = await database_instance.get_users({group: user_result[0].group})
-                            break;
-                        case 3: // change all people
-                            tmp = await database_instance.get_users({})
-                            break;
-                        default:
-                            break;
-                    }
-                    console.log("WILL BE RETURNED", tmp)
-
-                    resolve(tmp)
-                })
-
-            });
-            console.log("GOT RETURNED", other_users)
-            return_object.users = return_object.users.concat(other_users)
-
-            console.log(return_object)
+            
             return res.status(200).json(return_object)    
 
         } catch (error) {

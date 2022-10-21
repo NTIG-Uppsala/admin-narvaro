@@ -11,7 +11,8 @@ const Output = () => {
 
     const [statusArray, setStatusArray] = useState();
 
-    /* Will be runned as a client side script */
+
+    /* Will be runned as a client side script when the page renders */
     useEffect(() => {
         axios.get('/api/getusers').then(res => {
             console.log("data gotten from api: \n", res.data)
@@ -55,6 +56,15 @@ const Output = () => {
     }
 
     const Person = (props) => {
+        const [latest_change, setLatestChange] = useState(moment(props.latest_change).fromNow());
+
+        useEffect(() => {
+            /* Will update the from now every second */
+            setInterval(() => {
+                setLatestChange(moment(props.latest_change).fromNow())
+            }, 1000);
+        }, [])
+
         return (
             <div className={"message-container" + ((props.id % 2 == 0) ? ' gray-color' : '')} id="message-containerOutput">
                 <div className="name status-flex">
@@ -63,7 +73,7 @@ const Output = () => {
                 </div>
                 <div className="status status-flex">
                     <span className={(props.status == true) ? 'green-color' : 'red-color'}> {props.avalibility} </span>
-                    <span className="latest-update subheading">Senast uppdaterad: {moment(props.latest_change).fromNow()} </span>
+                    <span className="latest-update subheading">Senast uppdaterad: {latest_change} </span>
                 </div>    
             </div>
         )
