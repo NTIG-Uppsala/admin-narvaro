@@ -59,10 +59,13 @@ const Output = () => {
         const [latest_change, setLatestChange] = useState(moment(props.latest_change).fromNow());
 
         useEffect(() => {
-            /* Will update the from now every second */
+            /* Will update the from now every minute */
+            setLatestChange(moment(props.latest_change).fromNow())
+            
+
             setInterval(() => {
                 setLatestChange(moment(props.latest_change).fromNow())
-            }, 1000);
+            }, 60000);
         }, [])
 
         return (
