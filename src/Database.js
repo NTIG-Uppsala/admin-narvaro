@@ -62,7 +62,6 @@ class Database {
                 // console.log(result);
                 // console.log(result); 
                 if (err) {
-                    console.log("Could not retrive data from database", err)
                     reject(err);
                 }
                 if (result.length == 1) return resolve(result[0]);
@@ -93,7 +92,10 @@ class Database {
     }
         
     update_user(userId, new_values) {
-        userModel.findOne({_id: userId}, (err, result) => { 
+        // this.models.users.update({"created": false}, {"$set":{"created": true}}, {"multi": true}, (err, writeResult) => {});
+
+        this.models.users.findOne({_id: userId}, (err, result) => { 
+            console.log("update user reuslt", result)
             if (err) throw err;
             if (result) {
                 result.name = new_values.name;
