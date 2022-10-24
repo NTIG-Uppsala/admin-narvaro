@@ -29,11 +29,12 @@ apiRouter.get('/getgroups', async (req, res) =>  {
 /* Handles when users are updated on the dashboard */
 apiRouter.post('/updateusers', (req, res) => {
     req.body.forEach(user => {
+        console.log(user)
         console.log("Updating user", user.name)
         console.log("New values", user)
-        database_instance.update_user(user._id, user);
+        // database_instance.update_user(user.objectId, user);
     })
-    io.emit("status update")
+    req.io.emit("status update")
     return res.status(200).json({status: "ok"})
 })
 
@@ -58,7 +59,9 @@ apiRouter.post('/verifyurl', async (req, res) => {
         user_array.push(user_result)
         return_object.verified = true
 
-        let other_users = await new Promise( async (resolve, reject) => {
+
+        try {
+            
             let privilege = await database_instance.get_privileges({_id: user_result.privilege})
             let tmp;
 
@@ -86,10 +89,13 @@ apiRouter.post('/verifyurl', async (req, res) => {
             /* Concat user_array with tmp */
             user_array = user_array.concat(tmp)
 
-            resolve(user_array)
-        });
+        } catch (error) {
+            throw error
+        }
+
+
         // console.log("GOT RETURNED", other_users)
-        return_object.users = return_object.users.concat(other_users)
+        return_object.users = return_object.users.concat(user_array)
 
         console.log(return_object)
         

@@ -2,27 +2,20 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 import express from 'express'
-
 import next from 'next';
 import bodyParser from 'body-parser';
 import http from 'http';
-
-
 import {Server as SocketServer} from 'socket.io'
-
-
-import Database from './Database.js';
-const database_instance = new Database();
 
 import mongoose from 'mongoose';
 
+import Database from './Database.js';
 import apiRouter from './routes/api.js';
 
-
+const database_instance = new Database();
 const server = express();
 const http_server = http.createServer(server);
 const io = new SocketServer(http_server);
-
 
 const dev = process.env.NODE_ENV !== 'production'
 
@@ -37,6 +30,11 @@ nextApp.prepare().then( async () => {
     }));
 
     server.use(express.json());
+
+    server.use((req, res, callback) => {
+        req.io = io;
+        callback();
+    });
 
     /* API router */
     server.use('/api', apiRouter);
@@ -60,37 +58,31 @@ nextApp.prepare().then( async () => {
     
 });
 
- 
-
-
-
 /* notifies console when someone connects to server socket */
 io.on('connection', (socket) => { 
     console.log('A user connected', socket.handshake.address);
 
     /* A event for changes to the status */
-    socket.on('status change', (response) => { 
+    socket.on('status change', async (response) => { 
         console.log(response)
         console.log("STATUS CHANGE")
         /* Update status array */
+        try {
+            let user = await database_instance.get_users({name: response.name })
 
-        
-        database_instance.models.users.findOne({name: response.name }, (err, result) => { 
-            if (err) throw err;
-
-           if (result)  {
-                result.status = response.status;
-                result.latest_change = new Date();
+            if (user)  {
+                user.status = response.status;
+                user.latest_change = new Date();
                 
-                result.save((err) => {
+                user.save((err) => {
                     if (err) throw err;
                     console.log("Updated in database")
                 });
-            }
-            
             io.emit("status update")
-            
-        });
+            }
+        } catch (error) {
+            throw error
+        }
 
         /* Status change */
         
