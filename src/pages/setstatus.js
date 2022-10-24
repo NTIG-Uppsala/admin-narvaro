@@ -94,7 +94,6 @@ const Input = () => {
                                 onChange={handleCheckboxChange} 
                                 checked={props.status}
                             />
-
                         <div className="slider round"></div>
                     </label>
                 </div>
@@ -117,13 +116,7 @@ const Input = () => {
 
             {(verified) ? 
                 <div id="main">
-                    <div className="title-grid">
-                        <h1>Ange din status</h1>
-                        {/* <Link href={'/dashboard?auth=' + router.query.auth}>
-                            <img src="images/edit.svg"></img>  
-                        </Link> */}
-                        
-                    </div>
+                    <h1>Ange din status</h1>
                     {(statusArray === undefined) ? 
                         <h1>Laddar innehållet..</h1> : statusArray }
                 </div>

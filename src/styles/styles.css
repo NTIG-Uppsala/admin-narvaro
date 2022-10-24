@@ -96,6 +96,10 @@ a:active {
   padding-bottom: 20px;
 }
 
+#main > h1 {
+  text-align: center;
+}
+
 .message-container{
   display: flex; 
   flex-direction: row; 
@@ -119,21 +123,6 @@ a:active {
 
 .gray-color {
   background-color: var(--row-background-color);
-}
-
-.title-grid {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: left;
-}
-
-.title-grid > img {
-  margin-left: 20px;
-}
-
-.title-grid > img:hover {
-  cursor: pointer;
 }
 
 /* Output page specific stuff */
@@ -299,16 +288,13 @@ input:checked + .slider:before {
     display: flex;
     flex-wrap: wrap;
   }
-  .container-flexwrap {
+  .container-flexcenter {
     display: flex;
     justify-content: center;
     align-items: center;
   }
-  .name-flexwrap {
+  .name-size {
     font-size: 22px;
-  }
-  .name > input {
-    padding: 0px;
   }
   .subheading {
     font-size: 12px;
@@ -316,6 +302,7 @@ input:checked + .slider:before {
   .name > input {
     width: 100%;
     font-size: smaller;
+    padding: 0px;
   }
   .save-button {
     padding: 10px 20px;
