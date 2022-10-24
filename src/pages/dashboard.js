@@ -185,10 +185,10 @@ const Dashboard = () => {
                     {
                         (formValues.length != 0) ?
                             <>
-                                <Link href="/verysecretadminpanelabc123" >
+                                <Link href="/dashboard" >
                                     <a onClick={() => submit(formValues)} className="save-button">Spara</a>
                                 </Link>
-                                <Link href={'/verysecretadminpanelabc123'} >
+                                <Link href={'/dashboard'} >
                                     <a onClick={() => {setFormValues([])}} className="save-button red-button">Avbryt</a>
                                 </Link>
                             </>
