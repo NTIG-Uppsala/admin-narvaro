@@ -45,11 +45,13 @@ class Database {
     get_privileges(filter) {
         filter = filter || {};
         return new Promise((resolve, reject) => {
-            privilegeModel.find(filter, (err, result) => {
+            this.models.privileges.find(filter, (err, result) => {
                 if (err) reject(err);
-                resolve(result);
+                if (result.length == 1) resolve(result[0]);
+                else resolve(result);
+                
             });
-        });
+        })
     }
 
     get_users(filter) {
@@ -63,6 +65,8 @@ class Database {
                     console.log("Could not retrive data from database", err)
                     reject(err);
                 }
+                if (result.length == 1) return resolve(result[0]);
+
                 /* Sort result array after priority key and resolve promise */
                 resolve(result.sort((a, b) => {
                     return a.order - b.order
