@@ -45,7 +45,7 @@ const Input = () => {
 
     const handleCheckboxChange = (event) => {
         let return_value = {
-            name: event.target.name,
+            id: event.target.name,
             status: event.target.checked
         }
 
@@ -66,6 +66,7 @@ const Input = () => {
             people_elements.push(
             <Person
                 key={index}
+                _id={item._id}
                 id={index+1}
                 name={item.name}
                 status={item.status}
@@ -88,7 +89,7 @@ const Input = () => {
                     <label className="switch" htmlFor={'avaliable-' + props.name.replace(" ", "-")}>
                             <input 
                                 type="checkbox" 
-                                name={props.name} 
+                                name={props._id} 
                                 id={'avaliable-' + props.name.replace(" ", "-")} 
                                 onChange={handleCheckboxChange} 
                                 checked={props.status}

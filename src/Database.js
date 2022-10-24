@@ -91,22 +91,32 @@ class Database {
         });
     }
         
-    update_user(userId, new_values) {
-        // this.models.users.update({"created": false}, {"$set":{"created": true}}, {"multi": true}, (err, writeResult) => {});
-
-        this.models.users.findOne({_id: userId}, (err, result) => { 
-            console.log("update user reuslt", result)
-            if (err) throw err;
-            if (result) {
-                result.name = new_values.name;
-                result.role = new_values.role;
-                result.group = new_values.group;
-                result.privilege = new_values.privilege;
-                result.save((err) => { if (err) throw err; console.log("Saved user to database", result.name)});
+    async update_user(userId, new_values) {
+        /*
+            Updates users with new values
+        */
+        let stuff_to_change = {};
+        let allowed_keys = ["name", "role", "status", "latest_change", "order", "uri", "group", "privilege"];
+        for (const key in new_values) {
+            // We do not want to update a users _id
+            if (key == "objectId" || key == "_id") continue;
+            
+            if (allowed_keys.includes(key)) {
+                stuff_to_change[key] = new_values[key];
             }
+        }
+                    
+        return new Promise((resolve, reject) => {
 
-            // return res.json(result); 
-        });
+            if (Object.keys(stuff_to_change).length == 0)
+                reject("No values to change");
+
+
+            this.models.users.updateOne({_id: userId}, stuff_to_change, (err, writeResult) => {
+                if (err) return reject(err)
+                resolve(writeResult)
+            })
+        })
     }
 
     regenerate_uri() {

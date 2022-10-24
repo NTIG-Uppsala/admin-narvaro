@@ -66,25 +66,18 @@ io.on('connection', (socket) => {
     socket.on('status change', async (response) => { 
         console.log(response)
         console.log("STATUS CHANGE")
-        /* Update status array */
-        try {
-            let user = await database_instance.get_users({name: response.name })
 
-            if (user)  {
-                user.status = response.status;
-                user.latest_change = new Date();
-                
-                user.save((err) => {
-                    if (err) throw err;
-                    console.log("Updated in database")
-                });
+        /* Update status of person in database */
+        database_instance.update_user(response.id, {
+            status: response.status, 
+            latest_change: response.latest_change
+        })
+        .then((result) => {
+            console.log("Updated user status, result ->", result)
             io.emit("status update")
-            }
-        } catch (error) {
-            throw error
-        }
-
-        /* Status change */
+        }).catch((err) => {
+            console.log(err)
+        });
         
     });
 
