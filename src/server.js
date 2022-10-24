@@ -49,7 +49,7 @@ nextApp.prepare().then( async () => {
         if (err) throw err
         console.log("Server is running on port 8000")
     });
-
+    const database_url = (process.env.NODE_ENV == "production") ? process.env.MONGODB_URI : process.env.MONGODB_URI_DEV;
     mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${encodeURIComponent(process.env.DB_PASSWORD)}@admin-narvaro.o11easj.mongodb.net/users`, (err) => {
         if (err) throw err;
         
