@@ -47,54 +47,51 @@ apiRouter.post('/verifyurl', async (req, res) => {
     }
 
     let user_result;
+    let user_array = [];
 
     try {
-        let user_array = [];
         user_result = await database_instance.get_users({uri: uri})
-        
 
-        if (user_result.length > 0) {
-            user_array.push(user_result[0])
-            console.log("VERIFY URL THING ASLKJDALKSJDLKSAdLKAJSD\n", user_array)
-            return_object.verified = true
+        if (user_result.length == 0)
+            return res.json(return_object);
 
-            let other_users = await new Promise((resolve, reject) => {
-                database_instance.models.privileges.findOne({_id: user_result[0].privilege}, async (err, res) => {
-                    
-                    console.log(res)
-                    let tmp;
-                    switch (res.control) {
-                        case 1: // only change the person himself
-                            tmp = await database_instance.get_users({name: user_result[0].name})
-                            break;
-                        case 2: // change all people in same group
-                            tmp = await database_instance.get_users({group: user_result[0].group})
-                            break;
-                        case 3: // change all people
-                            tmp = await database_instance.get_users({})
-                            break;
-                        default:
-                            tmp = []
-                            break;
-                    }
-                    user_array = user_array.concat(tmp)
-                    // console.log("WILL BE RETURNED", tmp)
-                    user_array = user_array.filter(( obj ) => {
-                        console.log("filtered out object", obj._id,  user_result[0]._id, obj._id !== user_result[0]._id)
-                        return obj._id !== user_result[0]._id;
-                    });
+        user_array.push(user_result)
+        return_object.verified = true
 
-                    console.log("VERIFY URL THING ASLKJDALKSJDLKSAdLKAJSD\n", user_array)
+        let other_users = await new Promise( async (resolve, reject) => {
+            let privilege = await database_instance.get_privileges({_id: user_result.privilege})
+            let tmp;
 
-                    resolve(user_array)
-                })
+            /* Depending on privilege get different users */
+            switch (privilege.control) {
+                case 1: // only change the person himself
+                    tmp = await database_instance.get_users({name: user_result.name})
+                    break;
+                case 2: // change all people in same group
+                    tmp = await database_instance.get_users({group: user_result.group})
+                    break;
+                case 3: // change all people
+                    tmp = await database_instance.get_users({})
+                    break;
+                default:
+                    tmp = [] // no users
+                    break;
+            }
 
+            /* Filter out already existing user in user_array */
+            tmp = tmp.filter(( obj ) => {
+                return obj.name != user_result.name;
             });
-            // console.log("GOT RETURNED", other_users)
-            return_object.users = return_object.users.concat(other_users)
 
-            console.log(return_object)
-        }
+            /* Concat user_array with tmp */
+            user_array = user_array.concat(tmp)
+
+            resolve(user_array)
+        });
+        // console.log("GOT RETURNED", other_users)
+        return_object.users = return_object.users.concat(other_users)
+
+        console.log(return_object)
         
         return res.status(200).json(return_object)    
 
