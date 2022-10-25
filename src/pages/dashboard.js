@@ -2,74 +2,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router'
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
-
-
-const GroupOptions = (props) => {
-    const [groups, setGroups] = useState([]);
-
-    useEffect(() => {
-        axios.get('/api/getgroups').then((response) => {
-            /* For all groups create an option for it */
-            let response_data = response.data.map((item, index) => {
-                /* If the group id is the same as user group, select it */
-                let new_element = <option key={index} value={item._id} selected={props.group_id == item._id}>{item.display_name}</option>
-                return new_element
-            });
-            setGroups(response_data);
-        });
-    }, []);
-
-
-
-    return (
-        <select className="dropdown-menu" id={props.id} name={props.name}  onChange={props.onChange}>
-            {(groups.length == 0) ? <option>Laddar innehållet...</option> : groups}
-        </select>
-    )
-}
-
-const PrivilegeOptions = (props) => {
-    /* Works the same way as group options */
-    const [privileges, setPrivileges] = useState([]);
-
-    useEffect(() => {
-        console.log("use Effect ran")
-        axios.get('/api/getprivileges').then((response) => {
-            let response_data = response.data.map((item, index) => {
-                let new_element = <option key={index}  value={item._id} selected={props.privilege_id == item._id}>{item.display_name}</option>
-                return new_element
-            });
-            setPrivileges(response_data);
-        });
-    }, []);
-
-    return (
-        <select className="dropdown-menu" onChange={props.onChange} id={props.id} name={props.name}>
-            {(privileges.length == 0) ? <option>Laddar innehållet...</option> : privileges}
-        </select>
-    )
-
-}
-
-const Person = (props) => {
-    return (
-        <div className={"message-container message-container-flexwrap" + ((props.id % 2 == 0) ? ' gray-color' : '')} onChange={props.onChange}>
-            <div className="name name-size">
-                <input type="text" required name="name" id={props._id} defaultValue={props.name}></input>
-            </div>
-            <div className="name name-size">
-                <input type="text" required name="role" id={props._id} defaultValue={props.role}></input>
-            </div>
-            <div className="container container-flexcenter">
-                <PrivilegeOptions name="privilege" id={props._id}  privilege_id={props.privilege_id} />
-            </div>
-            <div className="container container-flexcenter">
-                <GroupOptions  name="group" id={props._id} group_id={props.group_id}/>
-            </div>
-        </div>
-    )
-}
-
+import Person from '../components/DashboardPerson'
 
 const Dashboard = () => {
     const [people, setPeople] = useState([]);

@@ -4,10 +4,12 @@ import React, { useState, useEffect } from "react";
 import io from 'socket.io-client';
 import { useRouter } from 'next/router'
 
+import Person from '../components/SetPersonStatus';
+
 const Input = () => {
     const socket = io();
     
-    const [statusArray, setStatusArray] = useState([]);
+    const [people, setPeople] = useState([]);
     const [verified, setVerified] = useState(false);
 
     const router = useRouter()
@@ -48,72 +50,23 @@ const Input = () => {
     /* Render the person */
     const render_people = (person_object) => {
 
-        let people_elements = [];
         if (person_object == null) return;
-
-        person_object.forEach((item, index) => {
-            // console.log("forloop")
-            
-            console.log(item)
-            people_elements.push(
-            <Person
-                key={index}
-                _id={item._id}
-                id={index+1}
-                name={item.name}
-                status={item.status}
-            />)
-        
-        });
-
-        setStatusArray(people_elements)
-        console.log("Status array::::", statusArray)
-
-    }
-    const Checkbox = (props) => {
-        const [checked, setChecked] = useState(props.status);
-        // https://bobbyhadz.com/blog/react-check-if-checkbox-is-checked
-
-        const handleCheckboxChange = (event) => {
-            let return_value = {
-                id: event.target.name,
-                status: event.target.checked
-            }
-            
-            setChecked(event.target.checked)
-
-            socket.emit("status change", return_value)
-            
-        }
-
-        return (
-            <label className="switch" htmlFor={'avaliable-' + props.name.replace(" ", "-")}>
-                <input 
-                    type="checkbox" 
-                    name={props._id} 
-                    id={'avaliable-' + props.name.replace(" ", "-")} 
-                    onChange={handleCheckboxChange} 
-                    checked={checked}
+        let people_elements = person_object.map((item, index) => {
+            return ( 
+                <Person
+                    key={index}
+                    _id={item._id}
+                    id={index+1}
+                    name={item.name}
+                    status={item.status}
                 />
-                <div className="slider round"></div>
-            </label>
-        )
-    }
+            )
+        })
 
-    const Person = (props) => {
-        return (
-            <div className={"message-container" + ((props.id % 2 == 0) ? ' gray-color' : '')}>
-                <div className="name">
-                    <span>{props.name}</span>
-                </div>
-                <div className="container">
-                    <Checkbox _id={props._id} name={props.name} status={props.status}/>
-                </div>
-            </div>
-        )
+        setPeople(people_elements)
+        console.log("Status array::::", people)
 
     }
-    
 
     return (
       <>
@@ -129,8 +82,11 @@ const Input = () => {
             {(verified) ? 
                 <div id="main">
                     <h1>Ange din status</h1>
-                    {(statusArray === undefined) ? 
-                        <h1>Laddar innehållet..</h1> : statusArray }
+                    {(!people.length) ? 
+                        <h1>Laddar innehållet..</h1> 
+                        : 
+                        people 
+                    }
                 </div>
                 : <p>Tillträde förbjuden</p>
                 }
