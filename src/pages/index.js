@@ -13,9 +13,8 @@ const Output = () => {
     useEffect(() => {
         axios.get('/api/getusers').then(res => {
             console.log("data gotten from api: \n", res.data)
-    
-            return render_people(res.data)
 
+            return render_people(res.data)
         });
 
         socket.on('status update', (response) => {
@@ -25,7 +24,6 @@ const Output = () => {
                 return render_people(res.data)
             });
         });
-
     }, []);
 
     /* Used to update content on page */
@@ -33,8 +31,6 @@ const Output = () => {
         let people_elements = [];
         console.log(person_object)
         person_object.forEach((item, index) => {
-            // console.log("forloop")
-            
             let new_element = <Person
                 key={index}
                 id={index+1}
@@ -45,14 +41,9 @@ const Output = () => {
                 latest_change={item.latest_change}
             />
             people_elements.push(new_element)
-
         });
-
         setStatusArray(people_elements)
-
     }
-
-
 
     return (
         <>
@@ -71,9 +62,7 @@ const Output = () => {
                 </div>
             </div>
         </>
-
     )
-    
 }
 
 export default Output;

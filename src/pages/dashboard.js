@@ -10,7 +10,6 @@ const Dashboard = () => {
     const [submitOk, setSubmitOk] = useState(false);
     const router = useRouter()
 
-
     /* Called whenever a user input is changed */
     const handleInputChange = (event, person) => {
         setSubmitOk(false) /* Reset submitOk */
@@ -21,10 +20,12 @@ const Dashboard = () => {
             privilege: person.privilege,
             group: person.group
         };
+
         /* 
             If no person has been changed yet.
             Add the new person to the array with the changed values
         */
+
         setFormValues((oldFormValues) => {
             console.log("ALL old values -> ", oldFormValues)
 
@@ -52,14 +53,11 @@ const Dashboard = () => {
                         [event.target.name]: event.target.value,
                     };
                 }
-                    
             });
-
             return [...new_changed_value]
         });
     };
-
-    
+   
     /* When the page is rendered, get all users and create a people component */
     useEffect(() => {   
         // GARL: https: //bobbyhadz.com/blog/react-push-to-state-array
@@ -75,11 +73,9 @@ const Dashboard = () => {
                     group_id={item.group}
                     onChange={(event) => handleInputChange(event, item)}
                 />
-            ));
-        
+            ));        
             setPeople(peopleFromApi);
         }); 
-
     }, []);
 
     useEffect(() => {   
@@ -97,7 +93,6 @@ const Dashboard = () => {
                 router.reload(window.location.pathname)
             }
         });
-    
     }
 
     return (
@@ -117,7 +112,6 @@ const Dashboard = () => {
                         <h1>Laddar innehållet..</h1> : people }
                 </div>
 
-                
                 <div className='center-button'>
                     {
                         (formValues.length != 0) ?
@@ -129,21 +123,15 @@ const Dashboard = () => {
                                     <a onClick={() => {router.reload(window.location.pathname)}} className="save-button red-button">Avbryt</a>
                                 </Link>
                             </>
-                        : null
-                            
+                        : null 
                     }
                     {
                         (submitOk) ? <p>Ändring lyckades!</p> : null
                     }
-                    
-                    
                 </div>
-
             </div> 
         </div>
-        
       </>
-         
     );
   }
   

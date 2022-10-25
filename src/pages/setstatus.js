@@ -19,19 +19,18 @@ const Input = () => {
         - Verify the url
         - add a socket listener for status update
     */
+
     useEffect( () => {
         if (router.isReady) {
 
             console.log("i fire once");
             console.log("router.query: ", router.query.auth);
 
-            
             axios.post('/api/verifyurl', {uri: router.query.auth}).then(res => {
                 console.log(res.data)
                 setVerified(res.data.verified)
                 render_people(res.data.users)
             });
-
 
             socket.on('status update', () => {
                 console.log("STATUS UPDATE")
@@ -42,10 +41,7 @@ const Input = () => {
                 });
             });
         }
-
     }, [router.isReady]);
-
-    
 
     /* Render the person */
     const render_people = (person_object) => {
@@ -62,10 +58,8 @@ const Input = () => {
                 />
             )
         })
-
         setPeople(people_elements)
         console.log("Status array::::", people)
-
     }
 
     return (
@@ -98,9 +92,7 @@ const Input = () => {
                 </div>
             </div> 
         </div>
-        
-      </>
-         
+      </>     
     );
   }
   
