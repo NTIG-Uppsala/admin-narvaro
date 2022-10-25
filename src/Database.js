@@ -36,7 +36,7 @@ class Database {
         }
 
         this.models = {
-            "users": check_if_model_defined("atendences", this.userSchema),
+            "users": check_if_model_defined("users", this.userSchema),
             "privileges": check_if_model_defined("privileges", this.privilegeSchema),
             "groups": check_if_model_defined("groups", this.groupSchema)
         }
