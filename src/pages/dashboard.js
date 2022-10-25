@@ -4,15 +4,14 @@ import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import Person from '../components/DashboardPerson'
 
-import { getCookie } from 'cookies-next';
 
-const Dashboard = () => {
+const Dashboard = (props) => {
     const [people, setPeople] = useState([]);
     const [formValues, setFormValues] = useState([]);
     const [submitOk, setSubmitOk] = useState(false);
-    const [is_logged_in, set_logged_in] = useState(getCookie('is_logged_in'));
+    const [is_logged_in, set_logged_in] = useState(0);
     const router = useRouter()
-
+    console.log("serverside props", props.authed)
     /* Called whenever a user input is changed */
     const handleInputChange = (event, person) => {
         setSubmitOk(false) /* Reset submitOk */
@@ -86,9 +85,9 @@ const Dashboard = () => {
     }, [formValues]);
 
     useEffect(() => {
-        if (is_logged_in !== true) {
-            router.push('/login')
-        }
+        // if (is_logged_in !== true) {
+        //     router.push('/login')
+        // }
     }, []);
 
 
@@ -153,6 +152,13 @@ const Dashboard = () => {
             }
         </>
     );
+}
+
+export const getServerSideProps = async (context) => {
+    let response = await axios.get("http://localhost:8000/api/isloggedin", { withCredentials: true })
+    return {
+        props: { authed: response.data.result }
+    }
 }
 
 export default Dashboard;

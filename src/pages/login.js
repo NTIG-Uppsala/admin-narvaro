@@ -1,18 +1,15 @@
 import Login from '../components/login';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
-import { setCookie } from 'cookies-next';
 export default () => {
 
     const [password, setPassword] = useState("");
     const [correctPassword, setCorrectPassword] = useState();
     const tryLogin = () => {
         console.log("trylogin", password)
-        axios.post('/api/verifylogin', { password: password }).then(res => {
-            console.log(res.data)
-            setCookie('is_logged_in', res.data);
-            setCorrectPassword(res.data);
-            if (window !== undefined && res.data === true) {
+        axios.post('/api/verifylogin', { password: password }, { withCredentials: true }).then(res => {
+            console.log(res.data.result)
+            if (window !== undefined && res.result === true) {
                 window.location.href = '/dashboard';
             }
         })
