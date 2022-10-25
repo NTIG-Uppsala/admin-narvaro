@@ -118,6 +118,10 @@ a:active {
   justify-content: flex-end;
 }
 
+#status-link-hover:hover {
+  color: #d9d9d9;
+}
+
 /* Output page specific stuff */
 
 #message-containerOutput > .status  {
