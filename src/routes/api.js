@@ -40,6 +40,11 @@ apiRouter.post('/updateusers', (req, res) => {
     return res.status(200).json({status: "ok"})
 })
 
+apiRouter.post('/verifylogin', async (req, res) => {
+    let login_result = await database_instance.verify_login("admin", req.body.password);
+    return res.json(login_result);
+})
+
 apiRouter.post('/verifyurl', async (req, res) => {
     let uri = req.body.uri;
 

@@ -2,30 +2,31 @@ import mongoose from 'mongoose';
 
 class Database {
     constructor() {
-        this.test;
-        // this.userModel = new mongoose.model("atendences", {
         this.userSchema = new mongoose.Schema({
             name: String,
             role: String,
             status: Boolean,
             latest_change: Date,
             order: Number,
-            uri: String, 
+            uri: String,
             group: mongoose.Types.ObjectId,
             privilege: mongoose.Types.ObjectId
         });
-        
-        // this.groupModel = new mongoose.model("groups", {
+
         this.groupSchema = new mongoose.Schema({
             display_name: String
         })
 
-        // this.privilegeModel = new mongoose.model("privileges", {
         this.privilegeSchema = new mongoose.Schema({
             display_name: String,
             control: Number
         });
-        
+
+        this.adminUserSchema = new mongoose.Schema({
+            username: String,
+            password: String
+        });
+
         const check_if_model_defined = (model, schema) => {
             if (!mongoose.models[model]) {
                 return new mongoose.model(model, schema);
@@ -38,7 +39,8 @@ class Database {
         this.models = {
             "users": check_if_model_defined("users", this.userSchema),
             "privileges": check_if_model_defined("privileges", this.privilegeSchema),
-            "groups": check_if_model_defined("groups", this.groupSchema)
+            "groups": check_if_model_defined("groups", this.groupSchema),
+            "adminUsers": check_if_model_defined("adminusers", this.adminUserSchema)
         }
     }
 
@@ -49,7 +51,7 @@ class Database {
                 if (err) reject(err);
                 if (result.length == 1) resolve(result[0]);
                 else resolve(result);
-                
+
             });
         })
     }
@@ -58,9 +60,6 @@ class Database {
         filter = filter || {};
         return new Promise((resolve, reject) => {
             this.models.users.find(filter, (err, result) => {
-                // console.log("Found", result.length, "users");
-                // console.log(result);
-                // console.log(result); 
                 if (err) {
                     reject(err);
                 }
@@ -70,7 +69,7 @@ class Database {
                 resolve(result.sort((a, b) => {
                     return a.order - b.order
                 }))
-      
+
             })
         });
     }
@@ -79,9 +78,6 @@ class Database {
         filter = filter || {};
         return new Promise((resolve, reject) => {
             this.models.groups.find(filter, (err, result) => {
-                // console.log("Found", result.length, "users");
-                // console.log(result);
-                // console.log(result); 
                 if (err) {
                     console.log("Could not retrive data from database", err)
                     reject(err);
@@ -90,7 +86,7 @@ class Database {
             })
         });
     }
-        
+
     async update_user(userId, new_values) {
         /*
             Updates users with new values
@@ -100,32 +96,46 @@ class Database {
         for (const key in new_values) {
             // We do not want to update a users _id
             if (key == "objectId" || key == "_id") continue;
-            
+
             if (allowed_keys.includes(key)) {
                 stuff_to_change[key] = new_values[key];
             }
         }
-                    
+
         return new Promise((resolve, reject) => {
 
             if (Object.keys(stuff_to_change).length == 0)
                 reject("No values to change");
 
 
-            this.models.users.updateOne({_id: userId}, stuff_to_change, (err, writeResult) => {
+            this.models.users.updateOne({ _id: userId }, stuff_to_change, (err, writeResult) => {
                 if (err) return reject(err)
                 resolve(writeResult)
             })
         })
     }
 
+    async verify_login(user_name, password_to_check) {
+        /*
+            Checks database for the correct admin password
+        */
+        return new Promise((resolve, reject) => {
+            this.models.adminUsers.find({ name: user_name }, (err, result) => {
+                if (err) reject(err);
+                if (result.length == 0) reject("Could not find admin user");
+                if (result[0].password == password_to_check) resolve(true);
+                else resolve(false);
+            })
+        })
+    }
+
     regenerate_uri() {
-        
+
         const makeid = (length) => {
-            var result           = '';
-            var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            var result = '';
+            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             var charactersLength = characters.length;
-            for ( var i = 0; i < length; i++ ) {
+            for (var i = 0; i < length; i++) {
                 result += characters.charAt(Math.floor(Math.random() * charactersLength));
             }
             return result;
@@ -135,8 +145,8 @@ class Database {
             result.forEach((person) => {
                 console.log("Found privilege", person.name, "with uri", person.uri);
                 person.uri = makeid(10);
-                person.save((err) => { 
-                    if (err) throw err; 
+                person.save((err) => {
+                    if (err) throw err;
                     console.log("Saved privilege", person.name, "with uri", person.uri)
                 });
             })
@@ -144,19 +154,18 @@ class Database {
         })
 
 
-        
+
     }
 
     print_uris() {
         this.models.users.find({}, (err, result) => {
-            console.log("person results uri", result)
             result.forEach((person) => {
                 console.log(`${person.name} ${person.role} -> https://narvaro.ntig.net/setstatus?auth=${person.uri}`);
             })
         })
     }
 
-    
+
 
 }
 
