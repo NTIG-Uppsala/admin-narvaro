@@ -70,7 +70,7 @@ io.on('connection', (socket) => {
         /* Update status of person in database */
         database_instance.update_user(response.id, {
             status: response.status, 
-            latest_change: response.latest_change
+            latest_change: new Date()
         })
         .then((result) => {
             console.log("Updated user status, result ->", result)
