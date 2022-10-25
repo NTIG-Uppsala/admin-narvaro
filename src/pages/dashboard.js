@@ -4,10 +4,13 @@ import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import Person from '../components/DashboardPerson'
 
+import { getCookie } from 'cookies-next';
+
 const Dashboard = () => {
     const [people, setPeople] = useState([]);
     const [formValues, setFormValues] = useState([]);
     const [submitOk, setSubmitOk] = useState(false);
+    const [is_logged_in, set_logged_in] = useState(getCookie('is_logged_in'));
     const router = useRouter()
 
     /* Called whenever a user input is changed */
@@ -30,7 +33,7 @@ const Dashboard = () => {
             console.log("ALL old values -> ", oldFormValues)
 
             /* Searches for person in values */
-            let user_found = 
+            let user_found =
                 oldFormValues.find((item) => item.objectId == event.target.id) !== undefined;
 
             console.log("Was user found in changes? -> ", user_found)
@@ -40,7 +43,7 @@ const Dashboard = () => {
                 new_form_val[event.target.name] = event.target.value
                 console.log("New user change value -> ", new_form_val)
                 return [...oldFormValues, new_form_val]
-            } 
+            }
 
             /* If person has already been changed, change its values */
             let new_changed_value = oldFormValues.map(item => {
@@ -57,9 +60,9 @@ const Dashboard = () => {
             return [...new_changed_value]
         });
     };
-   
+
     /* When the page is rendered, get all users and create a people component */
-    useEffect(() => {   
+    useEffect(() => {
         // GARL: https: //bobbyhadz.com/blog/react-push-to-state-array
         /* Renders all users to the page after getting users from api */
         axios.get("/api/getusers").then((response) => {
@@ -73,14 +76,21 @@ const Dashboard = () => {
                     group_id={item.group}
                     onChange={(event) => handleInputChange(event, item)}
                 />
-            ));        
+            ));
             setPeople(peopleFromApi);
-        }); 
+        });
     }, []);
 
-    useEffect(() => {   
+    useEffect(() => {
         console.log("CURRENT formvalues", formValues)
     }, [formValues]);
+
+    useEffect(() => {
+        if (is_logged_in !== true) {
+            router.push('/login')
+        }
+    }, []);
+
 
     /* Called when the client presses the save button  */
     const submit = (values) => {
@@ -96,43 +106,53 @@ const Dashboard = () => {
     }
 
     return (
-      <>
-        <div className="backgroundImage">
-          <img src="images/backgroundNTI.jpg" />
-        </div>
-  
-        <img id="logo" src="images/nti_logo_footer.svg" alt="" />
-        
-        <div className="grid-center">
-            <div className="message-container-wrapper">
 
-                <div id="main">
-                    <h1>Administration</h1>
-                    {(people.length == 0) ? 
-                        <h1>Laddar innehållet..</h1> : people }
-                </div>
+        <>
+            {(is_logged_in === true) ?
+                <>
 
-                <div className='center-button'>
-                    {
-                        (formValues.length != 0) ?
-                            <>
-                                <Link href="/dashboard" >
-                                    <a onClick={() => submit(formValues)} className="save-button">Spara</a>
-                                </Link>
-                                <Link href={'/dashboard'} >
-                                    <a onClick={() => {router.reload(window.location.pathname)}} className="save-button red-button">Avbryt</a>
-                                </Link>
-                            </>
-                        : null 
-                    }
-                    {
-                        (submitOk) ? <p>Ändring lyckades!</p> : null
-                    }
-                </div>
-            </div> 
-        </div>
-      </>
+                    <div className="backgroundImage">
+                        <img src="images/backgroundNTI.jpg" />
+                    </div>
+
+                    <img id="logo" src="images/nti_logo_footer.svg" alt="" />
+
+                    <div className="grid-center">
+                        <div className="message-container-wrapper">
+                            <div id="main">
+                                <h1>Administration</h1>
+                                {(people.length == 0) ?
+                                    <h1>Laddar innehållet..</h1> : people}
+                            </div>
+
+                            <div className='center-button'>
+                                {
+                                    (formValues.length != 0) ?
+                                        <>
+                                            <Link href="/dashboard" >
+                                                <a onClick={() => submit(formValues)} className="save-button">Spara</a>
+                                            </Link>
+                                            <Link href={'/dashboard'} >
+                                                <a onClick={() => { router.reload(window.location.pathname) }} className="save-button red-button">Avbryt</a>
+                                            </Link>
+                                        </>
+                                        : null
+                                }
+                                {
+                                    (submitOk) ? <p>Ändring lyckades!</p> : null
+                                }
+                            </div>
+
+
+                        </div>
+                    </div>
+                </>
+
+                :
+                null
+            }
+        </>
     );
-  }
-  
-  export default Dashboard;
+}
+
+export default Dashboard;
