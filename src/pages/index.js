@@ -76,11 +76,11 @@ const Output = () => {
             <div className={"message-container" + ((props.id % 2 == 0) ? ' gray-color' : '')} id="message-containerOutput">
                 <div className="name status-flex">
                     <span>{props.name}</span>
-                    <span className="role subheading">{props.role} </span>
+                    <h4 className="role">{props.role} </h4>
                 </div>
                 <div className="status status-flex">
                     <span className={(props.status == true) ? 'green-color' : 'red-color'}> {props.avalibility} </span>
-                    <span className="latest-update subheading">Senast uppdaterad: {moment(props.latest_change).fromNow()} </span>
+                    <h4 className="latest-update">Senast uppdaterad: {moment(props.latest_change).fromNow()} </h4>
                 </div>    
             </div>
         )

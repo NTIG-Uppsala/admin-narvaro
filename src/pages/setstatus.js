@@ -120,14 +120,14 @@ const Input = () => {
                     {(statusArray === undefined) ? 
                         <h1>Laddar innehållet..</h1> : statusArray }
                 </div>
-            : <p>Tillträde förbjuden</p>
-            }
+                : <p>Tillträde förbjuden</p>
+                }
             
-            <div>
-                <Link href="/">
-                    <a>Visa Status</a>
-                </Link>
-            </div>
+                <div>
+                    <Link href="/">
+                        <a>Visa Status</a>
+                    </Link>
+                </div>
             </div> 
         </div>
         
