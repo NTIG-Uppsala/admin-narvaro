@@ -47,12 +47,14 @@ apiRouter.post('/verifylogin', async (req, res) => {
     req.session.logged_in = login_result
 
     console.log(req.session.logged_in)
+    console.log("session", req.session);
 
     return res.status(200).json({ result: login_result })
 })
 
 apiRouter.get('/isloggedin', (req, res) => {
     console.log("is user logged in", req.session.logged_in)
+    console.log("session", req.session);
     return res.status(200).json({ result: (req.session.logged_in == true) ? true : false })
 })
 
