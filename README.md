@@ -55,3 +55,6 @@ All pages are loacetd in `pages/<page>.js` and all scripts starting with `_` are
 
 ### Backend
 The server also consists of a backend running with Express.js. The backend handles all requests made to the website.
+
+### Testing
+This project uses [jest](https://nextjs.org/docs/testing) for testing.
