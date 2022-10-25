@@ -1,6 +1,8 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router'
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
+
 
 const GroupOptions = (props) => {
     const [groups, setGroups] = useState([]);
@@ -73,6 +75,8 @@ const Dashboard = () => {
     const [people, setPeople] = useState([]);
     const [formValues, setFormValues] = useState([]);
     const [submitOk, setSubmitOk] = useState(false);
+    const router = useRouter()
+
 
     /* Called whenever a user input is changed */
     const handleInputChange = (event, person) => {
@@ -157,6 +161,7 @@ const Dashboard = () => {
             if (response.status == 200) {
                 setFormValues([])
                 setSubmitOk(true)
+                router.reload(window.location.pathname)
             }
         });
     
@@ -188,7 +193,7 @@ const Dashboard = () => {
                                     <a onClick={() => submit(formValues)} className="save-button">Spara</a>
                                 </Link>
                                 <Link href={'/dashboard'} >
-                                    <a onClick={() => {setFormValues([])}} className="save-button red-button">Avbryt</a>
+                                    <a onClick={() => {router.reload(window.location.pathname)}} className="save-button red-button">Avbryt</a>
                                 </Link>
                             </>
                         : null
