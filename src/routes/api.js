@@ -48,6 +48,7 @@ apiRouter.post('/verifylogin', async (req, res) => {
 
     console.log(req.session.logged_in)
     console.log("session", req.session);
+    console.log("session id", req.sessionID);
 
     return res.status(200).json({ result: login_result })
 })
@@ -55,6 +56,7 @@ apiRouter.post('/verifylogin', async (req, res) => {
 apiRouter.get('/isloggedin', (req, res) => {
     console.log("is user logged in", req.session.logged_in)
     console.log("session", req.session);
+    console.log("session id", req.sessionID);
     return res.status(200).json({ result: (req.session.logged_in == true) ? true : false })
 })
 

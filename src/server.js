@@ -32,9 +32,11 @@ nextApp.prepare().then(async () => {
     server.use(bodyParser.urlencoded({
         extended: true
     }));
+
+    // https://github.com/expressjs/session
     server.use(session({
         secret: SECRET,
-        genid: () => { return uuidv4() },
+        genid: () => { return uuidv4() }, // BUG: Different for same user on different routes
         saveUninitialized: true,
         resave: false,
         cookie: {
