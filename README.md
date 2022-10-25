@@ -47,8 +47,8 @@ The website conists of the three pages:
 #### /setstatus?auth={authcode}
 > The setstatus page is where the status of a person can be set. To visit the setstatus page you need to have a valid uri and providing in the url. All people have a unique uri. The person are also given a group and a privilege. The privilege specifies if the person can only change their own status, all statuses in their group or all statuses.
 
-#### verysecretadminpanelabc123 (aka the admin panel)
-> This page is where the admin can configure all people. On the admin panel page every persons name, role, group and privilege can be seen and changes. 
+#### /dashboard (aka the admin panel)
+> This page is where the admin can configure all people. On the admin panel page every persons name, role, group and privilege can be seen and changes. The dashboard is password protected to prevent unauthorized access. To login to the dashboard the user is prompted with a login screen. The password is then submited to the backend and checked if it matches the password in the database.
 
 All pages are loacetd in `pages/<page>.js` and all scripts starting with `_` are not seen as a page that can be visited by NextJs.
 
@@ -57,4 +57,4 @@ All pages are loacetd in `pages/<page>.js` and all scripts starting with `_` are
 The server also consists of a backend running with Express.js. The backend handles all requests made to the website.
 
 ### Testing
-This project uses [jest](https://nextjs.org/docs/testing) for testing.
+This project uses [jest](https://nextjs.org/docs/testing) for testing. All tests can be found in `__tests__/`
