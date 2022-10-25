@@ -43,15 +43,7 @@ const Input = () => {
 
     }, [router.isReady]);
 
-    const handleCheckboxChange = (event) => {
-        let return_value = {
-            id: event.target.name,
-            status: event.target.checked
-        }
-
-        socket.emit("status change", return_value)
-        
-    }
+    
 
     /* Render the person */
     const render_people = (person_object) => {
@@ -78,6 +70,35 @@ const Input = () => {
         console.log("Status array::::", statusArray)
 
     }
+    const Checkbox = (props) => {
+        const [checked, setChecked] = useState(props.status);
+        // https://bobbyhadz.com/blog/react-check-if-checkbox-is-checked
+
+        const handleCheckboxChange = (event) => {
+            let return_value = {
+                id: event.target.name,
+                status: event.target.checked
+            }
+            
+            setChecked(event.target.checked)
+
+            socket.emit("status change", return_value)
+            
+        }
+
+        return (
+            <label className="switch" htmlFor={'avaliable-' + props.name.replace(" ", "-")}>
+                <input 
+                    type="checkbox" 
+                    name={props._id} 
+                    id={'avaliable-' + props.name.replace(" ", "-")} 
+                    onChange={handleCheckboxChange} 
+                    checked={checked}
+                />
+                <div className="slider round"></div>
+            </label>
+        )
+    }
 
     const Person = (props) => {
         return (
@@ -86,16 +107,7 @@ const Input = () => {
                     <span>{props.name}</span>
                 </div>
                 <div className="container">
-                    <label className="switch" htmlFor={'avaliable-' + props.name.replace(" ", "-")}>
-                            <input 
-                                type="checkbox" 
-                                name={props._id} 
-                                id={'avaliable-' + props.name.replace(" ", "-")} 
-                                onChange={handleCheckboxChange} 
-                                checked={props.status}
-                            />
-                        <div className="slider round"></div>
-                    </label>
+                    <Checkbox _id={props._id} name={props.name} status={props.status}/>
                 </div>
             </div>
         )
