@@ -16,8 +16,6 @@ import mongoose from 'mongoose';
 import Database from './Database.js';
 import apiRouter from './routes/api.js';
 
-
-
 const database_instance = new Database();
 const server = express();
 const http_server = http.createServer(server);
