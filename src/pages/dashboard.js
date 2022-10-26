@@ -1,15 +1,9 @@
-import Link from 'next/link';
-import { useRouter } from 'next/router'
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import Person from '../components/DashboardPerson'
 
 const Dashboard = (props) => {
     const [people, setPeople] = useState([]);
-
-    const [formValues, setFormValues] = useState([]);
-    const [submitOk, setSubmitOk] = useState(false);
-    const router = useRouter()
 
     /* When the page is rendered, get all users and create a people component */
     useEffect(() => {
