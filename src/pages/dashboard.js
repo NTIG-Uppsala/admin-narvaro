@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import Person from '../components/DashboardPerson'
-
 const Dashboard = (props) => {
     const [people, setPeople] = useState([]);
 
@@ -33,6 +32,7 @@ const Dashboard = (props) => {
             privileges={props.privileges}
             group_name={props.groups[0].display_name}
             privilege_name={props.privileges[0].display_name}
+            changing={true}
         />
         setPeople([...people, _person]);
     }
@@ -43,17 +43,14 @@ const Dashboard = (props) => {
                 <img src="images/backgroundNTI.jpg" />
             </div>
 
-            <img id="logo" src="images/nti_logo_footer.svg" alt="" />
-
-            <div className="grid-center">
-                <div className="message-container-wrapper">
-                    <div id="main">
-                        <h1>Administration</h1>
-                        {(people.length == 0) ?
-                            <h1>Laddar innehållet..</h1> : people}
-                    </div>
+            <div id="main" className='container'>
+                {(people.length == 0) ?
+                    <h1>Laddar innehållet..</h1> : people}
+                <div style={{ border: 'none', backgroundColor: 'transparent' }}>
+                    <button onClick={newPerson} style={{ border: 'none', backgroundColor: 'white', color: 'red', fontSize: '200px', width: '300px', height: '300px' }}>+</button>
                 </div>
-                <button onClick={newPerson}>add Användare</button>
+
+
             </div>
         </>
     );

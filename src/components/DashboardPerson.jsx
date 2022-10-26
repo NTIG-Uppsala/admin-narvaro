@@ -1,9 +1,10 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
+
 const Person = (props) => {
     const [person, setPerson] = useState(props)
-    const [changing, setChanging] = useState(false)
+    const [changing, setChanging] = useState(props.changing || false)
     const [submitOk, setSubmitOk] = useState(false);
 
     /* Called when the client presses the save button  */
@@ -44,27 +45,50 @@ const Person = (props) => {
     }
 
     return (
+        <>
+            {
+                (!changing) ?
+                    <div>
+                        <h1 className="bruh2">{person.name}</h1>
+                        <h2 className="bruh2">{person.role}</h2>
+                        <div className="menu-title menu-title2">
+                            Behörighet
+                        </div>
+                        <div className="saker">
+                            {person.privilege_name}
+                        </div>
+                        <div className="menu-title menu-title2">
+                            Grupp
+                        </div>
+                        <div className="saker">
+                            {person.group_name}
+                        </div>
+                        <div className="link link2">
+                            {(person.uri) ?
+                                <Link href={"https://narvaro.ntig.net/setstatus?auth=" + person.uri}>
+                                    <a target='_blank' >
+                                        {"https://narvaro.ntig.net/setstatus?auth=" + person.uri}
+                                    </a>
+                                </Link>
+                                :
+                                <p>no link</p>
+                            }
+                        </div>
+                        <button className="saker" onClick={() => { setChanging(!changing) }}>
+                            Redigera
+                        </button>
+                    </div>
+                    :
+                    <div>
+                        <input type="text" value={person.name} id="bruh3" onChange={(e) => setPerson({ ...person, name: e.target.value })} />
 
-        <div className={"message-container message-container-flexwrap" + ((props.id % 2 == 0) ? ' gray-color' : '')} onChange={props.onChange}>
-            <div className="name name-size">
-                {
-                    changing ?
-                        <input type="text" value={person.name} onChange={(e) => setPerson({ ...person, name: e.target.value })} />
-                        :
-                        <p>{person.name}</p>
-                }
-            </div>
-            <div className="name name-size">
-                {
-                    changing ?
+                        {/* <input type="text" placeholder="Henrik Jonsson" id="bruh3"></input> */}
+                        {/* <input type="text" placeholder="Titel" id="bruh"></input> */}
                         <input type="text" value={person.role} onChange={(e) => setPerson({ ...person, role: e.target.value })} />
-                        :
-                        <p>{person.role}</p>
-                }
-            </div>
-            <div className="container container-flexcenter">
-                {
-                    changing ?
+
+                        <div className="title menu-title">
+                            Behörighet
+                        </div>
                         <select className="dropdown-menu" defaultValue={person.privilege} onChange={() => { setPerson({ ...person, privilege: e.target.value }) }} id={props.id}>
                             {
                                 props.privileges.map((privilege, index) => {
@@ -72,14 +96,9 @@ const Person = (props) => {
                                 })
                             }
                         </select>
-                        :
-                        <p>{person.privilege_name}</p>
-                }
-
-            </div>
-            <div className="container container-flexcenter">
-                {
-                    changing ?
+                        <div className="title menu-title">
+                            Grupp
+                        </div>
                         <select className="dropdown-menu" id={props.id} defaultValue={person.group} onChange={() => { setPerson({ ...person, group: e.target.value }) }}>
                             {
                                 props.groups.map((group, index) => {
@@ -87,34 +106,33 @@ const Person = (props) => {
                                 })
                             }
                         </select>
-                        :
-                        <p>{person.group_name}</p>
-                }
-            </div>
-            <div className="container container-flexcenter">
-                {
-                    changing ?
-                        <button onClick={() => { new_uri() }}>new_uri</button>
-                        :
-                        <>
+                        <div className="menu menu-left title link">
                             {(person.uri) ?
                                 <Link href={"https://narvaro.ntig.net/setstatus?auth=" + person.uri}>
-                                    <a style={{ color: 'red', fontSize: '0.5em' }} target='_blank' >
+                                    <a target='_blank' >
                                         {"https://narvaro.ntig.net/setstatus?auth=" + person.uri}
                                     </a>
                                 </Link>
                                 :
                                 <p>no link</p>
                             }
-                        </>
+                            <button className="refresh-button" onClick={() => { new_uri() }}></button>
+                        </div>
+                        <div className="menu title">
+                            <button className="back-button" onClick={() => { setChanging(!changing) }}>
+                                Tillbaka
+                            </button>
+                            <button className="save-button" onClick={() => { submit() }}>
+                                Spara
+                            </button>
+                            <button className="delete-button" onClick={() => { deleteUser() }}>
+                                Ta bort
+                            </button>
+                        </div>
+                    </div>
+            }
+        </>
 
-                }
-            </div>
-            <button onClick={() => { setChanging(!changing) }}>edit</button>
-            <button onClick={() => { deleteUser() }}>delete user</button>
-            <button onClick={() => { submit() }}>Save</button>
-            <p>{(submitOk) ? "Uppdaterad" : ""}</p>
-        </div >
 
     )
 }

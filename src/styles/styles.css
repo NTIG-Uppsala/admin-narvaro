@@ -13,14 +13,14 @@
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
-body  {
-    margin: 0;
-    overflow-x: hidden;
-    color: var(--main-white-color);
-    font-family: var(--main-font-family)
+body {
+  margin: 0;
+  overflow-x: hidden;
+  color: var(--main-white-color);
+  font-family: var(--main-font-family)
 }
 
 /* Link Behavior */
@@ -57,7 +57,7 @@ a:active {
   height: 100vh;
 }
 
-.backgroundImage > img {
+.backgroundImage>img {
   width: 100vw;
   height: 100vh;
   object-fit: cover;
@@ -93,14 +93,14 @@ a:active {
   padding-bottom: 20px;
 }
 
-#main > h1 {
+#main>h1 {
   text-align: center;
 }
 
-.message-container{
-  display: flex; 
-  flex-direction: row; 
-  align-items: center; 
+.message-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   justify-content: center;
   text-align: left;
   width: 100%;
@@ -108,7 +108,7 @@ a:active {
   padding: 15px 50px;
 }
 
-.message-container > div {
+.message-container>div {
   width: 50%;
   margin: 5px 0px;
 }
@@ -124,7 +124,7 @@ a:active {
 
 /* Output page specific stuff */
 
-#message-containerOutput > .status  {
+#message-containerOutput>.status {
   text-align: right;
 }
 
@@ -133,7 +133,7 @@ a:active {
   flex-direction: column;
 }
 
-.status-flex > h4 {
+.status-flex>h4 {
   margin: 0px;
   font-weight: 400;
   font-size: 16px;
@@ -167,7 +167,7 @@ input[type=checkbox]:hover {
 }
 
 .switch input {
-  display:none;
+  display: none;
 }
 
 .slider {
@@ -192,11 +192,11 @@ input[type=checkbox]:hover {
   width: 26px;
 }
 
-input:checked + .slider {
+input:checked+.slider {
   background-color: var(--main-green-color);
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
   transform: translateX(26px);
 }
 
@@ -208,7 +208,7 @@ input:checked + .slider:before {
   border-radius: 50%;
 }
 
-.switch input:disabled + .slider:before {
+.switch input:disabled+.slider:before {
   background-color: lightgray;
 }
 
@@ -223,7 +223,7 @@ input:checked + .slider:before {
   font-size: 20px;
 }
 
-.dropdown-menu > option {
+.dropdown-menu>option {
   background-color: black;
   font-size: 16px;
 }
@@ -238,7 +238,7 @@ input:checked + .slider:before {
   align-items: center;
 }
 
-.name > input {
+.name>input {
   background-color: transparent;
   color: white;
   font-size: 20px;
@@ -296,7 +296,7 @@ input:checked + .slider:before {
   gap: 50px;
 }
 
-.login-container > h1 {
+.login-container>h1 {
   margin-top: 0;
 }
 
@@ -305,7 +305,7 @@ input:checked + .slider:before {
   position: relative;
 }
 
-.buttonIn > button {
+.buttonIn>button {
   position: absolute;
   width: 50px;
   height: 50px;
@@ -348,11 +348,11 @@ input:checked + .slider:before {
   margin-right: 10px;
 }
 
-.incorrect-password {  
+.incorrect-password {
   margin: 10px 0px;
 }
 
-.login-container > div > button {
+.login-container>div>button {
   background-color: transparent;
   color: var(--main-white-color);
   font-size: 20px;
@@ -362,7 +362,7 @@ input:checked + .slider:before {
   cursor: pointer;
 }
 
-.login-container > div > button:hover {
+.login-container>div>button:hover {
   background-color: white;
   color: black;
   transition: 0.2s ease;
@@ -370,56 +370,259 @@ input:checked + .slider:before {
 
 /* Media query for phone */
 
-@media (pointer:none), (pointer:coarse) {
+@media (pointer:none),
+(pointer:coarse) {
   #logo {
     display: none;
   }
-  .grid-center{
+
+  .grid-center {
     padding: 25px 0px;
   }
+
   .message-container-wrapper {
     width: 90vw;
     padding: 25px 0;
     font-size: 18px;
   }
+
   .message-container {
     padding: 12px;
   }
+
   .message-container-flexwrap {
     display: flex;
     flex-wrap: wrap;
   }
+
   .container-flexcenter {
     display: flex;
     justify-content: center;
     align-items: center;
   }
+
   .name-size {
     font-size: 22px;
   }
-  .status-flex > h4 {
+
+  .status-flex>h4 {
     font-size: 12px;
   }
-  .name > input {
+
+  .name>input {
     width: 100%;
     font-size: smaller;
     padding: 0px;
   }
+
   .save-button {
     padding: 10px 20px;
     font-size: 20px;
   }
-  .login-container > h1 {
+
+  .login-container>h1 {
     font-size: 36px;
   }
+
   .password input {
     background-size: 15px;
     width: 180px;
   }
-  .buttonIn > button {
+
+  .buttonIn>button {
     width: 30px;
   }
-  .login-container > div > button {
+
+  .login-container>div>button {
     width: 120px;
   }
+}
+
+
+/* DASHBOARD */
+.container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 50px;
+}
+
+.container>div {
+  text-align: center;
+  background-color: rgb(0, 0, 0, 0.65);
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  padding: 25px;
+  color: white;
+  border: 3px solid white;
+  min-width: 30vw;
+}
+
+.menu {
+  padding: 10px;
+  gap: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-left {
+  justify-content: flex-start;
+}
+
+.title {
+  margin: 20px 0px 5px 0px;
+}
+
+.save-button {
+  background-color: green;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background-color: #355E3B;
+}
+
+.save-button:active {
+  box-shadow: inset 0 0 10px black;
+}
+
+.delete-button {
+  background-color: red;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-size: .75em;
+}
+
+.delete-button:hover {
+  background-color: #880808;
+}
+
+.delete-button:active {
+  box-shadow: inset 0 0 10px black;
+}
+
+.back-button {
+  background-color: white;
+  color: black;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: .75em;
+}
+
+.back-button:hover {
+  background-color: gray;
+}
+
+.back-button:active {
+  box-shadow: inset 0 0 10px black;
+}
+
+.refresh-button {
+  width: 25px;
+  height: 25px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+}
+
+.refresh-button:hover {
+  background-color: gray;
+}
+
+.refresh-button:active {
+  box-shadow: inset 0 0 10px black;
+}
+
+.link {
+  border-bottom: 3px solid white;
+}
+
+.container select {
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.container select:focus {
+  outline: none;
+}
+
+.menu-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.container>div>input {
+  background-color: transparent;
+  height: auto;
+  font-size: 25px;
+  color: white;
+  border: none;
+  border-bottom: 3px solid white;
+  margin: 20px 0px;
+}
+
+.container>div>input::placeholder {
+  color: white;
+  font-size: 25px;
+  opacity: .8;
+}
+
+.container>div>input:focus {
+  outline: none;
+}
+
+#bruh {
+  width: 50%;
+  font-size: 20px;
+}
+
+#bruh::placeholder {
+  font-size: 20px;
+}
+
+.saker {
+  border: 3px solid white;
+  color: white;
+  font-size: 20px;
+  padding: 10px 10px;
+  border-radius: 10px;
+  margin: 10px 0px;
+  width: 50%;
+  background-color: transparent
+}
+
+button.saker {
+  cursor: pointer;
+  transition: ease .2s;
+}
+
+button.saker:hover {
+  background-color: white;
+  color: black;
+}
+
+.menu-title2 {
+  margin-top: 25px;
+}
+
+.link2 {
+  width: 50%;
+  margin: 10px 0px;
+}
+
+.bruh2 {
+  margin: 0;
 }
