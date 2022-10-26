@@ -36,19 +36,19 @@ nextApp.prepare().then(async () => {
     }));
 
     // https://github.com/expressjs/session
-    let time_to_live = 1000 * 60 * 10; // 7 days
+    let time_to_live = 1000 * 60 * 10; // 10 minutes
     server.use(session({
         store: MongoStore.create({
             mongoUrl: database_url,
-            ttl: time_to_live, // 1 week
+            ttl: time_to_live, 
         }),
         secret: process.env.SESSION_SECRET,
-        genid: () => { return uuidv4() }, // BUG: Different for same user on different routes
+        genid: () => { return uuidv4() },
         saveUninitialized: true,
         resave: false,
         cookie: {
             secure: false,
-            maxAge: time_to_live, // 10 minutes
+            maxAge: time_to_live, 
             sameSite: true
         }
     }))

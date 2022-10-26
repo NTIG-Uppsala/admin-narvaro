@@ -409,4 +409,17 @@ input:checked + .slider:before {
     padding: 10px 20px;
     font-size: 20px;
   }
+  .login-container > h1 {
+    font-size: 36px;
+  }
+  .password input {
+    background-size: 15px;
+    width: 180px;
+  }
+  .buttonIn > button {
+    width: 30px;
+  }
+  .login-container > div > button {
+    width: 120px;
+  }
 }
