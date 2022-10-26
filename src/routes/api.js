@@ -27,17 +27,27 @@ apiRouter.get('/getgroups', async (req, res) => {
 
 /* Handles when users are updated on the dashboard */
 apiRouter.post('/updateusers', (req, res) => {
-    req.body.forEach(user => {
-        console.log(user)
-        console.log("Updating user", user.name)
-        console.log("New values", user)
+    if (req.session.logged_in) {
+        req.body.forEach(user => {
+            console.log(user)
+            console.log("Updating user", user.name)
+            console.log("New values", user)
+            if (!user.objectId) {
+                database_instance.create_user(user)
+                    .then((result) => { console.log("Created user", result) })
+                    .catch((err) => { throw err });
+            }
+            else {
+                database_instance.update_user(user.objectId, user)
+                    .then((updat_result) => { console.log("Updated user, result ->", updat_result) })
+                    .catch((err) => { throw err });
+            }
 
-        database_instance.update_user(user.objectId, user)
-            .then((updat_result) => { console.log("Updated user, result ->", updat_result) })
-            .catch((err) => { throw err });
-    })
-    req.io.emit("status update")
-    return res.status(200).json({ status: "ok" })
+        })
+        req.io.emit("status update")
+        return res.status(200).json({ status: "ok" })
+    }
+    return res.status(401).json({ status: "unauthorized" })
 })
 
 apiRouter.post('/verifylogin', async (req, res) => {
