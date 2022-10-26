@@ -10,7 +10,6 @@ const Dashboard = (props) => {
     const [formValues, setFormValues] = useState([]);
     const [submitOk, setSubmitOk] = useState(false);
     const router = useRouter()
-    console.log("serverside props", props.authed)
     /* Called whenever a user input is changed */
     const handleInputChange = (event, person) => {
         setSubmitOk(false) /* Reset submitOk */
@@ -22,24 +21,15 @@ const Dashboard = (props) => {
             group: person.group
         };
 
-        /* 
-            If no person has been changed yet.
-            Add the new person to the array with the changed values
-        */
-
         setFormValues((oldFormValues) => {
-            console.log("ALL old values -> ", oldFormValues)
-
             /* Searches for person in values */
             let user_found =
                 oldFormValues.find((item) => item.objectId == event.target.id) !== undefined;
 
-            console.log("Was user found in changes? -> ", user_found)
 
             /* If person hasn't been changed before, add the user to the list */
             if (!user_found) {
                 new_form_val[event.target.name] = event.target.value
-                console.log("New user change value -> ", new_form_val)
                 return [...oldFormValues, new_form_val]
             }
 
@@ -79,18 +69,9 @@ const Dashboard = (props) => {
         });
     }, []);
 
-    useEffect(() => {
-        console.log("CURRENT formvalues", formValues)
-    }, [formValues]);
-
-
-
-
     /* Called when the client presses the save button  */
     const submit = (values) => {
-        console.log(values)
         axios.post('/api/updateusers', values).then((response) => {
-            console.log(response)
             if (response.status == 200) {
                 setFormValues([])
                 setSubmitOk(true)
@@ -100,9 +81,7 @@ const Dashboard = (props) => {
     }
 
     return (
-
         <>
-
             <div className="backgroundImage">
                 <img src="images/backgroundNTI.jpg" />
             </div>
@@ -135,11 +114,9 @@ const Dashboard = (props) => {
                         }
                     </div>
 
-
                 </div>
             </div>
         </>
-
     );
 }
 

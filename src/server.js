@@ -12,6 +12,7 @@ import http from 'http';
 import { Server as SocketServer } from 'socket.io'
 
 import mongoose from 'mongoose';
+import MongoStore from 'connect-mongo';
 
 import Database from './Database.js';
 import apiRouter from './routes/api.js';
@@ -25,6 +26,7 @@ const dev = process.env.NODE_ENV !== 'production'
 
 const nextApp = next({ dev })
 const nextHandler = nextApp.getRequestHandler()
+const database_url = (process.env.NODE_ENV == "production") ? process.env.MONGODB_URI : process.env.MONGODB_URI_DEV;
 
 nextApp.prepare().then(async () => {
 
@@ -34,15 +36,20 @@ nextApp.prepare().then(async () => {
     }));
 
     // https://github.com/expressjs/session
+    let time_to_live = 1000 * 60 * 10; // 7 days
     server.use(session({
-        secret: SECRET,
+        store: MongoStore.create({
+            mongoUrl: database_url,
+            ttl: time_to_live, // 1 week
+        }),
+        secret: process.env.SESSION_SECRET,
         genid: () => { return uuidv4() }, // BUG: Different for same user on different routes
         saveUninitialized: true,
         resave: false,
         cookie: {
             secure: false,
-            maxAge: 1000 * 60 * 10, // 10 minutes
-            // sameSite: true
+            maxAge: time_to_live, // 10 minutes
+            sameSite: true
         }
     }))
 
@@ -66,7 +73,6 @@ nextApp.prepare().then(async () => {
         if (err) throw err
         console.log("Server is running on port 8000")
     });
-    const database_url = (process.env.NODE_ENV == "production") ? process.env.MONGODB_URI : process.env.MONGODB_URI_DEV;
     mongoose.connect(database_url, (err) => {
         if (err) throw err;
 
