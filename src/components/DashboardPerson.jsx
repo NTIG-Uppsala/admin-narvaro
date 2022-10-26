@@ -89,7 +89,7 @@ const Person = (props) => {
                         <div className="title menu-title">
                             Behörighet
                         </div>
-                        <select className="dropdown-menu" defaultValue={person.privilege} onChange={() => { setPerson({ ...person, privilege: e.target.value }) }} id={props.id}>
+                        <select className="dropdown-menu" defaultValue={person.privilege} onChange={(e) => { setPerson({ ...person, privilege: e.target.value }) }} id={props.id}>
                             {
                                 props.privileges.map((privilege, index) => {
                                     return <option key={privilege._id} value={privilege._id} >{privilege.display_name}</option>
@@ -99,7 +99,7 @@ const Person = (props) => {
                         <div className="title menu-title">
                             Grupp
                         </div>
-                        <select className="dropdown-menu" id={props.id} defaultValue={person.group} onChange={() => { setPerson({ ...person, group: e.target.value }) }}>
+                        <select className="dropdown-menu" id={props.id} defaultValue={person.group} onChange={(e) => { setPerson({ ...person, group: e.target.value }) }}>
                             {
                                 props.groups.map((group, index) => {
                                     return <option key={group._id} value={group._id}>{group.display_name}</option>
