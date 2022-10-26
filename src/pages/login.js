@@ -1,16 +1,19 @@
 import Login from '../components/login';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/router'
 export default () => {
 
     const [password, setPassword] = useState("");
     const [correctPassword, setCorrectPassword] = useState();
+    const router = useRouter()
+
     const tryLogin = () => {
         console.log("trylogin", password)
-        axios.post('/api/verifylogin', { password: password }, { withCredentials: true }).then(res => {
+        axios.post('/api/verifylogin', { password: password }).then(res => {
             console.log(res.data.result)
-            if (window !== undefined && res.result === true) {
-                window.location.href = '/dashboard';
+            if (res.data.result === true) {
+                router.push('/dashboard')
             }
         })
 
@@ -33,7 +36,7 @@ export default () => {
             inputField.type = "password";
             showPasswordButton.style.backgroundImage = "url('/images/eye.svg')";
         }
-      }
+    }
 
     return (
         <>
