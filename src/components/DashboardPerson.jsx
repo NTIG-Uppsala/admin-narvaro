@@ -39,10 +39,10 @@ const Person = (props) => {
             <div className="container container-flexcenter">
                 {
                     changing ?
-                        <select className="dropdown-menu" onChange={() => { setPerson({ ...person, privilege: e.target.value }) }} id={props.id}>
+                        <select className="dropdown-menu" defaultValue={person.privilege} onChange={() => { setPerson({ ...person, privilege: e.target.value }) }} id={props.id}>
                             {
                                 props.privileges.map((privilege, index) => {
-                                    return <option key={index} value={privilege._id} selected={person.privilege == privilege._id}>{privilege.display_name}</option>
+                                    return <option key={privilege._id} value={privilege._id} >{privilege.display_name}</option>
                                 })
                             }
                         </select>
@@ -54,10 +54,10 @@ const Person = (props) => {
             <div className="container container-flexcenter">
                 {
                     changing ?
-                        <select className="dropdown-menu" id={props.id} onChange={() => { setPerson({ ...person, group: e.target.value }) }}>
+                        <select className="dropdown-menu" id={props.id} defaultValue={person.group} onChange={() => { setPerson({ ...person, group: e.target.value }) }}>
                             {
                                 props.groups.map((group, index) => {
-                                    return <option key={index} value={group._id} selected={person.group == group._id}>{group.display_name}</option>
+                                    return <option key={group._id} value={group._id}>{group.display_name}</option>
                                 })
                             }
                         </select>
