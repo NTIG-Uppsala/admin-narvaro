@@ -50,7 +50,7 @@ The website conists of the three pages:
 #### /dashboard (aka the admin panel)
 > This page is where the admin can configure all people. On the admin panel page every persons name, role, group and privilege can be seen and changes. The dashboard is password protected to prevent unauthorized access. To login to the dashboard the user is prompted with a login screen. The password is then submited to the backend and checked if it matches the password in the database.
 
-All pages are loacetd in `pages/<page>.js` and all scripts starting with `_` are not seen as a page that can be visited by NextJs.
+All pages are located in `pages/<page>.js` and all scripts starting with `_` are not seen as a page that can be visited by NextJs.
 
 
 ### Backend
@@ -58,3 +58,43 @@ The server also consists of a backend running with Express.js. The backend handl
 
 ### Testing
 This project uses [jest](https://nextjs.org/docs/testing) for testing. All tests can be found in `__tests__/`
+
+## Authentication system using express session
+The server uses Express session to store a user that has been on the page. The session is stored in a mongoDB collection. When the user vists a protected page. The frontend asks if the user is signed in where the backend will respond with a yes or a no.
+
+The backend login system consists of two endpoints `/api/verifylogin` and `/api/isloggedin`
+### `/api/verifylogin`
+Used to login the user. The user is logged in by sending a post request to the endpoint with the username and password in the body. The server then checks if the user exists in the database. If the user exists the server creates a session cookie and saves `logged_in = true` to it.
+
+### `/api/isloggedin`
+Gets the users session cookie and checks if the user is logged in. If the user is logged in the server returns `logged_in = true` else it returns `logged_in = false`
+
+#### Getting user logged in from NextJS `getServerSideProps()`
+When using the `/api/isloggedin` endpoint in `getServerSideProps()` from NextJs. The clients cookie needs to explicitly be sent to the server as this is not to be done by default when requesting. This is done by passing the cookie into the header of the request.
+eg.
+```js
+import axios from 'axios';
+
+export const getServerSideProps = async (context) => {
+    let response = await axios.get("http://localhost:8000/api/isloggedin", {
+        headers: {
+            cookie: context.req.headers.cookie
+        }
+    });
+    console.log("response", response.data)
+    if (response.data.result !== true) {
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false
+            }
+        }
+    }
+    else {
+        return {
+            props: { authed: response.data.result }
+        }
+    }
+}
+```
+If the api responds with a false. We redirect the user directly to the /login page before rendering the dashboard
