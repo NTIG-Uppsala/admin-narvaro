@@ -4,9 +4,9 @@ import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import Person from '../components/DashboardPerson'
 
-
 const Dashboard = (props) => {
     const [people, setPeople] = useState([]);
+
     const [formValues, setFormValues] = useState([]);
     const [submitOk, setSubmitOk] = useState(false);
     const router = useRouter()
@@ -49,20 +49,36 @@ const Dashboard = (props) => {
         });
     };
 
+
+
+
     /* When the page is rendered, get all users and create a people component */
+    // {...groups}
+    // {...privileges}
+    // key={index}
+    // _id={item._id}
+    // name={item.name}
+    // role={item.role}
+    // privilege_id={item.privilege}
+    // group_id={item.group}
+    // group_name={groups.find((group) => group._id == item.group_id).display_name}
+    // privilege_name={privileges.find((privilege) => privilege._id == item.privilege_id).display_name}
+    // onChange={(event) => handleInputChange(event, item)}
+    // groups={groups}
+    // privileges={privileges}
     useEffect(() => {
+        console.log("Get users ")
         // GARL: https: //bobbyhadz.com/blog/react-push-to-state-array
         /* Renders all users to the page after getting users from api */
         axios.get("/api/getusers").then((response) => {
-            const peopleFromApi = response.data.map((item, index) => (
+
+            const peopleFromApi = response.data.map((user, index) => (
                 <Person
-                    key={index}
-                    _id={item._id}
-                    name={item.name}
-                    role={item.role}
-                    privilege_id={item.privilege}
-                    group_id={item.group}
-                    onChange={(event) => handleInputChange(event, item)}
+                    {...user} // object of user values from api
+                    groups={props.groups}
+                    privileges={props.privileges}
+                    group_name={props.groups.find((group) => group._id == user.group).display_name}
+                    privilege_name={props.privileges.find((privilege) => privilege._id == user.privilege).display_name}
                 />
             ));
             setPeople(peopleFromApi);
@@ -129,6 +145,7 @@ export const getServerSideProps = async (context) => {
     });
     console.log("response", response.data)
     if (response.data.result !== true) {
+
         return {
             redirect: {
                 destination: '/login',
@@ -137,8 +154,14 @@ export const getServerSideProps = async (context) => {
         }
     }
     else {
+
+        let privileges = await axios.get(`${URL}/api/getprivileges`)
+        let groups = await axios.get(`${URL}/api/getgroups`)
         return {
-            props: { authed: response.data.result }
+            props: {
+                groups: groups.data,
+                privileges: privileges.data
+            }
         }
     }
 }
