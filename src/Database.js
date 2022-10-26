@@ -3,12 +3,12 @@ import mongoose from 'mongoose';
 class Database {
     constructor() {
         this.userSchema = new mongoose.Schema({
-            name: String,
-            role: String,
-            status: Boolean,
-            latest_change: Date,
-            order: Number,
-            uri: String,
+            name: { type: String, required: true, 'default': 'Inget namn' },
+            role: { type: String, required: true, 'default': 'Ingen roll' },
+            status: { type: Boolean, required: true, 'default': false },
+            latest_change: { type: Date, required: true, 'default': Date.now },
+            order: { type: Number, required: true, 'default': -1 },
+            uri: { type: String, required: true, 'default': this.makeid(10) },
             group: mongoose.Types.ObjectId,
             privilege: mongoose.Types.ObjectId
         });
@@ -129,22 +129,46 @@ class Database {
         })
     }
 
+    async add_user(user) {
+        /*
+            Adds a user to the database
+        */
+        let _user = {
+            name: user.name,
+            role: user.role,
+            status: false,
+            latest_change: new Date(),
+            order: -1,
+            uri: this.makeid(10),
+            group: user.group,
+            privilege: user.privilege
+        }
+        return new Promise((resolve, reject) => {
+            this.models.users.create(_user, (err, result) => {
+                if (err) reject(err);
+                resolve(result);
+            })
+        });
+    }
+
+    makeid(length) {
+        var result = '';
+        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
     regenerate_uri() {
 
-        const makeid = (length) => {
-            var result = '';
-            var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-            var charactersLength = characters.length;
-            for (var i = 0; i < length; i++) {
-                result += characters.charAt(Math.floor(Math.random() * charactersLength));
-            }
-            return result;
-        }
+
         this.models.users.find({}, (err, result) => {
             console.log(result)
             result.forEach((person) => {
                 console.log("Found privilege", person.name, "with uri", person.uri);
-                person.uri = makeid(10);
+                person.uri = this.makeid(10);
                 person.save((err) => {
                     if (err) throw err;
                     console.log("Saved privilege", person.name, "with uri", person.uri)
