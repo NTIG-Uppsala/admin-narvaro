@@ -23,6 +23,20 @@ const Dashboard = (props) => {
         });
     }, []);
 
+    const newPerson = () => {
+        let _person = <Person
+            name="Ny Användare"
+            role="Ny Roll"
+            group={props.groups[0]._id}
+            privilege={props.privileges[0]._id}
+            groups={props.groups}
+            privileges={props.privileges}
+            group_name={props.groups[0].display_name}
+            privilege_name={props.privileges[0].display_name}
+        />
+        setPeople([...people, _person]);
+    }
+
     return (
         <>
             <div className="backgroundImage">
@@ -39,6 +53,7 @@ const Dashboard = (props) => {
                             <h1>Laddar innehållet..</h1> : people}
                     </div>
                 </div>
+                <button onClick={newPerson}>add Användare</button>
             </div>
         </>
     );

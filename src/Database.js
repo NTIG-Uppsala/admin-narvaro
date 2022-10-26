@@ -9,8 +9,8 @@ class Database {
             latest_change: { type: Date, required: true, 'default': Date.now },
             order: { type: Number, required: true, 'default': -1 },
             uri: { type: String, required: true, 'default': this.makeid(10) },
-            group: mongoose.Types.ObjectId,
-            privilege: mongoose.Types.ObjectId
+            group: { type: mongoose.Types.ObjectId, ref: "groups" },
+            privilege: { type: mongoose.Types.ObjectId, ref: "privileges" }
         });
 
         this.groupSchema = new mongoose.Schema({
@@ -134,14 +134,14 @@ class Database {
             Adds a user to the database
         */
         let _user = {
-            name: user.name,
-            role: user.role,
+            name: user.name || "Inget namn",
+            role: user.role || "Ingen roll",
             status: false,
             latest_change: new Date(),
-            order: -1,
+            order: user.order || -1,
             uri: this.makeid(10),
-            group: user.group,
-            privilege: user.privilege
+            group: user.group || null,
+            privilege: user.privilege || null
         }
         return new Promise((resolve, reject) => {
             this.models.users.create(_user, (err, result) => {
@@ -150,6 +150,19 @@ class Database {
             })
         });
     }
+
+    async remove_user(user_id) {
+        /*
+            Removes a user from the database
+        */
+        return new Promise((resolve, reject) => {
+            this.models.users.deleteOne({ _id: user_id }, (err, result) => {
+                if (err) reject(err);
+                resolve(result);
+            })
+        })
+    }
+
 
     makeid(length) {
         var result = '';

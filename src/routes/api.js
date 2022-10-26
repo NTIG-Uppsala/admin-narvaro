@@ -27,27 +27,49 @@ apiRouter.get('/getgroups', async (req, res) => {
 
 /* Handles when users are updated on the dashboard */
 apiRouter.post('/updateusers', (req, res) => {
-    if (req.session.logged_in) {
-        let user = req.body.user;
-        console.log(user)
-        console.log("Updating user", user.name)
-        console.log("New values", user)
-        if (!user._id) {
-            database_instance.create_user(user)
-                .then((result) => { console.log("Created user", result) })
-                .catch((err) => { throw err });
-        }
-        else {
-            database_instance.update_user(user._id, user)
-                .then((updat_result) => { console.log("Updated user, result ->", updat_result) })
-                .catch((err) => { throw err });
-        }
+    if (!req.session.logged_in) {
+        return res.status(401).json({ status: "unauthorized" })
 
-        req.io.emit("status update")
-        return res.status(200).json({ status: "ok" })
     }
-    return res.status(401).json({ status: "unauthorized" })
+    let user = req.body.user;
+    console.log(user)
+    console.log("Updating user", user.name)
+    console.log("New values", user)
+    if (!user._id) {
+        database_instance.add_user(user)
+            .then((result) => { console.log("Created user", result) })
+            .catch((err) => { throw err });
+    }
+    else {
+        database_instance.update_user(user._id, user)
+            .then((updat_result) => { console.log("Updated user, result ->", updat_result) })
+            .catch((err) => { throw err });
+    }
+
+    req.io.emit("status update")
+    return res.status(200).json({ status: "ok" })
 })
+
+apiRouter.post('/deleteuser', (req, res) => {
+    if (!req.session.logged_in) {
+        return res.status(401).json({ status: "unauthorized" })
+    }
+
+    let user = req.body.user;
+    console.log("Deleting user", user.name)
+    database_instance.remove_user(user._id)
+        .then((result) => {
+            console.log("Deleted user", result)
+            req.io.emit("status update")
+            return res.status(200).json({ status: "ok" })
+        })
+        .catch((err) => {
+            console.log(err)
+            return res.status(500).json({ status: "error" })
+        })
+
+})
+
 
 apiRouter.post('/verifylogin', async (req, res) => {
 
