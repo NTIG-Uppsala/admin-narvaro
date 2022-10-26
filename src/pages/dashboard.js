@@ -9,7 +9,6 @@ const Dashboard = (props) => {
     const [people, setPeople] = useState([]);
     const [formValues, setFormValues] = useState([]);
     const [submitOk, setSubmitOk] = useState(false);
-    const [is_logged_in, set_logged_in] = useState(0);
     const router = useRouter()
     console.log("serverside props", props.authed)
     /* Called whenever a user input is changed */
@@ -84,11 +83,7 @@ const Dashboard = (props) => {
         console.log("CURRENT formvalues", formValues)
     }, [formValues]);
 
-    useEffect(() => {
-        // if (is_logged_in !== true) {
-        //     router.push('/login')
-        // }
-    }, []);
+
 
 
     /* Called when the client presses the save button  */
@@ -107,57 +102,66 @@ const Dashboard = (props) => {
     return (
 
         <>
-            {(is_logged_in === true) ?
-                <>
 
-                    <div className="backgroundImage">
-                        <img src="images/backgroundNTI.jpg" />
+            <div className="backgroundImage">
+                <img src="images/backgroundNTI.jpg" />
+            </div>
+
+            <img id="logo" src="images/nti_logo_footer.svg" alt="" />
+
+            <div className="grid-center">
+                <div className="message-container-wrapper">
+                    <div id="main">
+                        <h1>Administration</h1>
+                        {(people.length == 0) ?
+                            <h1>Laddar innehållet..</h1> : people}
                     </div>
 
-                    <img id="logo" src="images/nti_logo_footer.svg" alt="" />
-
-                    <div className="grid-center">
-                        <div className="message-container-wrapper">
-                            <div id="main">
-                                <h1>Administration</h1>
-                                {(people.length == 0) ?
-                                    <h1>Laddar innehållet..</h1> : people}
-                            </div>
-
-                            <div className='center-button'>
-                                {
-                                    (formValues.length != 0) ?
-                                        <>
-                                            <Link href="/dashboard" >
-                                                <a onClick={() => submit(formValues)} className="save-button">Spara</a>
-                                            </Link>
-                                            <Link href={'/dashboard'} >
-                                                <a onClick={() => { router.reload(window.location.pathname) }} className="save-button red-button">Avbryt</a>
-                                            </Link>
-                                        </>
-                                        : null
-                                }
-                                {
-                                    (submitOk) ? <p>Ändring lyckades!</p> : null
-                                }
-                            </div>
-
-
-                        </div>
+                    <div className='center-button'>
+                        {
+                            (formValues.length != 0) ?
+                                <>
+                                    <Link href="/dashboard" >
+                                        <a onClick={() => submit(formValues)} className="save-button">Spara</a>
+                                    </Link>
+                                    <Link href={'/dashboard'} >
+                                        <a onClick={() => { router.reload(window.location.pathname) }} className="save-button red-button">Avbryt</a>
+                                    </Link>
+                                </>
+                                : null
+                        }
+                        {
+                            (submitOk) ? <p>Ändring lyckades!</p> : null
+                        }
                     </div>
-                </>
 
-                :
-                null
-            }
+
+                </div>
+            </div>
         </>
+
     );
 }
 
 export const getServerSideProps = async (context) => {
-    let response = await axios.get("http://localhost:8000/api/isloggedin", { withCredentials: true })
-    return {
-        props: { authed: response.data.result }
+    let response = await axios.get("http://localhost:8000/api/isloggedin", {
+        headers: {
+            cookie: context.req.headers.cookie
+        }
+    });
+    console.log("response", response.data)
+    if (response.data.result !== true) {
+        return {
+            redirect: {
+                destination: '/login',
+                permanent: false
+            }
+        }
+    }
+    else {
+        return {
+            props: { authed: response.data.result }
+        }
     }
 }
 
