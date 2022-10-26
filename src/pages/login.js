@@ -8,15 +8,19 @@ export default () => {
     const [correctPassword, setCorrectPassword] = useState();
     const router = useRouter()
 
-    const tryLogin = () => {
-        console.log("trylogin", password)
-        axios.post('/api/verifylogin', { password: password }).then(res => {
-            console.log(res.data.result)
-            if (res.data.result === true) {
-                router.push('/dashboard')
-            }
-        })
-
+    const tryLogin = (e) => {
+        if ((e.type == "click") || (e.type == "keypress" && e.key == 'Enter'))
+        {
+            axios.post('/api/verifylogin', { password: password }).then(res => {
+                console.log(res.data.result)
+                if (res.data.result === true) {
+                    setCorrectPassword(true)
+                    router.push('/dashboard')
+                } else {
+                    setCorrectPassword(false)
+                }
+            })  
+        }
     }
 
     const updateState = (e) => {
@@ -51,7 +55,7 @@ export default () => {
                         <h1>Logga In</h1>
                         <div className="password">
                             <div className='buttonIn'>
-                                <input type="password" id="password" name='password' onChange={updateState} placeholder="Lösenord" /><br />
+                                <input type="password" id="password" name='password' onKeyPress={tryLogin} onChange={updateState} placeholder="Lösenord" /><br />
                                 <button id="show-password" onClick={passwordState}></button>
                             </div>
                             <div className="incorrect-password">
