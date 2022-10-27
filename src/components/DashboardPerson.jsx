@@ -71,14 +71,16 @@ const Person = (props) => {
                                 </a>
                             </Link>
                         </div>
-                        {
-                            (person._id !== -1) ? <button className="rights" onClick={() => { setChanging(!changing) }}>Redigera <img src="/images/pen.svg" alt="penna knapp" /></button> : null
-                        }
+                        <div class="button-rights-container">
+                            {
+                                (person._id !== -1) ? <button className="rights" onClick={() => { setChanging(!changing) }}>Redigera</button> : null
+                            }
+                        </div>
                     </div>
                     :
                     <div>
                         <input type="text" value={person.name} onChange={(e) => setPerson({ ...person, name: e.target.value })} />
-                        <input type="text" value={person.role} onChange={(e) => setPerson({ ...person, role: e.target.value })} />
+                        <input type="text" className='role' value={person.role} onChange={(e) => setPerson({ ...person, role: e.target.value })} />
 
                         <div className="title menu-text">
                             Behörighet
@@ -102,11 +104,9 @@ const Person = (props) => {
                         </select>
                         <div className="menu menu-left title link-border">
                             {(person.uri) ?
-                                <Link href={"https://narvaro.ntig.net/setstatus?auth=" + person.uri}>
-                                    <a target='_blank' >
-                                        {"https://narvaro.ntig.net/setstatus?auth=" + person.uri}
-                                    </a>
-                                </Link>
+                                <p>
+                                    {"https://narvaro.ntig.net/setstatus?auth=" + person.uri}
+                                </p>
                                 :
                                 new_uri()
                             }
