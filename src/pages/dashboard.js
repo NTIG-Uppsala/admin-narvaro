@@ -59,8 +59,7 @@ const Dashboard = (props) => {
 }
 
 export const getServerSideProps = async (context) => {
-    let URL = (process.env.NODE_ENV !== 'production') ? 'http://localhost:8000/' : 'https://narvaro.ntig.net/';
-    let response = await axios.get(`${URL}/api/isloggedin`, {
+    let response = await axios.get(`${process.env.HOST_URL}api/isloggedin`, {
         headers: {
             cookie: context.req.headers.cookie
         }

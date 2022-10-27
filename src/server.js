@@ -28,6 +28,10 @@ const nextApp = next({ dev })
 const nextHandler = nextApp.getRequestHandler()
 const database_url = (process.env.NODE_ENV == "production") ? process.env.MONGODB_URI : process.env.MONGODB_URI_DEV;
 
+if (process.env.HOST_URL == undefined) {
+    throw "HOST_URL is required as a variable in .env (eg. HOST_URL=http://localhost:3000/)";
+}
+
 nextApp.prepare().then(async () => {
 
     /* Set up body-parser */
@@ -40,7 +44,7 @@ nextApp.prepare().then(async () => {
     server.use(session({
         store: MongoStore.create({
             mongoUrl: database_url,
-            ttl: time_to_live, 
+            ttl: time_to_live,
         }),
         secret: process.env.SESSION_SECRET,
         genid: () => { return uuidv4() },
@@ -48,7 +52,7 @@ nextApp.prepare().then(async () => {
         resave: false,
         cookie: {
             secure: false,
-            maxAge: time_to_live, 
+            maxAge: time_to_live,
             sameSite: true
         }
     }))
