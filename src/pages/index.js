@@ -4,6 +4,8 @@ import io from 'socket.io-client';
 
 import Person from '../components/PersonStatus'
 
+import Head from 'next/head'
+
 const Output = () => {
     const [statusArray, setStatusArray] = useState();
 
@@ -47,6 +49,9 @@ const Output = () => {
 
     return (
         <>
+            <Head>
+                <title>Administrations status</title>
+            </Head>
             <div className="backgroundImage">
                 <img src="/images/backgroundNTI.jpg" alt="bakgrunds bild på hemsidan"/>
             </div>

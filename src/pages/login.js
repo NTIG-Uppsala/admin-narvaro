@@ -2,6 +2,7 @@ import Login from '../components/login';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router'
+import Head from 'next/head'
 export default () => {
 
     const [password, setPassword] = useState("");
@@ -44,6 +45,9 @@ export default () => {
 
     return (
         <>
+            <Head>
+                <title>Logga in</title>
+            </Head>
             <div className="backgroundImage">
                 <img src="/images/backgroundNTI.jpg" />
             </div>

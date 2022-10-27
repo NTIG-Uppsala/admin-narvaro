@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import Person from '../components/DashboardPerson'
+import Head from 'next/head'
 const Dashboard = (props) => {
     const [people, setPeople] = useState([]);
 
@@ -38,7 +39,10 @@ const Dashboard = (props) => {
     }
 
     return (
-        <>
+        <>  
+            <Head>
+                <title>Administration</title>
+            </Head>
             <div className="backgroundImage">
                 <img src="images/backgroundNTI.jpg" alt="bakgrunds bild på hemsidan"/>
             </div>
