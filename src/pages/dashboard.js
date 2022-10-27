@@ -43,11 +43,11 @@ const Dashboard = (props) => {
                 <img src="images/backgroundNTI.jpg" />
             </div>
 
-            <div id="main" className='container'>
+            <div id="main" className='dashboard-container'>
                 {(people.length == 0) ?
                     <h1>Laddar innehållet..</h1> : people}
                 <div style={{ border: 'none', backgroundColor: 'transparent' }}>
-                    <button onClick={newPerson} style={{ border: 'none', backgroundColor: 'white', color: 'red', fontSize: '200px', width: '300px', height: '300px' }}>+</button>
+                    <button onClick={newPerson} className="add-button">+</button>
                 </div>
 
 

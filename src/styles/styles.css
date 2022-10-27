@@ -213,6 +213,166 @@ input:checked+.slider:before {
 }
 
 /* Dashboard page */
+.dashboard-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 25px 0;
+  gap: 50px;
+}
+
+.dashboard-container>div {
+  text-align: center;
+  background-color: rgb(0, 0, 0, 0.65);
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: left;
+  padding: 25px;
+  color: white;
+  border: 3px solid white;
+  min-width: 30vw;
+}
+
+.menu {
+  padding: 10px;
+  gap: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-left {
+  justify-content: flex-start;
+}
+
+.title {
+  margin: 20px 0px 5px 0px;
+}
+
+.save-button {
+  background-color: green;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background-color: #355E3B;
+}
+
+.save-button:active {
+  box-shadow: inset 0 0 10px black;
+}
+
+.delete-button {
+  background-color: transparent;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-size: .75em;
+}
+
+.back-button {
+  background-color: transparent;
+  color: black;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: .75em;
+}
+
+.refresh-button {
+  width: 25px;
+  height: 25px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+.dashboard-container select {
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.dashboard-container select:focus {
+  outline: none;
+}
+
+.menu-text {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.dashboard-container>div>input {
+  background-color: transparent;
+  height: auto;
+  font-size: 25px;
+  color: white;
+  border: none;
+  border-bottom: 3px solid white;
+  margin: 20px 0px;
+}
+
+.dashboard-container>div>input::placeholder {
+  color: white;
+  font-size: 25px;
+  opacity: .8;
+}
+
+.dashboard-container>div>input:focus {
+  outline: none;
+}
+
+.rights {
+  border: 3px solid white;
+  color: white;
+  font-size: 20px;
+  padding: 10px 10px;
+  border-radius: 10px;
+  margin: 10px 0px;
+  width: 50%;
+  background-color: transparent
+}
+
+button.rights {
+  cursor: pointer;
+  transition: ease .2s;
+}
+
+button.rights:hover {
+  background-color: white;
+  color: black;
+}
+
+button.rights > img:hover {
+  background-color: white;
+  color: black;
+}
+
+.menu-title {
+  margin-top: 25px;
+}
+
+.link-border {
+  border-bottom: 3px solid white;
+}
+
+.link-position {
+  width: 50%;
+  margin: 10px 0px;
+}
+
+.person-info {
+  margin: 0;
+}
 
 .dropdown-menu {
   padding: 10px 15px;
@@ -232,44 +392,14 @@ input:checked+.slider:before {
   cursor: pointer;
 }
 
-.center-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.name>input {
-  background-color: transparent;
-  color: white;
-  font-size: 20px;
+.add-button {
+  background-color: white;
+  color: black;
+  padding: 8px 15px;
   border: none;
-  border-bottom: 3px solid white;
-  padding: 10px;
-}
-
-.save-button {
-  padding: 15px 30px;
   border-radius: 5px;
-  background-color: var(--main-green-color);
-  font-size: 25px;
-  margin: 15px;
-}
-
-.save-button:hover {
-  background-color: #49a54e;
-}
-
-.save-button:active {
-  background-color: #49a54e;
-  box-shadow: inset 0 0 10px black;
-}
-
-.red-button {
-  background-color: var(--main-red-color);
-}
-
-.red-button:hover {
-  background-color: #b20000;
+  cursor: pointer;
+  font-size: .75em;
 }
 
 /* Login page */
@@ -436,193 +566,4 @@ input:checked+.slider:before {
   .login-container>div>button {
     width: 120px;
   }
-}
-
-
-/* DASHBOARD */
-.container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 50px;
-}
-
-.container>div {
-  text-align: center;
-  background-color: rgb(0, 0, 0, 0.65);
-  border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: left;
-  padding: 25px;
-  color: white;
-  border: 3px solid white;
-  min-width: 30vw;
-}
-
-.menu {
-  padding: 10px;
-  gap: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.menu-left {
-  justify-content: flex-start;
-}
-
-.title {
-  margin: 20px 0px 5px 0px;
-}
-
-.save-button {
-  background-color: green;
-  padding: 15px 30px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  cursor: pointer;
-}
-
-.save-button:hover {
-  background-color: #355E3B;
-}
-
-.save-button:active {
-  box-shadow: inset 0 0 10px black;
-}
-
-.delete-button {
-  background-color: red;
-  padding: 8px 15px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  cursor: pointer;
-  font-size: .75em;
-}
-
-.delete-button:hover {
-  background-color: #880808;
-}
-
-.delete-button:active {
-  box-shadow: inset 0 0 10px black;
-}
-
-.back-button {
-  background-color: white;
-  color: black;
-  padding: 8px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: .75em;
-}
-
-.back-button:hover {
-  background-color: gray;
-}
-
-.back-button:active {
-  box-shadow: inset 0 0 10px black;
-}
-
-.refresh-button {
-  width: 25px;
-  height: 25px;
-  border-radius: 9999px;
-  border: none;
-  cursor: pointer;
-}
-
-.refresh-button:hover {
-  background-color: gray;
-}
-
-.refresh-button:active {
-  box-shadow: inset 0 0 10px black;
-}
-
-.link {
-  border-bottom: 3px solid white;
-}
-
-.container select {
-  padding: 10px;
-  border-radius: 5px;
-}
-
-.container select:focus {
-  outline: none;
-}
-
-.menu-title {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.container>div>input {
-  background-color: transparent;
-  height: auto;
-  font-size: 25px;
-  color: white;
-  border: none;
-  border-bottom: 3px solid white;
-  margin: 20px 0px;
-}
-
-.container>div>input::placeholder {
-  color: white;
-  font-size: 25px;
-  opacity: .8;
-}
-
-.container>div>input:focus {
-  outline: none;
-}
-
-#bruh {
-  width: 50%;
-  font-size: 20px;
-}
-
-#bruh::placeholder {
-  font-size: 20px;
-}
-
-.saker {
-  border: 3px solid white;
-  color: white;
-  font-size: 20px;
-  padding: 10px 10px;
-  border-radius: 10px;
-  margin: 10px 0px;
-  width: 50%;
-  background-color: transparent
-}
-
-button.saker {
-  cursor: pointer;
-  transition: ease .2s;
-}
-
-button.saker:hover {
-  background-color: white;
-  color: black;
-}
-
-.menu-title2 {
-  margin-top: 25px;
-}
-
-.link2 {
-  width: 50%;
-  margin: 10px 0px;
-}
-
-.bruh2 {
-  margin: 0;
 }
