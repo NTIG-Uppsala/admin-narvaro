@@ -252,7 +252,7 @@ input:checked+.slider:before {
 }
 
 .save-button {
-  background-color: green;
+  background-color: var(--main-green-color);
   padding: 15px 30px;
   border: none;
   border-radius: 5px;
@@ -300,6 +300,7 @@ input:checked+.slider:before {
 .dashboard-container select {
   padding: 10px;
   border-radius: 5px;
+  width: 75%;
 }
 
 .dashboard-container select:focus {
@@ -319,6 +320,7 @@ input:checked+.slider:before {
   border: none;
   border-bottom: 3px solid white;
   margin: 20px 0px;
+  width: 75%;
 }
 
 .dashboard-container>div>input::placeholder {
@@ -345,14 +347,10 @@ input:checked+.slider:before {
 button.rights {
   cursor: pointer;
   transition: ease .2s;
+  text-align: left;
 }
 
 button.rights:hover {
-  background-color: white;
-  color: black;
-}
-
-button.rights > img:hover {
   background-color: white;
   color: black;
 }
@@ -363,10 +361,11 @@ button.rights > img:hover {
 
 .link-border {
   border-bottom: 3px solid white;
+  width: 75%;
+  line-break: anywhere;
 }
 
 .link-position {
-  width: 50%;
   margin: 10px 0px;
 }
 
@@ -381,6 +380,7 @@ button.rights > img:hover {
   color: white;
   border-radius: 5px;
   font-size: 20px;
+  cursor: pointer;
 }
 
 .dropdown-menu>option {
@@ -388,18 +388,28 @@ button.rights > img:hover {
   font-size: 16px;
 }
 
-.dropdown-menu:hover {
+.add-button {
+  background-color: transparent;
   cursor: pointer;
+  width: 250px;
+  height: 250px;
+  border: none;
+  padding: 150px;
+  border-radius: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: ease .2s;
 }
 
-.add-button {
-  background-color: white;
-  color: black;
-  padding: 8px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: .75em;
+.add-button:hover {
+  background-color: var(--contents-background-color);
+  border: 3px solid var(--main-white-color);
+}
+
+.add-button>img {
+  width: 250px;
+  height: 250px;
 }
 
 /* Login page */
@@ -566,4 +576,15 @@ button.rights > img:hover {
   .login-container>div>button {
     width: 120px;
   }
+
+  .add-button:hover {
+    background-color: transparent;
+    border: none;
+  }
+
+  .add-button:active {
+    background-color: var(--contents-background-color);
+    border: 3px solid var(--main-white-color);
+  }
+
 }

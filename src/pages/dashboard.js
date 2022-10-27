@@ -46,8 +46,10 @@ const Dashboard = (props) => {
             <div id="main" className='dashboard-container'>
                 {(people.length == 0) ?
                     <h1>Laddar innehållet..</h1> : people}
-                <div style={{ border: 'none', backgroundColor: 'transparent' }}>
-                    <button onClick={newPerson} className="add-button">+</button>
+                <div style={{ border: 'none', backgroundColor: 'transparent', display: 'flex', alignItems: 'center' }}>
+                    <button onClick={newPerson} className="add-button">
+                        <img src="/images/add-user.svg"></img>
+                    </button>
                 </div>
 
 
