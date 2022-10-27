@@ -52,19 +52,19 @@ const Person = (props) => {
                     <div>
                         <h1 className="person-info">{person.name}</h1>
                         <h2 className="person-info">{person.role}</h2>
-                        <div className="menu-title menu-text">
+                        <div className="menu-text">
                             Behörighet
                         </div>
                         <div className="rights">
                             {person.privilege_name}
                         </div>
-                        <div className="menu-title menu-text">
+                        <div className="menu-text">
                             Grupp
                         </div>
                         <div className="rights">
                             {person.group_name}
                         </div>
-                        <div className="link-border link-position">
+                        <div className="link-border">
                             <Link href={"https://narvaro.ntig.net/setstatus?auth=" + person.uri}>
                                 <a target='_blank' >
                                     {"https://narvaro.ntig.net/setstatus?auth=" + person.uri}
