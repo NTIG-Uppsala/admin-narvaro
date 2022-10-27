@@ -1,12 +1,12 @@
 import axios from 'axios';
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-
+import { useRouter } from 'next/router'
 const Person = (props) => {
     const [person, setPerson] = useState(props)
     const [changing, setChanging] = useState(props.changing || false)
     const [submitOk, setSubmitOk] = useState(false);
-
+    const Router = useRouter()
     /* Called when the client presses the save button  */
     const submit = () => {
         axios.post('/api/updateusers', { user: person }).then((response) => {
@@ -14,18 +14,19 @@ const Person = (props) => {
                 console.log("success")
                 setChanging(false)
                 setSubmitOk(true)
+                Router.reload()
             }
         });
     }
 
     const deleteUser = () => {
-        axios.post('/api/deleteuser', { user: person }).then((response) => {
+        return axios.post('/api/deleteuser', { user: person }).then((response) => {
             if (response.status == 200) {
                 console.log("success")
                 setChanging(false)
                 setSubmitOk(true)
-                setPerson({ name: "Deleted", email: "Deleted", role: "Deleted" })
             }
+            Router.reload()
         });
     }
 
@@ -64,26 +65,19 @@ const Person = (props) => {
                             {person.group_name}
                         </div>
                         <div className="link-border link-position">
-                            {(person.uri) ?
-                                <Link href={"https://narvaro.ntig.net/setstatus?auth=" + person.uri}>
-                                    <a target='_blank' >
-                                        {"https://narvaro.ntig.net/setstatus?auth=" + person.uri}
-                                    </a>
-                                </Link>
-                                :
-                                <p>no link</p>
-                            }
+                            <Link href={"https://narvaro.ntig.net/setstatus?auth=" + person.uri}>
+                                <a target='_blank' >
+                                    {"https://narvaro.ntig.net/setstatus?auth=" + person.uri}
+                                </a>
+                            </Link>
                         </div>
-                        <button className="rights" onClick={() => { setChanging(!changing) }}>
-                            Redigera <img src="/images/pen.svg" alt="penna knapp"/>
-                        </button>
+                        {
+                            (person._id !== -1) ? <button className="rights" onClick={() => { setChanging(!changing) }}>Redigera <img src="/images/pen.svg" alt="penna knapp" /></button> : null
+                        }
                     </div>
                     :
                     <div>
                         <input type="text" value={person.name} onChange={(e) => setPerson({ ...person, name: e.target.value })} />
-
-                        {/* <input type="text" placeholder="Henrik Jonsson"></input> */}
-                        {/* <input type="text" placeholder="Titel"></input> */}
                         <input type="text" value={person.role} onChange={(e) => setPerson({ ...person, role: e.target.value })} />
 
                         <div className="title menu-text">
@@ -114,16 +108,16 @@ const Person = (props) => {
                                     </a>
                                 </Link>
                                 :
-                                <p>no link</p>
+                                new_uri()
                             }
                             <button className="refresh-button" onClick={() => { new_uri() }}>
                                 <img src="images/refresh.svg" alt="hämta om knapp"></img>
                             </button>
                         </div>
                         <div className="menu title">
-                            <button className="back-button" onClick={() => { setChanging(!changing) }}>
-                                <img src="images/back.svg" alt="tillbaka knapp"></img>
-                            </button>
+                            {
+                                (person._id !== undefined) ? <button className="back-button" onClick={() => { setChanging(!changing) }}><img src="images/back.svg" alt="tillbaka knapp"></img></button> : null
+                            }
                             <button className="save-button" onClick={() => { submit() }}>
                                 Spara
                             </button>
