@@ -4,6 +4,8 @@ import io from 'socket.io-client';
 
 import Person from '../components/PersonStatus'
 
+import Head from 'next/head'
+
 const Output = () => {
     const [statusArray, setStatusArray] = useState();
 
@@ -47,11 +49,14 @@ const Output = () => {
 
     return (
         <>
+            <Head>
+                <title>Administrations status</title>
+            </Head>
             <div className="backgroundImage">
-                <img src="/images/backgroundNTI.jpg"/>
+                <img src="/images/backgroundNTI.jpg" alt="bakgrunds bild på hemsidan"/>
             </div>
         
-            <img id="logo" src="images/nti_logo_footer.svg" alt=""/>
+            <img id="logo" src="images/nti_logo_footer.svg" alt="ntis logga"/>
             <div className="grid-center">
                 <div className="message-container-wrapper">
                     <h1>Status</h1>

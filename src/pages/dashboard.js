@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import Person from '../components/DashboardPerson'
+import Head from 'next/head'
 const Dashboard = (props) => {
     const [people, setPeople] = useState([]);
 
@@ -38,9 +39,12 @@ const Dashboard = (props) => {
     }
 
     return (
-        <>
+        <>  
+            <Head>
+                <title>Administration</title>
+            </Head>
             <div className="backgroundImage">
-                <img src="images/backgroundNTI.jpg" />
+                <img src="images/backgroundNTI.jpg" alt="bakgrunds bild på hemsidan"/>
             </div>
 
             <div id="main" className='dashboard-container'>
@@ -48,7 +52,7 @@ const Dashboard = (props) => {
                     <h1>Laddar innehållet..</h1> : people}
                 <div style={{ border: 'none', backgroundColor: 'transparent', display: 'flex', alignItems: 'center' }}>
                     <button onClick={newPerson} className="add-button">
-                        <img src="/images/add-user.svg"></img>
+                        <img src="/images/add-user.svg" alt="ikon för att lägga till ny användare"></img>
                     </button>
                 </div>
 
