@@ -76,8 +76,8 @@ export const getServerSideProps = async (context) => {
     }
     else {
 
-        let privileges = await axios.get(`${URL}/api/getprivileges`)
-        let groups = await axios.get(`${URL}/api/getgroups`)
+        let privileges = await axios.get(`${process.env.HOST_URL}/api/getprivileges`)
+        let groups = await axios.get(`${process.env.HOST_URL}/api/getgroups`)
         return {
             props: {
                 groups: groups.data,
