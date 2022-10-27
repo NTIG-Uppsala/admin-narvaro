@@ -237,83 +237,6 @@ input:checked+.slider:before {
   min-height: 48vh;
 }
 
-.menu {
-  padding: 10px;
-  gap: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.menu-left {
-  justify-content: flex-start;
-}
-
-.title {
-  margin: 20px 0px 5px 0px;
-}
-
-.save-button {
-  background-color: var(--main-green-color);
-  padding: 15px 30px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  cursor: pointer;
-}
-
-.save-button:hover {
-  background-color: #355E3B;
-}
-
-.save-button:active {
-  box-shadow: inset 0 0 10px black;
-}
-
-.delete-button {
-  background-color: transparent;
-  padding: 8px 15px;
-  border: none;
-  border-radius: 5px;
-  color: white;
-  cursor: pointer;
-  font-size: .75em;
-}
-
-.back-button {
-  background-color: transparent;
-  color: black;
-  padding: 8px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: .75em;
-}
-
-.refresh-button {
-  width: 25px;
-  height: 25px;
-  border-radius: 9999px;
-  border: none;
-  cursor: pointer;
-  background-color: transparent;
-}
-
-.dashboard-container select {
-  padding: 10px;
-  border-radius: 5px;
-  width: 75%;
-}
-
-.dashboard-container select:focus {
-  outline: none;
-}
-
-.menu-text {
-  font-size: 20px;
-  font-weight: bold;
-}
-
 .dashboard-container>div>input {
   background-color: transparent;
   height: auto;
@@ -333,6 +256,64 @@ input:checked+.slider:before {
 
 .dashboard-container>div>input:focus {
   outline: none;
+}
+
+.dashboard-container select {
+  padding: 10px;
+  border-radius: 5px;
+  width: 75%;
+}
+
+.dashboard-container select:focus {
+  outline: none;
+}
+
+.menu {
+  padding: 10px;
+  gap: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-left {
+  justify-content: flex-start;
+}
+
+.menu-text {
+  font-size: 20px;
+  font-weight: bold;
+  margin-top: 25px;
+}
+
+.title {
+  margin: 20px 0px 5px 0px;
+}
+
+.link-border {
+  border-bottom: 3px solid white;
+  width: 75%;
+  line-break: anywhere;
+  margin: 10px 0px;
+}
+
+.person-info {
+  margin: 0;
+}
+
+.dropdown-menu {
+  padding: 10px 15px;
+  border: 3px solid white;
+  background-color: transparent;
+  color: white;
+  border-radius: 5px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.dropdown-menu>option {
+  background-color: black;
+  font-size: 16px;
 }
 
 .rights {
@@ -365,37 +346,50 @@ button.rights:hover {
   background-image: url(/images/pen-black.svg);
 }
 
-.menu-title {
-  margin-top: 25px;
-}
-
-.link-border {
-  border-bottom: 3px solid white;
-  width: 75%;
-  line-break: anywhere;
-}
-
-.link-position {
-  margin: 10px 0px;
-}
-
-.person-info {
-  margin: 0;
-}
-
-.dropdown-menu {
-  padding: 10px 15px;
-  border: 3px solid white;
+.refresh-button {
+  width: 25px;
+  height: 25px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
   background-color: transparent;
-  color: white;
+}
+
+.back-button {
+  background-color: transparent;
+  color: black;
+  padding: 8px 15px;
+  border: none;
   border-radius: 5px;
-  font-size: 20px;
+  cursor: pointer;
+  font-size: .75em;
+}
+
+.save-button {
+  background-color: var(--main-green-color);
+  padding: 15px 30px;
+  border: none;
+  border-radius: 5px;
+  color: white;
   cursor: pointer;
 }
 
-.dropdown-menu>option {
-  background-color: black;
-  font-size: 16px;
+.save-button:hover {
+  background-color: #355E3B;
+}
+
+.save-button:active {
+  box-shadow: inset 0 0 10px black;
+}
+
+.delete-button {
+  background-color: transparent;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-size: .75em;
 }
 
 .add-button {
@@ -403,8 +397,8 @@ button.rights:hover {
   cursor: pointer;
   width: 250px;
   height: 250px;
+  padding: 150px; 
   border: none;
-  padding: 150px;
   border-radius: 15px;
   display: flex;
   justify-content: center;
