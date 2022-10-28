@@ -35,7 +35,7 @@ const Output = () => {
         person_object.forEach((item, index) => {
             let new_element = <Person
                 key={index}
-                id={index+1}
+                id={index + 1}
                 name={item.name}
                 role={item.role}
                 status={item.status}
@@ -50,19 +50,19 @@ const Output = () => {
     return (
         <>
             <Head>
-                <title>Administrations status</title>
+                <title>Administrationsstatus</title>
             </Head>
             <div className="backgroundImage">
-                <img src="/images/backgroundNTI.jpg" alt="bakgrunds bild på hemsidan"/>
+                <img src="/images/backgroundNTI.jpg" alt="bakgrunds bild på hemsidan" />
             </div>
-        
-            <img id="logo" src="images/nti_logo_footer.svg" alt="ntis logga"/>
+
+            <img id="logo" src="images/nti_logo_footer.svg" alt="ntis logga" />
             <div className="grid-center">
                 <div className="message-container-wrapper">
                     <h1>Status</h1>
                     <div id="statusDiv">
-                        {(statusArray === undefined) ? 
-                        <h1>Laddar innehållet..</h1> : statusArray }
+                        {(statusArray === undefined) ?
+                            <h1>Laddar innehållet..</h1> : statusArray}
                     </div>
                 </div>
             </div>
