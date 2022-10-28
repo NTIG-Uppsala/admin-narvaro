@@ -197,7 +197,7 @@ class Database {
     print_uris() {
         this.models.users.find({}, (err, result) => {
             result.forEach((person) => {
-                console.log(`${person.name} ${person.role} -> https://narvaro.ntig.net/setstatus?auth=${person.uri}`);
+                console.log(`${person.name} ${person.role} -> ${process.env.HOST_URL}setstatus?auth=${person.uri}`);
             })
         })
     }
