@@ -87,8 +87,6 @@ nextApp.prepare().then(async () => {
 
 /* notifies console when someone connects to server socket */
 io.on('connection', (socket) => {
-    console.log('A user connected', socket.handshake.address);
-
     /* A event for changes to the status */
     socket.on('status change', async (response) => {
         console.log(response)
