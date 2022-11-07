@@ -1,7 +1,147 @@
 import axios from 'axios';
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+
+
+const NameField = (props) => {
+    return (
+        <>
+            {(!props.changing) ?
+                <h1 className="person-info">{props.value}</h1>
+                :
+                <input type="text" value={props.value} onChange={props.onChangeHandler} />
+            }
+        </>
+    )
+}
+
+const RoleField = (props) => {
+    return (
+        <>
+            {(!props.changing) ?
+                <h2 className="person-info">{props.value}</h2>
+                :
+                <input type="text" className='role' value={props.value} onChange={props.onChangeHandler} />
+            }
+
+        </>
+    )
+}
+
+const PrivilegeField = (props) => {
+    return (
+        <>
+            <div className="menu-text">
+                Behörighet
+            </div>
+            {(!props.changing) ?
+                <div className="rights">
+                    {props.value}
+                </div>
+                :
+                <select className="dropdown-menu" defaultValue={props.privilege} onChange={props.onChangeHandler} id={props.id}>
+                    {
+                        props.privileges.map((privilege, index) => {
+                            return <option key={privilege._id} value={privilege._id} >{privilege.display_name}</option>
+                        })
+                    }
+                </select>
+
+            }
+
+        </>
+    )
+
+}
+
+const GroupField = (props) => {
+    return (
+        <>
+            <div className="menu-text">
+                Grupp
+            </div>
+            {(!props.changing) ?
+                <div className="rights">
+                    {props.value}
+                </div>
+                :
+                <select className="dropdown-menu" id={props.id} defaultValue={props.group} onChange={(e) => { setPerson({ ...person, group: e.target.value }) }}>
+                    {
+                        props.groups.map((group, index) => {
+                            return <option key={group._id} value={group._id}>{group.display_name}</option>
+                        })
+                    }
+                </select>
+
+            }
+
+        </>
+    )
+
+
+}
+
+const URLField = (props) => {
+    return (
+        <>
+            {(!props.changing) ?
+                <div className="link-border">
+                    <Link href={"https://narvaro.ntig.net/setstatus?auth=" + props.value}>
+                        <a target='_blank' >
+                            {"https://narvaro.ntig.net/setstatus?auth=" + props.value}
+                        </a>
+                    </Link>
+                </div>
+                :
+                <div className="menu menu-left title link-border">
+                    {(props.value) ?
+                        <p>
+                            {"https://narvaro.ntig.net/setstatus?auth=" + props.value}
+                        </p>
+                        :
+                        props.onChangeHandler()
+                    }
+                    <button className="refresh-button" onClick={props.onChangeHandler}>
+                        <img src="images/refresh.svg" alt="hämta om knapp"></img>
+                    </button>
+                </div>
+
+
+            }
+
+        </>
+    )
+}
+
+const Buttons = (props) => {
+    return (
+        <>
+            {(!props.changing) ?
+                <div class="button-rights-container">
+                    {
+                        (props._id !== -1) ? <button className="rights" onClick={props.onChangeHandler}>Redigera</button> : null
+                    }
+                </div>
+                :
+                <div className="menu title">
+                    {
+                        (props._id !== undefined) ? <button className="back-button" onClick={props.onChangeHandler}><img src="images/back.svg" alt="tillbaka knapp"></img></button> : null
+                    }
+                    <button className="save-button" onClick={props.SubmitHandler}>
+                        Spara
+                    </button>
+                    <button className="delete-button" onClick={props.DeletHandler}>
+                        <img src="images/trash.svg" alt="ta bort knapp"></img>
+                    </button>
+                </div>
+            }
+        </>
+    )
+}
+
+
+
 const Person = (props) => {
     const [person, setPerson] = useState(props)
     const [changing, setChanging] = useState(props.changing || false)
@@ -47,86 +187,44 @@ const Person = (props) => {
 
     return (
         <>
-            {
-                (!changing) ?
-                    <div>
-                        <h1 className="person-info">{person.name}</h1>
-                        <h2 className="person-info">{person.role}</h2>
-                        <div className="menu-text">
-                            Behörighet
-                        </div>
-                        <div className="rights">
-                            {person.privilege_name}
-                        </div>
-                        <div className="menu-text">
-                            Grupp
-                        </div>
-                        <div className="rights">
-                            {person.group_name}
-                        </div>
-                        <div className="link-border">
-                            <Link href={"https://narvaro.ntig.net/setstatus?auth=" + person.uri}>
-                                <a target='_blank' >
-                                    {"https://narvaro.ntig.net/setstatus?auth=" + person.uri}
-                                </a>
-                            </Link>
-                        </div>
-                        <div class="button-rights-container">
-                            {
-                                (person._id !== -1) ? <button className="rights" onClick={() => { setChanging(!changing) }}>Redigera</button> : null
-                            }
-                        </div>
-                    </div>
-                    :
-                    <div>
-                        <input type="text" value={person.name} onChange={(e) => setPerson({ ...person, name: e.target.value })} />
-                        <input type="text" className='role' value={person.role} onChange={(e) => setPerson({ ...person, role: e.target.value })} />
-
-                        <div className="title menu-text">
-                            Behörighet
-                        </div>
-                        <select className="dropdown-menu" defaultValue={person.privilege} onChange={(e) => { setPerson({ ...person, privilege: e.target.value }) }} id={props.id}>
-                            {
-                                props.privileges.map((privilege, index) => {
-                                    return <option key={privilege._id} value={privilege._id} >{privilege.display_name}</option>
-                                })
-                            }
-                        </select>
-                        <div className="title menu-text">
-                            Grupp
-                        </div>
-                        <select className="dropdown-menu" id={props.id} defaultValue={person.group} onChange={(e) => { setPerson({ ...person, group: e.target.value }) }}>
-                            {
-                                props.groups.map((group, index) => {
-                                    return <option key={group._id} value={group._id}>{group.display_name}</option>
-                                })
-                            }
-                        </select>
-                        <div className="menu menu-left title link-border">
-                            {(person.uri) ?
-                                <p>
-                                    {"https://narvaro.ntig.net/setstatus?auth=" + person.uri}
-                                </p>
-                                :
-                                new_uri()
-                            }
-                            <button className="refresh-button" onClick={() => { new_uri() }}>
-                                <img src="images/refresh.svg" alt="hämta om knapp"></img>
-                            </button>
-                        </div>
-                        <div className="menu title">
-                            {
-                                (person._id !== undefined) ? <button className="back-button" onClick={() => { setChanging(!changing) }}><img src="images/back.svg" alt="tillbaka knapp"></img></button> : null
-                            }
-                            <button className="save-button" onClick={() => { submit() }}>
-                                Spara
-                            </button>
-                            <button className="delete-button" onClick={() => { deleteUser() }}>
-                                <img src="images/trash.svg" alt="ta bort knapp"></img>
-                            </button>
-                        </div>
-                    </div>
-            }
+            <div >
+                <NameField
+                    value={person.name}
+                    changing={changing}
+                />
+                <RoleField
+                    value={person.role}
+                    changing={changing}
+                />
+                <PrivilegeField
+                    id={person._id}
+                    value={person.privilege_name}
+                    changing={changing}
+                    privilege={person.privilege_id}
+                    privileges={props.privileges}
+                    onChangeHandler={(e) => { setPerson({ ...person, privilege_id: e.target.value }) }}
+                />
+                <GroupField
+                    id={person._id}
+                    value={person.group_name}
+                    changing={changing}
+                    group={person.group_id}
+                    groups={props.groups}
+                    onChangeHandler={(e) => { setPerson({ ...person, group_id: e.target.value }) }}
+                />
+                <URLField
+                    value={person.uri}
+                    changing={changing}
+                    onChangeHandler={() => { new_uri() }}
+                />
+                <Buttons
+                    _id={person._id}
+                    changing={changing}
+                    onChangeHandler={() => { setChanging(!changing) }}
+                    SubmitHandler={() => { submit() }}
+                    DeletHandler={() => { deleteUser() }}
+                />
+            </div>
         </>
 
 

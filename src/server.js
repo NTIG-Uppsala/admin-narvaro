@@ -5,19 +5,19 @@ import express from 'express'
 import session from 'express-session'
 
 import { v4 as uuidv4 } from 'uuid';
-const SECRET = uuidv4().toString();
 import next from 'next';
-import bodyParser from 'body-parser';
 import http from 'http';
+import bodyParser from 'body-parser';
 import { Server as SocketServer } from 'socket.io'
 
-import mongoose from 'mongoose';
 import MongoStore from 'connect-mongo';
 
-import Database from './Database.js';
+import Database, { database_url } from './Database.js';
 import apiRouter from './routes/api.js';
 
 const database_instance = new Database();
+database_instance.print_uris()
+
 const server = express();
 const http_server = http.createServer(server);
 const io = new SocketServer(http_server);
@@ -26,7 +26,6 @@ const dev = process.env.NODE_ENV !== 'production'
 
 const nextApp = next({ dev })
 const nextHandler = nextApp.getRequestHandler()
-const database_url = (process.env.NODE_ENV == "production") ? process.env.MONGODB_URI : process.env.MONGODB_URI_DEV;
 
 if (process.env.HOST_URL == undefined) {
     throw "HOST_URL is required as a variable in .env (eg. HOST_URL=http://localhost:3000/)";
@@ -77,12 +76,6 @@ nextApp.prepare().then(async () => {
         if (err) throw err
         console.log("Server is running on port 8000")
     });
-    mongoose.connect(database_url, (err) => {
-        if (err) throw err;
-
-        return console.log("Connected to database");
-    });
-
 });
 
 /* notifies console when someone connects to server socket */
