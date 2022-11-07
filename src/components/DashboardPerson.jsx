@@ -92,6 +92,13 @@ const URLField = (props) => {
                             {"https://narvaro.ntig.net/setstatus?auth=" + props.value}
                         </a>
                     </Link>
+                    <button className="refresh-button" onClick={props.copyLinkHandler} >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copy" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <rect x="8" y="8" width="12" height="12" rx="2" />
+                            <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2" />
+                        </svg>
+                    </button>
                 </div>
                 :
                 <div className="menu menu-left title link-border">
@@ -105,6 +112,14 @@ const URLField = (props) => {
                     <button className="refresh-button" onClick={props.onChangeHandler}>
                         <img src="images/refresh.svg" alt="hämta om knapp"></img>
                     </button>
+                    <button className="refresh-button" onClick={props.copyLinkHandler}>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copy" width="32" height="32" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+                            <rect x="8" y="8" width="12" height="12" rx="2" />
+                            <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2" />
+                        </svg>
+                    </button>
+                    
                 </div>
 
 
@@ -188,17 +203,25 @@ const Person = (props) => {
             return result;
         }
 
+        let _NEW = uri(10);
+
         if (new_user === true) {
-            setPerson({ ...person, uri: uri(10) })
+            setPerson({ ...person, uri: _NEW })
         }
         else {
             if (typeof window !== 'undefined') {
                 let confirm = window.confirm("Är du säker på att du vill generera en ny länk? Den gamla länken kommer inte att fungera längre.")
                 if (confirm === true) {
-                    setPerson({ ...person, uri: uri(10) })
+                    setPerson({ ...person, uri: _NEW })
                 }
             }
         }
+        // navigator.clipboard.writeText(`https://narvaro.ntig.net/setstatus?auth=${_NEW}`)
+    }
+
+    const copyURIToClipboard = () => {
+        navigator.clipboard.writeText(`https://narvaro.ntig.net/setstatus?auth=${person.uri}`)
+        alert("Länken till "+ person.name+ " har kopierats till urklipp")
     }
 
     return (
@@ -232,6 +255,7 @@ const Person = (props) => {
                     value={person.uri}
                     changing={changing}
                     onChangeHandler={(new_user) => { new_uri(new_user) }}
+                    copyLinkHandler={copyURIToClipboard}
                 />
                 <Buttons
                     _id={person._id}
