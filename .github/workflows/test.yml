@@ -1,5 +1,5 @@
 
-name: Runs jest tests
+name: Runs tests
 on:
   push:
     branches: [ "main" ]
@@ -13,6 +13,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.10"
+
     - name: Setup Node 
       uses: actions/setup-node@v3
       with:
@@ -24,22 +29,8 @@ jobs:
 
     - name: Running tests
       run: npm run test
-
-  run_python_tests:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Setup Node 
-      uses: actions/setup-node@v3
-      with:
-        node-version: 16
-    - run: npm ci
-    - run: cd src/ && node index.js &
+    
+    - run: npm run dev
 
     - name: Install dependencies
       run: |
