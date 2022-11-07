@@ -100,7 +100,7 @@ const URLField = (props) => {
                             {"https://narvaro.ntig.net/setstatus?auth=" + props.value}
                         </p>
                         :
-                        props.onChangeHandler()
+                        props.onChangeHandler(true)
                     }
                     <button className="refresh-button" onClick={props.onChangeHandler}>
                         <img src="images/refresh.svg" alt="hämta om knapp"></img>
@@ -160,19 +160,24 @@ const Person = (props) => {
     }
 
     const deleteUser = () => {
-        return axios.post('/api/deleteuser', { user: person }).then((response) => {
-            if (response.status == 200) {
-                console.log("success")
-                setChanging(false)
-                setSubmitOk(true)
+
+        if (typeof window !== 'undefined') {
+            if (window.confirm("Är du säker på att du vill ta bort " + person.name + "?")) {
+                return axios.post('/api/deleteuser', { user: person }).then((response) => {
+                    if (response.status == 200) {
+                        console.log("success")
+                        setChanging(false)
+                        setSubmitOk(true)
+                    }
+                    Router.reload()
+                });
             }
-            Router.reload()
-        });
+        }    
     }
 
     useEffect(() => { console.log(person) }, [person])
 
-    const new_uri = () => {
+    const new_uri = (new_user) => {
         let uri = (len) => {
             let result = '';
             var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -182,7 +187,20 @@ const Person = (props) => {
             }
             return result;
         }
-        setPerson({ ...person, uri: uri(10) })
+
+        if (new_user === true) {
+            setPerson({ ...person, uri: uri(10) })
+        }
+        else {
+            if (typeof window !== 'undefined') {
+
+                let confirm = window.confirm("Är du säker på att du vill generera en ny länk? Den gamla länken kommer inte att fungera längre.")
+                if (confirm === true) {
+
+                    setPerson({ ...person, uri: uri(10) })
+                }
+            }
+        }
     }
 
     return (
@@ -215,7 +233,7 @@ const Person = (props) => {
                 <URLField
                     value={person.uri}
                     changing={changing}
-                    onChangeHandler={() => { new_uri() }}
+                    onChangeHandler={(new_user) => { new_uri(new_user) }}
                 />
                 <Buttons
                     _id={person._id}
