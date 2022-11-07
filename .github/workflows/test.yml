@@ -30,7 +30,7 @@ jobs:
     - name: Running tests
       run: npm run test
     
-    - run: npm run dev
+    - run: npm run dev &
 
     - name: Install dependencies
       run: |
