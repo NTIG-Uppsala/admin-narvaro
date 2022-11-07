@@ -193,10 +193,8 @@ const Person = (props) => {
         }
         else {
             if (typeof window !== 'undefined') {
-
                 let confirm = window.confirm("Är du säker på att du vill generera en ny länk? Den gamla länken kommer inte att fungera längre.")
                 if (confirm === true) {
-
                     setPerson({ ...person, uri: uri(10) })
                 }
             }
