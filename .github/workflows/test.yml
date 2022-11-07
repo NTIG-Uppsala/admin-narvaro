@@ -6,6 +6,11 @@ on:
   pull_request:
     branches: ["*"]
 
+env:
+  HOST_URL: ${{ secrets.HOST_URL }}
+  SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+  MONGODB_URI_DEV: ${{ secrets.MONGODB_URI_DEV }}
+
 jobs:  
   run_tests:
     runs-on: ubuntu-latest
