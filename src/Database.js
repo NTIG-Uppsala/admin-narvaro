@@ -1,7 +1,18 @@
+import dotenv from 'dotenv'
+dotenv.config()
 import mongoose from 'mongoose';
 
-class Database {
+
+export const database_url = (process.env.NODE_ENV == "production") ? process.env.MONGODB_URI : process.env.MONGODB_URI_DEV;
+
+export default class Database {
     constructor() {
+        mongoose.connect(database_url, (err) => {
+            if (err) throw err;
+
+            return console.log("Connected to database");
+        })
+
         this.userSchema = new mongoose.Schema({
             name: { type: String, required: true, 'default': 'Inget namn' },
             role: { type: String, required: true, 'default': 'Ingen roll' },
@@ -205,5 +216,3 @@ class Database {
 
 
 }
-
-export default Database;
