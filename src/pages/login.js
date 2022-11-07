@@ -1,4 +1,3 @@
-import Login from '../components/login';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router'
@@ -10,8 +9,7 @@ export default () => {
     const router = useRouter()
 
     const tryLogin = (e) => {
-        if ((e.type == "click") || (e.type == "keypress" && e.key == 'Enter'))
-        {
+        if ((e.type == "click") || (e.type == "keypress" && e.key == 'Enter')) {
             axios.post('/api/verifylogin', { password: password }).then(res => {
                 console.log(res.data.result)
                 if (res.data.result === true) {
@@ -20,7 +18,7 @@ export default () => {
                 } else {
                     setCorrectPassword(false)
                 }
-            })  
+            })
         }
     }
 

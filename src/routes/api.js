@@ -4,7 +4,6 @@ import Database from '../Database.js';
 
 const database_instance = new Database();
 
-database_instance.print_uris()
 
 const apiRouter = Router();
 
