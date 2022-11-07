@@ -36,6 +36,7 @@ const Output = () => {
             let new_element = <Person
                 key={index}
                 id={index + 1}
+                _id={item._id}
                 name={item.name}
                 role={item.role}
                 status={item.status}
