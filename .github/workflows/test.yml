@@ -37,4 +37,4 @@ jobs:
         python -m pip install --upgrade pip
         if [ -f tests/test_requirements.txt ]; then pip install -r tests/test_requirements.txt; fi
     - name: Run Tests scripts on localhost
-      run: python tests/tests.py http://localhost:8000/
+      run: python tests/tests.py
