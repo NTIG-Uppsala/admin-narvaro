@@ -1,6 +1,6 @@
 export function Container({ children }) {
     return (
-        <div className="py-[25px] px-[50px] rounded-xl bg-black/75 flex flex-col justify-center min-w-[50%] border-[5px] border-solid border-white">
+        <div className="py-[25px] px-[50px] rounded-xl bg-black/75 flex flex-col justify-center min-w-[50%] border-[3px] border-solid border-white">
             {children}
         </div>
     )

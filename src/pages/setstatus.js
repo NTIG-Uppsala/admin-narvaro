@@ -2,63 +2,54 @@ import Link from 'next/link';
 import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import io from 'socket.io-client';
-import { useRouter } from 'next/router'
-
-import Person from '../components/SetPersonStatus';
-
 import Head from 'next/head';
+
+
+import Background from '../components/Background'
+import Logo from '../components/Logo'
+import { Container } from '../components/Containers'
+import Checkbox from '../components/CheckboxSlider'
+
+const Person = (props) => {
+    return (
+        <div className={((props.id % 2 == 0) ? "bg-stone-700/50" : "") + " flex flex-row gap-[50px] items-center justify-between  pt-3 pb-3 md:pt-6 md:pb-6 px-4"}>
+            <div id="name" className="text-left mr-5">
+                <p className="text-lg md:text-3xl">{props.name}</p>
+            </div>
+            <div id="slider" className="text-right ml-5">
+                <Checkbox _id={props._id} name={props.name} status={props.status} />
+            </div>
+        </div>
+    )
+}
+
+/* Render the person */
 
 const Input = (props) => {
     const socket = io();
-    const [people, setPeople] = useState([]);
+    const [people, setPeople] = useState(props.users);
     const [verified, setVerified] = useState(props.verified);
-
-    const router = useRouter()
 
     /* 
         When the Page is loaded
         - add a socket listener for status update
     */
     useEffect(() => {
-        if (router.isReady) {
-            socket.on('status update', () => {
-                console.log("STATUS UPDATE")
-                axios.post('/api/verifyurl', { uri: router.query.auth }).then(res => {
-                    setVerified(res.data.verified)
-                    setPeople(() => {
-                        return render_people(res.data.users)
-                    })
+        socket.on('status update', () => {
+            console.log("STATUS UPDATE")
+            axios.post('/api/verifyurl', { uri: props.uri }).then(res => {
+                console.log(res.data)
+                setVerified(res.data.verified)
+                setPeople(() => {
+                    if (res.data.verified === true) {
+                        return res.data.users;
+                    }
+                })
 
-                });
             });
-        }
-    }, [router.isReady]);
+        });
+    }, []);
 
-    useEffect(() => {
-        setPeople(() => {
-            return render_people(props.users)
-        })
-    }, [])
-
-    /* Render the person */
-    const render_people = (person_object) => {
-        if (person_object.length < 1) {
-            return [];
-        }
-        else {
-            return person_object.map((item, index) => {
-                return (
-                    <Person
-                        key={index}
-                        id={index + 1}
-                        _id={item._id}
-                        name={item.name}
-                        status={item.status}
-                    />
-                )
-            })
-        };
-    }
 
 
     return (
@@ -66,15 +57,10 @@ const Input = (props) => {
             <Head>
                 <title>Sätt status</title>
             </Head>
-
-            <div className="backgroundImage">
-                <img src="images/backgroundNTI.jpg" alt="bakgrunds bild på hemsidan" />
-            </div>
-
-            <img id="logo" src="images/nti_logo_footer.svg" alt="ntis logga" />
-
-            <div className="grid-center">
-                <div className="message-container-wrapper">
+            <Background />
+            <Logo />
+            <div className="h-screen w-full grid place-items-center">
+                <Container>
                     {(!verified) ?
                         <>
                             <h3>Tillträde förbjuden</h3>
@@ -82,23 +68,30 @@ const Input = (props) => {
                         </>
                         :
                         <>
-                            <div id="main">
-                                <h1>Ange din status</h1>
-                                {(!people.length) ?
-                                    <p>Laddar innehållet..</p>
-                                    :
-                                    people
+                            <h1 className="font-lg text-3xl font-bold text-center">Set status</h1>
+                            <div className="flex flex-col md:pt-12">
+                                {
+                                    people && people.map((item, index) => {
+                                        return (
+                                            <Person
+                                                key={index}
+                                                id={index + 1}
+                                                _id={item._id}
+                                                name={item.name}
+                                                status={item.status}
+                                            />
+                                        )
+                                    })
+
                                 }
                             </div>
-                            <div>
-                                <Link href="/">
-                                    <a id="status-link-hover">Visa Status</a>
-                                </Link>
-                            </div>
+                            <Link href="/">
+                                <a id="status-link-hover" className='text-center font-2xl font-bold pt-5 hover:text-slate-300 duration-100'>Visa Status</a>
+                            </Link>
                         </>
                     }
-                </div>
-            </div>
+                </Container>
+            </div >
         </>
     );
 }
@@ -118,7 +111,8 @@ export const getServerSideProps = async (context) => {
         return {
             props: {
                 verified: res.data.verified,
-                users: res.data.users
+                users: res.data.users,
+                uri: context.query.auth
             }
         }
     }

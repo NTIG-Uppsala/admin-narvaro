@@ -2,9 +2,49 @@ import axios from 'axios';
 import React, { useState, useEffect } from "react";
 import io from 'socket.io-client';
 
-import Person from '../components/PersonStatus'
+/* import Person from '../components/PersonStatus' */
+import { Container } from '../components/Containers'
+import Background from '../components/Background'
+import Logo from '../components/Logo'
 
 import Head from 'next/head'
+import moment from 'moment';
+import 'moment/locale/sv';
+
+const Person = (props) => {
+    const [latest, setLatest] = useState(props.latest_change)
+    const [latest_change, setLatestChange] = useState(() => { return moment(props.latest_change).fromNow() });
+
+    moment.locale('sv')
+    const update_latest_change = () => {
+        return setLatestChange(moment(latest).fromNow())
+    }
+
+    useEffect(() => {
+        console.log("useEffect in person")
+        /* Will update the from now every minute */
+        setLatestChange(() => { return moment(props.latest_change).fromNow() })
+
+        setInterval(update_latest_change, 60000);
+
+    }, [props.latest_change])
+
+
+    return (
+        <div className={((props.id % 2 == 0) ? "bg-stone-700/50" : "") + " flex flex-row gap-[50px] justify-between pt-3 pt:3 md:pt-6 md:pb-6 sm:pb-4 sm:pt-4"}>
+            <div id="name" className="text-left mr-5">
+                <p className="text-lg md:text-3xl break-keep">{props.name}</p>
+                <span className="text-xs md:text-lg ">{props.role}</span>
+            </div>
+            <div id="status" className="text-right">
+                <p className={"text-lg md:text-3xl" + ((props.status) ? " text-[#00ff00]" : " text-[#ff0000]")} id={props._id}>
+                    {(props.status) ? "Tillgänglig" : "Ej tillgänglig"}
+                </p>
+                <span className="text-xs md:text-lg">Senast Uppdaterad:<br />{moment(props.latest_change).fromNow()}</span>
+            </div>
+        </div>
+    )
+}
 
 const Output = () => {
     const [statusArray, setStatusArray] = useState();
@@ -53,20 +93,21 @@ const Output = () => {
             <Head>
                 <title>Administrationsstatus</title>
             </Head>
-            <div className="backgroundImage">
-                <img src="/images/backgroundNTI.jpg" alt="bakgrunds bild på hemsidan" />
-            </div>
+            <Background />
+            <Logo />
 
-            <img id="logo" src="images/nti_logo_footer.svg" alt="ntis logga" />
-            <div className="grid-center">
-                <div className="message-container-wrapper">
-                    <h1>Status</h1>
-                    <div id="statusDiv">
+            <div className="h-screen w-full grid place-items-center">
+                <Container>
+                    <h1 className="font-lg text-5xl font-bold text-center">Status</h1>
+                    <div className="flex flex-col md:pt-12">
                         {(statusArray === undefined) ?
                             <h1>Laddar innehållet..</h1> : statusArray}
+
                     </div>
-                </div>
+                </Container>
+
             </div>
+
         </>
     )
 }
