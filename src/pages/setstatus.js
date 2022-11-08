@@ -8,26 +8,49 @@ import Head from 'next/head';
 import Background from '../components/Background'
 import Logo from '../components/Logo'
 import { Container } from '../components/Containers'
-import Checkbox from '../components/CheckboxSlider'
 
 const Person = (props) => {
+    const [checked, setChecked] = useState(props.status);
+    const socket = io();
+
+    // https://bobbyhadz.com/blog/react-check-if-checkbox-is-checked
+    const handleCheckboxChange = (event) => {
+        let return_value = {
+            id: event.target.id,
+            status: event.target.checked
+        }
+
+        setChecked(event.target.checked)
+
+        socket.emit("status change", return_value)
+        console.log(checked)
+    }
+
     return (
         <div className={((props.id % 2 == 0) ? "bg-stone-700/50" : "") + " flex flex-row gap-[50px] items-center justify-between  pt-3 pb-3 md:pt-6 md:pb-6 px-4"}>
             <div id="name" className="text-left mr-5">
                 <p className="text-lg md:text-3xl">{props.name}</p>
             </div>
             <div id="slider" className="text-right ml-5">
-                <Checkbox _id={props._id} name={props.name} status={props.status} />
+                <label htmlFor={props._id} className="inline-flex relative items-center cursor-pointer">
+                    <input
+                        type="checkbox"
+                        id={props._id}
+                        onChange={handleCheckboxChange}
+                        defaultChecked={checked}
+                        className="sr-only peer"
+                    />
+                    <div id={'slider-' + props._id} className="w-11 h-6 bg-red-500 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-500 duration-500"></div>
+                </label>
+
             </div>
         </div>
     )
 }
 
-/* Render the person */
-
 const Input = (props) => {
     const socket = io();
-    const [people, setPeople] = useState(props.users);
+    const [people, setPeople] = useState(props.users || [{}]);
     const [verified, setVerified] = useState(props.verified);
 
     /* 
@@ -71,7 +94,8 @@ const Input = (props) => {
                             <h1 className="font-lg text-3xl font-bold text-center">Set status</h1>
                             <div className="flex flex-col md:pt-12">
                                 {
-                                    people && people.map((item, index) => {
+                                    people.map((item, index) => {
+                                        console.log("ITEM", item)
                                         return (
                                             <Person
                                                 key={index}
