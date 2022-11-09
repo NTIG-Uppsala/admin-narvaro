@@ -10,7 +10,6 @@ import { Container } from '../components/Containers'
 
 const Person = (props) => {
     const [checked, setChecked] = useState(props.status || false);
-    const socket = io();
 
     useEffect(() => {
         setChecked(props.status)

@@ -31,12 +31,6 @@ export default () => {
         console.log(password)
     }
 
-    /* Changes password visibility */
-
-    const passwordState = () => {
-        setShowPassword(!showPassword)
-    }
-
     return (
         <>
             <Head>
