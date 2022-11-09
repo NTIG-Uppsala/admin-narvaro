@@ -69,7 +69,7 @@ const WebPage = (props) => {
                 <Container>
                     <h1 className="font-lg text-5xl font-bold text-center">Status</h1>
                     <div className="flex flex-col md:pt-12">
-                        {people.map((item, index) => { return <Person key={index} id={index + 1} {...item} /> })}
+                        {people && people.map((item, index) => { return <Person key={index} id={index + 1} {...item} /> })}
                     </div>
                 </Container>
 
