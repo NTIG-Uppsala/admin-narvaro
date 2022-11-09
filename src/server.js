@@ -77,26 +77,3 @@ nextApp.prepare().then(async () => {
         console.log("Server is running on port 8000")
     });
 });
-
-/* notifies console when someone connects to server socket */
-io.on('connection', (socket) => {
-    /* A event for changes to the status */
-    socket.on('status change', async (response) => {
-        console.log(response)
-        console.log("STATUS CHANGE")
-
-        /* Update status of person in database */
-        database_instance.update_user(response.id, {
-            status: response.status,
-            latest_change: new Date()
-        })
-            .then((result) => {
-                console.log("Updated user status, result ->", result)
-                io.emit("status update")
-            }).catch((err) => {
-                console.log(err)
-            });
-
-    });
-
-});

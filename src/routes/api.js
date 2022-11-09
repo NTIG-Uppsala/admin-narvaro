@@ -24,6 +24,26 @@ apiRouter.get('/getgroups', async (req, res) => {
     return res.json(database_response)
 })
 
+
+apiRouter.post('/setstatus', async (req, res) => {
+    let data = req.body
+
+    req.io.emit("status update", data)
+
+    database_instance.update_user(data.id, {
+        status: data.status,
+        latest_change: new Date()
+    })
+        .then((result) => {
+            console.log("Updated user status, result ->", result)
+            return res.status(200).json({})
+        }).catch((err) => {
+            console.log(err)
+            req.io.emit("status update", { ...data, status: !data.status, error: err })
+            return res.status(401).json({})
+        });
+})
+
 /* Handles when users are updated on the dashboard */
 apiRouter.post('/updateusers', (req, res) => {
     if (!req.session.logged_in) {

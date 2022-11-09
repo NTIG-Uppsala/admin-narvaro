@@ -162,11 +162,11 @@ const DashboardItem = (props) => {
                     </div>
                     <div>
                         <p className='text-2xl uppercase font-bold'>Behörighet</p>
-                        <Select options={person.privileges} defaultSelected={person.privilege} onChangeHandler={(e) => { setPerson({ ...person, privilege_id: e.target.value }) }} />
+                        <Select options={person.privileges} defaultSelected={person.privilege} onChangeHandler={(e) => { console.log(e); setPerson({ ...person, privilege: e.target.value }) }} />
                     </div>
                     <div>
                         <p className='text-2xl uppercase font-bold'>Grupp</p>
-                        <Select options={person.groups} defaultSelected={person.group} onChangeHandler={(e) => { setPerson({ ...person, privilege_id: e.target.value }) }} />
+                        <Select options={person.groups} defaultSelected={person.group} onChangeHandler={(e) => { setPerson({ ...person, group: e.target.value }) }} />
                     </div>
                     <div>
                         <p className='text-2xl uppercase font-bold'>Personlig Länk</p>
@@ -198,22 +198,22 @@ const DashboardItem = (props) => {
                 <>
 
                     <div>
-                        <p className='text-3xl mb-2'>{person.name}</p>
-                        <p className='text-2xl'>{person.role}</p>
+                        <p className='text-3xl mb-2'>{props.name}</p>
+                        <p className='text-2xl'>{props.role}</p>
 
                     </div>
                     <div>
                         <p className='text-2xl font-bold'>Behörighet</p>
-                        <p className='bg-transparent text-white border-2 p-4 rounded-lg border-white mb-5 mt-5'>{person.privilege_name}</p>
+                        <p className='bg-transparent text-white border-2 p-4 rounded-lg border-white mb-5 mt-5'>{props.privilege_name}</p>
                     </div>
                     <div>
                         <p className='text-2xl uppercase font-bold'>Grupp</p>
-                        <p className='bg-transparent text-white border-2 p-4 rounded-lg border-white mb-5 mt-5'>{person.group_name}</p>
+                        <p className='bg-transparent text-white border-2 p-4 rounded-lg border-white mb-5 mt-5'>{props.group_name}</p>
                     </div>
                     <div>
                         <p className='text-2xl uppercase font-bold'>Personlig Länk</p>
                         <div className='flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5 mt-5'>
-                            <p>https://narvaro.ntig.net/setstatus?auth={person.uri}</p>
+                            <p>https://narvaro.ntig.net/setstatus?auth={props.uri}</p>
                             <button onClick={copyToClipboard}>
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copy" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
                                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -236,43 +236,34 @@ const DashboardItem = (props) => {
 }
 
 const Dashboard = (props) => {
-    const [people, setPeople] = useState([]);
+    const [people, setPeople] = useState(new Map(
+        props.users.map((user) => [user._id, <DashboardItem
+            key={user._id}
+            {...user} // object of user values from api
+            groups={props.groups}
+            privileges={props.privileges}
+            group_name={props.groups.find((group) => group._id == user.group).display_name}
+            privilege_name={props.privileges.find((privilege) => privilege._id == user.privilege).display_name}
+        />])
+    ))
 
-    /* When the page is rendered, get all users and create a people component */
-    useEffect(() => {
-        /* Renders all users to the page after getting users from api */
-        axios.get("/api/getusers").then((response) => {
+    const addPerson = () => {
+        // https://stackoverflow.com/questions/64517770/how-to-add-value-to-map-initialized-in-state-using-react
 
-            const peopleFromApi = response.data.map((user) => (
-                <DashboardItem
-                    key={user.id}
-                    {...user} // object of user values from api
-                    groups={props.groups}
-                    privileges={props.privileges}
-                    group_name={props.groups.find((group) => group._id == user.group).display_name}
-                    privilege_name={props.privileges.find((privilege) => privilege._id == user.privilege).display_name}
-                />
-            ));
-            setPeople(peopleFromApi);
-        });
-    }, []);
-
-    const newPerson = () => {
-        let _person = (
-            <DashboardItem
-                key={people.length}
-                name="Ny Användare"
-                role="Ny Roll"
-                group={props.groups[0]._id}
-                privilege={props.privileges[0]._id}
-                groups={props.groups}
-                privileges={props.privileges}
-                group_name={props.groups[0].display_name}
-                privilege_name={props.privileges[0].display_name}
-                editing={true}
-            />
-        )
-        setPeople([...people, _person]);
+        const updated_map = new Map(people)
+        updated_map.set(updated_map.size.toString(), <DashboardItem
+            key={updated_map.size}
+            name="Ny Användare"
+            role="Ny Roll"
+            group={props.groups[0]._id}
+            privilege={props.privileges[0]._id}
+            groups={props.groups}
+            privileges={props.privileges}
+            group_name={props.groups[0].display_name}
+            privilege_name={props.privileges[0].display_name}
+            editing={true}
+        />)
+        setPeople(updated_map)
     }
 
     return (
@@ -285,9 +276,8 @@ const Dashboard = (props) => {
             <Logo />
 
             <div className="h-screen w-full flex flex-wrap justify-center py-5 gap-[50px]">
-                {(people.length == 0) ? <h1>Laddar innehållet..</h1> : people}
-
-                <AddUserButton handler={newPerson} />
+                {!people.length && [...people.keys()].map(item => people.get(item))}
+                <AddUserButton handler={addPerson} />
             </div>
         </>
     );
@@ -313,10 +303,13 @@ export const getServerSideProps = async (context) => {
 
         let privileges = await axios.get(`${process.env.HOST_URL}/api/getprivileges`)
         let groups = await axios.get(`${process.env.HOST_URL}/api/getgroups`)
+        let users = await axios.get(`${process.env.HOST_URL}/api/getusers`)
+
         return {
             props: {
                 groups: groups.data,
-                privileges: privileges.data
+                privileges: privileges.data,
+                users: users.data
             }
         }
     }
