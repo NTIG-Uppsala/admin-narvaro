@@ -11,38 +11,39 @@ import moment from 'moment';
 import 'moment/locale/sv';
 moment.locale('sv')
 
-const Person = (props) => {
-    const [latest_change, setLatestChange] = useState(() => moment(props.latest_change).fromNow());
-
-    const update_latest_change = () => setLatestChange(() => moment(props.latest_change).fromNow());
-    useEffect(() => {
-        /* Will update the from Last Updated text every minute */
-        setInterval(update_latest_change, 60000);
-    }, [])
-
-    useEffect(() => {
-        update_latest_change()
-    }, [props.latest_change])
-
-
-    return (
-        <div className={((props.id % 2 == 0) ? "bg-stone-700/50" : "") + " flex flex-row pr-6 pl-6 md:gap-x-32 lg:gap-x-64 justify-between items-center py-6 px-3 md:py-3"}>
-            <div id="name" className="text-left mr-5">
-                <p className="text-xl md:text-3xl break-keep">{props.name}</p>
-                <span className="text-xs md:text-sm lg:text-base">{props.role}</span>
-            </div>
-            <div id="status" className="text-right">
-                <p className={"text-xl md:text-3xl" + ((props.status) ? " text-[#00ff00]" : " text-[#ff0000]")} id={props._id}>
-                    {(props.status) ? "Tillgänglig" : "Ej tillgänglig"}
-                </p>
-                <span className="text-xs md:text-sm lg:text-base">Senast Uppdaterad:<br />{latest_change}</span>
-            </div>
-        </div>
-    )
-}
 
 const WebPage = (props) => {
     const [people, setPeople] = useState(props.users)
+    const Person = (propscomp) => {
+        const [latest_change, setLatestChange] = useState(moment(propscomp.latest_change).fromNow());
+
+        useEffect(() => {
+            /* Will update the from Last Updated text every minute */
+            setInterval(() => {
+                setLatestChange(moment(propscomp.latest_change).fromNow())
+            }, 60000);
+        }, [])
+
+        useEffect(() => {
+            setLatestChange(moment(propscomp.latest_change).fromNow())
+        }, [propscomp.latest_change])
+
+
+        return (
+            <div className={((propscomp.id % 2 == 0) ? "bg-stone-700/50" : "") + " flex flex-row pr-6 pl-6 md:gap-x-32 lg:gap-x-64 justify-between items-center py-6 px-3 md:py-3"}>
+                <div id="name" className="text-left mr-5">
+                    <p className="text-xl md:text-3xl break-keep">{propscomp.name}</p>
+                    <span className="text-xs md:text-sm lg:text-base">{propscomp.role}</span>
+                </div>
+                <div id="status" className="text-right">
+                    <p className={"text-xl md:text-3xl" + ((propscomp.status) ? " text-[#00ff00]" : " text-[#ff0000]")} id={propscomp._id}>
+                        {(propscomp.status) ? "Tillgänglig" : "Ej tillgänglig"}
+                    </p>
+                    <span className="text-xs md:text-sm lg:text-base">Senast Uppdaterad:<br />{latest_change}</span>
+                </div>
+            </div>
+        )
+    }
 
     const socket = io();
 
