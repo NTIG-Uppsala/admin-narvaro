@@ -2,17 +2,12 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 import express from 'express'
-import session from 'express-session'
-
-import { v4 as uuidv4 } from 'uuid';
 import next from 'next';
 import http from 'http';
 import bodyParser from 'body-parser';
 import { Server as SocketServer } from 'socket.io'
 
-import MongoStore from 'connect-mongo';
-
-import Database, { database_url } from './Database.js';
+import Database from './libs/Database.js';
 import apiRouter from './routes/api.js';
 
 const database_instance = new Database();
@@ -37,24 +32,6 @@ nextApp.prepare().then(async () => {
     server.use(bodyParser.urlencoded({
         extended: true
     }));
-
-    // https://github.com/expressjs/session
-    let time_to_live = 1000 * 60 * 10; // 10 minutes
-    server.use(session({
-        store: MongoStore.create({
-            mongoUrl: database_url,
-            ttl: time_to_live,
-        }),
-        secret: process.env.SESSION_SECRET,
-        genid: () => { return uuidv4() },
-        saveUninitialized: true,
-        resave: false,
-        cookie: {
-            secure: false,
-            maxAge: time_to_live,
-            sameSite: true
-        }
-    }))
 
     server.use(express.json());
 
