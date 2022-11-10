@@ -67,7 +67,7 @@ export default () => {
                             </label>
                         </div> */}
                         <div>
-                            <label className="flex flex-row w-full justify-center items-center rounded-lg border-2 border-white">
+                            <div className="flex flex-row w-full justify-center items-center rounded-lg border-2 border-white">
                                 <LockIcon />
                                 <input type={(showPassword) ? 'text' : 'password'} name='password' id='password' placeholder="Lösenord" className="bg-transparent rounded-md p-2 focus:outline-none" onKeyPress={tryLogin} onChange={updateState} />
                                 <button id='show-password' onClick={() => { setShowPassword(!showPassword) }} className='mr-2'>
@@ -78,7 +78,7 @@ export default () => {
                                             <EyeIcon />
                                     }
                                 </button>
-                            </label>
+                            </div>
                         </div>
                         <div>
                             <button className="bg-transparent border-[3px] p-3 duration-150 hover:bg-slate-100 hover:text-black border-white text-white rounded-md" onClick={tryLogin}>Logga in</button>

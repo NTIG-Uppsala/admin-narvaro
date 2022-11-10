@@ -31,11 +31,11 @@ const WebPage = (props) => {
 
         return (
             <div className={((propscomp.id % 2 == 0) ? "bg-stone-700/50" : "") + " flex flex-row pr-6 pl-6 md:gap-x-32 lg:gap-x-64 justify-between items-center py-6 px-3 md:py-3"}>
-                <div id="name" className="text-left mr-5">
+                <div className="text-left mr-5">
                     <p className="text-xl md:text-3xl break-keep">{propscomp.name}</p>
                     <span className="text-xs md:text-sm lg:text-base">{propscomp.role}</span>
                 </div>
-                <div id="status" className="text-right">
+                <div className="text-right">
                     <p className={"text-xl md:text-3xl" + ((propscomp.status) ? " text-[#00ff00]" : " text-[#ff0000]")} id={propscomp._id}>
                         {(propscomp.status) ? "Tillgänglig" : "Ej tillgänglig"}
                     </p>
