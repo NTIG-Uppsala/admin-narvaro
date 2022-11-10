@@ -44,7 +44,7 @@ apiRouter.get('/getgroups', async (req, res) => {
 })
 
 
-apiRouter.post('/setstatus', authenticateTokenMiddleware, async (req, res) => {
+apiRouter.post('/setstatus', async (req, res) => {
     let data = req.body
 
     req.io.emit("status update", data)
