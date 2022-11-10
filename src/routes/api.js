@@ -49,6 +49,7 @@ apiRouter.post('/setstatus', async (req, res) => {
 
     req.io.emit("status update", data)
 
+    console.log("updating status for user ->", data)
     database_instance.update_user(data.id, {
         status: data.status,
         latest_change: new Date()
@@ -87,7 +88,6 @@ apiRouter.post('/updateusers', authenticateTokenMiddleware, (req, res) => {
 apiRouter.post('/deleteuser', authenticateTokenMiddleware, (req, res) => {
 
     let user = req.body.user;
-    console.log("updating status for user ->", user)
     console.log("Deleting user", user.name)
     database_instance.remove_user(user._id)
         .then((result) => {
