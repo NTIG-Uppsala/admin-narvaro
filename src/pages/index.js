@@ -26,16 +26,16 @@ const Person = (props) => {
 
 
     return (
-        <div className={((props.id % 2 == 0) ? "bg-stone-700/50" : "") + " flex flex-row gap-[50px] justify-between pt-3 pt:3 md:pt-6 md:pb-6 sm:pb-4 sm:pt-4"}>
+        <div className={((props.id % 2 == 0) ? "bg-stone-700/50" : "") + " flex flex-row pr-6 pl-6 md:gap-x-32 lg:gap-x-64 justify-between items-center py-6 px-3 md:py-3"}>
             <div id="name" className="text-left mr-5">
                 <p className="text-xl md:text-3xl break-keep">{props.name}</p>
-                <span className="text-xs md:text-lg ">{props.role}</span>
+                <span className="text-xs md:text-sm lg:text-base">{props.role}</span>
             </div>
             <div id="status" className="text-right">
                 <p className={"text-xl md:text-3xl" + ((props.status) ? " text-[#00ff00]" : " text-[#ff0000]")} id={props._id}>
                     {(props.status) ? "Tillgänglig" : "Ej tillgänglig"}
                 </p>
-                <span className="text-xs md:text-lg">Senast Uppdaterad:<br />{latest_change}</span>
+                <span className="text-xs md:text-sm lg:text-base">Senast Uppdaterad:<br />{latest_change}</span>
             </div>
         </div>
     )
