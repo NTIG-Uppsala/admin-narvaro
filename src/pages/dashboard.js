@@ -5,67 +5,10 @@ import { useRouter } from 'next/router'
 import Background from '../components/Background'
 import Logo from '../components/Logo'
 import { DashboardContainer } from '../components/Containers'
+import { CopyIcon, RefreshIcon } from '../components/Icons'
+import { AddUserButton, EditButton, BackButton, SaveButton, DeleteButton } from '../components/Buttons';
 
-const AddUserButton = ({ handler }) => {
-    return (
-        <button className='text-white w-72 h-auto hover:border-2 p-4 rounded-lg hover:border-white hover:bg-black/75 duration-150 mb-5 mt-5' onClick={handler}>
-            <div className='flex flex-col items-center justify-center gap-5'>
-                <p className='text-xl font-bold'>
-                    Lägg till användare
-                </p>
-                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-user-plus" width="52" height="52" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
-                    <path d="M16 11h6m-3 -3v6" />
-                </svg>
-            </div>
-        </button>
-
-    )
-}
-
-
-const EditButton = ({ onClickHandler }) => {
-    return (
-        <button className='bg-transparent text-white border-2 p-4 rounded-lg border-white mb-5 mt-5' onClick={onClickHandler}>
-            <div className='flex flex-row gap-5'>
-                Redigera
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-pencil" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                    <path d="M4 20h4l10.5 -10.5a1.5 1.5 0 0 0 -4 -4l-10.5 10.5v4" />
-                    <line x1="13.5" y1="6.5" x2="17.5" y2="10.5" />
-                </svg>
-            </div>
-        </button>
-    )
-}
-
-const BackButton = ({ onClickHandler }) => {
-    return (
-        <button className='bg-transparent text-white mx-4 border-2 p-4 rounded-lg border-white mb-5 mt-5' onClick={onClickHandler}>
-            Tillbaka
-        </button>
-    )
-}
-
-const SaveButton = ({ onClickHandler }) => {
-    return (
-        <button className='bg-transparent mx-4 text-white border-2 p-4 rounded-lg border-white mb-5 mt-5' onClick={onClickHandler}>
-            Spara
-        </button>
-    )
-}
-
-const DeleteButton = ({ onClickHandler }) => {
-    return (
-        <button className='bg-transparent mx-4 text-white border-2 p-4 rounded-lg border-white mb-5 mt-5' onClick={onClickHandler}>
-            Ta bort
-        </button>
-    )
-}
-
-
+import { getCookie } from 'cookies-next';
 
 const InputField = (props) => {
     return (
@@ -89,35 +32,68 @@ const Select = ({ options, defaultSelected, onChangeHandler }) => {
 const DashboardItem = (props) => {
     const [person, setPerson] = useState(props);
     const [editing, setEditing] = useState(props.editing || false);
+    const [textCopied, setTextCopied] = useState(false)
     const Router = useRouter()
     const toggleEditing = () => {
         setEditing(!editing);
     }
 
     const copyToClipboard = () => {
-        navigator.clipboard.writeText("https://narvaro.ntig.net/setstatus?auth=" + person.uri);
+        // navigator clipboard api needs a secure context (https)
+        let textToCopy = "https://narvaro.ntig.net/setstatus?auth=" + person.uri
+        if (navigator.clipboard && window.isSecureContext) {
+            // navigator clipboard api method'
+            setTextCopied(true)
+            setTimeout(() => setTextCopied(false), 2000)
+            return navigator.clipboard.writeText(textToCopy);
+        } else {
+            // text area method
+            let textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+            // make the textarea out of viewport
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            setTextCopied(true)
+            setTimeout(() => setTextCopied(false), 2000)
+            return new Promise((res, rej) => {
+                // here the magic happens
+                document.execCommand('copy') ? res() : rej();
+                textArea.remove();
+            });
+        }
     }
 
     const submit = () => {
-        axios.post('/api/updateusers', { user: person }).then((response) => {
-            if (response.status == 200) {
-                console.log("success")
-                setEditing(false)
-                Router.reload()
-            }
-        });
+        axios.post('/api/updateusers', { user: person }, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } })
+            .then((response) => {
+                if (response.status == 200) {
+                    console.log("Successfull update -> ", person)
+                    setEditing(false)
+                    Router.reload()
+                }
+            }).catch((err) => {
+                Router.push("/login")
+            })
     }
 
     const deleteUser = () => {
         if (typeof window !== 'undefined') {
             if (window.confirm("Är du säker på att du vill ta bort " + person.name + "?")) {
-                axios.post('/api/deleteuser', { user: person }).then((response) => {
-                    if (response.status == 200) {
-                        console.log("success")
-                        setEditing(false)
-                    }
-                    Router.reload()
-                });
+
+                axios.post('/api/deleteuser', { user: person }, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } })
+                    .then((response) => {
+                        if (response.status == 200) {
+                            console.log("Successfull update -> ", person)
+                            setEditing(false)
+                            Router.reload()
+                        }
+                    }).catch((err) => {
+                        Router.push("/login")
+                    })
             }
         }
     }
@@ -173,22 +149,15 @@ const DashboardItem = (props) => {
                         <div className='flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5 mt-5'>
                             {(person.uri) ? <p>https://narvaro.ntig.net/setstatus?auth={person.uri}</p> : regenerateUri(true)}
                             <button onClick={regenerateUri}>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-refresh" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                    <path d="M20 11a8.1 8.1 0 0 0 -15.5 -2m-.5 -4v4h4" />
-                                    <path d="M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4" />
-                                </svg>
+                                <RefreshIcon />
                             </button>
                             <button onClick={copyToClipboard}>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copy" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                    <rect x="8" y="8" width="12" height="12" rx="2" />
-                                    <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2" />
-                                </svg>
+                                <CopyIcon />
                             </button>
+                            {textCopied && <span>Länk kopierad!</span>}
                         </div>
                     </div>
-                    <div className='text-center'>
+                    <div className='text-center flex flex-row gap-x-4 justify-center'>
                         <BackButton onClickHandler={toggleEditing} />
                         <SaveButton onClickHandler={submit} />
                         <DeleteButton onClickHandler={deleteUser} />
@@ -215,13 +184,9 @@ const DashboardItem = (props) => {
                         <div className='flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5 mt-5'>
                             <p>https://narvaro.ntig.net/setstatus?auth={props.uri}</p>
                             <button onClick={copyToClipboard}>
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copy" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="#ffffff" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                    <rect x="8" y="8" width="12" height="12" rx="2" />
-                                    <path d="M16 8v-2a2 2 0 0 0 -2 -2h-8a2 2 0 0 0 -2 2v8a2 2 0 0 0 2 2h2" />
-                                </svg>
-
+                                <CopyIcon />
                             </button>
+                            {textCopied && <span>Länk kopierad!</span>}
                         </div>
                     </div>
                     <div className='text-center'>
@@ -284,35 +249,36 @@ const Dashboard = (props) => {
 }
 
 export const getServerSideProps = async (context) => {
-    let response = await axios.get(`${process.env.HOST_URL}api/isloggedin`, {
-        headers: {
-            cookie: context.req.headers.cookie
-        }
-    });
-    console.log("response", response.data)
-    if (response.data.result !== true) {
+    try {
 
-        return {
-            redirect: {
-                destination: '/login',
-                permanent: false
+        let response = await axios.get(`${process.env.HOST_URL}api/authorize`, {
+            headers: {
+                'Authorization': `Bearer ${context.req.cookies.token}`
+            }
+        });
+        if (response.status < 400) {
+
+            let privileges = await axios.get(`${process.env.HOST_URL}/api/getprivileges`)
+            let groups = await axios.get(`${process.env.HOST_URL}/api/getgroups`)
+            let users = await axios.get(`${process.env.HOST_URL}/api/getusers`)
+
+            return {
+                props: {
+                    groups: groups.data,
+                    privileges: privileges.data,
+                    users: users.data
+                }
             }
         }
+    } catch (error) {
     }
-    else {
-
-        let privileges = await axios.get(`${process.env.HOST_URL}/api/getprivileges`)
-        let groups = await axios.get(`${process.env.HOST_URL}/api/getgroups`)
-        let users = await axios.get(`${process.env.HOST_URL}/api/getusers`)
-
-        return {
-            props: {
-                groups: groups.data,
-                privileges: privileges.data,
-                users: users.data
-            }
+    return {
+        redirect: {
+            destination: '/login',
+            permanent: false
         }
     }
+
 }
 
 export default Dashboard;

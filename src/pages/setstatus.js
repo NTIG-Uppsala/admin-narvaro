@@ -10,7 +10,6 @@ import { Container } from '../components/Containers'
 
 const Person = (props) => {
     const [checked, setChecked] = useState(props.status || false);
-    const socket = io();
 
     useEffect(() => {
         setChecked(props.status)
@@ -88,10 +87,10 @@ const Input = (props) => {
             <div className="h-screen w-full grid place-items-center">
                 <Container>
                     {(!verified) ?
-                        <>
-                            <h3>Tillträde förbjuden</h3>
-                            <p>Vänligen kolla så att din adress är korrekt</p>
-                        </>
+                        <div className='p-6'>
+                            <h1 className='font-bold text-3xl'>Tillträde förbjuden!</h1>
+                            <p className='text-lg'>Vänligen verifiera länken och försök igen!</p>
+                        </div>
                         :
                         <>
                             <h1 className="font-lg text-3xl font-bold text-center">Set status</h1>
