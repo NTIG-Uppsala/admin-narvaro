@@ -1,11 +1,30 @@
 import Router from 'express';
 
-import Database from '../Database.js';
+import Database from '../libs/Database.js';
+import { generateAccessToken, isTokenValid } from '../libs/jwt.js';
 
 const database_instance = new Database();
 
 
 const apiRouter = Router();
+
+
+function authenticateTokenMiddleware(req, res, next) {
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+
+    if (token === null) return res.sendStatus(401)
+
+    isTokenValid(token).then((result) => {
+        console.log("result", result)
+        req.token_value = result.data
+        next()
+    }).catch((error) => {
+        console.log(error)
+        return res.sendStatus(403)
+    })
+
+}
 
 apiRouter.get('/getusers', async (req, res) => {
     let status_object = await database_instance.get_users();
@@ -25,7 +44,7 @@ apiRouter.get('/getgroups', async (req, res) => {
 })
 
 
-apiRouter.post('/setstatus', async (req, res) => {
+apiRouter.post('/setstatus', authenticateTokenMiddleware, async (req, res) => {
     let data = req.body
 
     req.io.emit("status update", data)
@@ -45,11 +64,7 @@ apiRouter.post('/setstatus', async (req, res) => {
 })
 
 /* Handles when users are updated on the dashboard */
-apiRouter.post('/updateusers', (req, res) => {
-    if (!req.session.logged_in) {
-        return res.status(401).json({ status: "unauthorized" })
-
-    }
+apiRouter.post('/updateusers', authenticateTokenMiddleware, (req, res) => {
     let user = req.body.user;
     console.log(user)
     console.log("Updating user", user.name)
@@ -69,10 +84,7 @@ apiRouter.post('/updateusers', (req, res) => {
     return res.status(200).json({ status: "ok" })
 })
 
-apiRouter.post('/deleteuser', (req, res) => {
-    if (!req.session.logged_in) {
-        return res.status(401).json({ status: "unauthorized" })
-    }
+apiRouter.post('/deleteuser', authenticateTokenMiddleware, (req, res) => {
 
     let user = req.body.user;
     console.log("Deleting user", user.name)
@@ -89,25 +101,22 @@ apiRouter.post('/deleteuser', (req, res) => {
 
 })
 
+apiRouter.post('/login', async (req, res) => {
+    let username = "admin"
+    let password = req.body.password
 
-apiRouter.post('/verifylogin', async (req, res) => {
-
-    let login_result = await database_instance.verify_login("admin", req.body.password);
-
-    req.session.logged_in = login_result
-
-    console.log(req.session.logged_in)
-    console.log("session", req.session);
-    console.log("session id", req.sessionID);
-
-    return res.status(200).json({ result: login_result })
+    let login_result = await database_instance.verify_login(username, password);
+    if (login_result === true) {
+        let newToken = generateAccessToken({ user: username })
+        return res.status(200).json({ token: newToken })
+    }
+    else {
+        return res.sendStatus(403)
+    }
 })
 
-apiRouter.get('/isloggedin', (req, res) => {
-    console.log("is user logged in", req.session.logged_in)
-    console.log("session", req.session);
-    console.log("session id", req.sessionID);
-    return res.status(200).json({ result: (req.session.logged_in == true) ? true : false })
+apiRouter.get('/authorize', authenticateTokenMiddleware, async (req, res) => {
+    return res.status(200).json(req.token_value)
 })
 
 apiRouter.post('/verifyurl', async (req, res) => {
