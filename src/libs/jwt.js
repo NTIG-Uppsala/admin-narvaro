@@ -13,12 +13,7 @@ export const isTokenValid = (token) => {
     })
 }
 
-export const generateAccessToken = (dataObject, should_never_expire = false) => {
-    let ttl = '1h'
-
-    if (should_never_expire)
-        ttl = undefined
-
+export const generateAccessToken = (dataObject, ttl = undefied) => {
     return jwt.sign(dataObject, process.env.JWT_SECRET, { expiresIn: ttl })
 }
 

@@ -67,10 +67,15 @@ export default class Database {
         })
     }
 
-    get_users(filter) {
+    get_users(filter, authorized = false) {
         filter = filter || {};
+
+        let filter_values = "name role _id status order"
+
+        if (authorized) filter_values = "";
+
         return new Promise((resolve, reject) => {
-            this.models.users.find(filter, (err, result) => {
+            this.models.users.find(filter, filter_values, (err, result) => {
                 if (err) {
                     reject(err);
                 }

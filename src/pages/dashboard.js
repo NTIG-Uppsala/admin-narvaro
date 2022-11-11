@@ -260,7 +260,11 @@ export const getServerSideProps = async (context) => {
 
             let privileges = await axios.get(`${process.env.HOST_URL}/api/getprivileges`)
             let groups = await axios.get(`${process.env.HOST_URL}/api/getgroups`)
-            let users = await axios.get(`${process.env.HOST_URL}/api/getusers`)
+            let users = await axios.get(`${process.env.HOST_URL}/api/getusers`, {
+                headers: {
+                    'Authorization': `Bearer ${context.req.cookies.token}`
+                }
+            })
 
             return {
                 props: {
