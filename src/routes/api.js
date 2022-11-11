@@ -27,8 +27,18 @@ function authenticateTokenMiddleware(req, res, next) {
 }
 
 apiRouter.get('/getusers', async (req, res) => {
-    let status_object = await database_instance.get_users();
-    return res.json(status_object);
+    const authHeader = req.headers['authorization']
+    const token = authHeader && authHeader.split(' ')[1]
+
+    isTokenValid(token).then(async (result) => {
+        console.log("result", result)
+        let status_object = await database_instance.get_users({}, true);
+        return res.json(status_object);
+    }).catch(async (error) => {
+        let status_object = await database_instance.get_users();
+        return res.json(status_object);
+    })
+
 });
 
 /* Gets all avaliable privileges */
@@ -44,7 +54,7 @@ apiRouter.get('/getgroups', async (req, res) => {
 })
 
 
-apiRouter.post('/setstatus', async (req, res) => {
+apiRouter.post('/setstatus', authenticateTokenMiddleware, async (req, res) => {
     let data = req.body
 
     req.io.emit("status update", data)
@@ -107,7 +117,7 @@ apiRouter.post('/login', async (req, res) => {
 
     let login_result = await database_instance.verify_login(username, password);
     if (login_result === true) {
-        let newToken = generateAccessToken({ user: username })
+        let newToken = generateAccessToken({ user: username }, '1h')
         return res.status(200).json({ token: newToken })
     }
     else {
@@ -128,14 +138,18 @@ apiRouter.post('/verifyurl', async (req, res) => {
         users: []
     }
 
+
     let user_result;
     let user_array = [];
 
     try {
-        user_result = await database_instance.get_users({ uri: uri })
+        user_result = await database_instance.get_users({ uri: uri }, true)
 
         if (user_result.length == 0)
             return res.json(return_object);
+
+        let token = generateAccessToken({}, '60s')
+        return_object["token"] = token
 
         user_array.push(user_result)
         return_object.verified = true

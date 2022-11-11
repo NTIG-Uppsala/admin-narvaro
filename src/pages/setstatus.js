@@ -8,6 +8,9 @@ import Background from '../components/Background'
 import Logo from '../components/Logo'
 import { Container } from '../components/Containers'
 
+import { getCookie } from 'cookies-next';
+
+
 const Person = (propscomp) => {
     const [checked, setChecked] = useState(propscomp.status || false);
 
@@ -24,7 +27,7 @@ const Person = (propscomp) => {
 
         setChecked(event.target.checked)
 
-        axios.post('/api/setstatus', post_body, (res) => { console.log(res) })
+        axios.post('/api/setstatus', post_body, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } }, (res) => { console.log(res) })
         console.log(checked)
     }
 
@@ -130,6 +133,8 @@ export const getServerSideProps = async (context) => {
     }
     else {
         let res = await axios.post(`${process.env.HOST_URL}api/verifyurl`, { uri: context.query.auth })
+        console.log(res.data)
+        context.res.setHeader('set-cookie', [`token=${res.data.token}`])
         return {
             props: {
                 verified: res.data.verified,
