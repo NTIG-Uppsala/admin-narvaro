@@ -118,7 +118,7 @@ apiRouter.post('/login', async (req, res) => {
 
     let login_result = await database_instance.verify_login(username, password);
     if (login_result === true) {
-        let newToken = generateAccessToken({ user: username }, '1h')
+        let newToken = generateAccessToken({ user: username, role: 'admin' }, '1h')
         return res.status(200).json({ token: newToken })
     }
     else {
@@ -127,7 +127,12 @@ apiRouter.post('/login', async (req, res) => {
 })
 
 apiRouter.get('/authorize', authenticateTokenMiddleware, async (req, res) => {
-    return res.status(200).json(req.token_value)
+    if (req.token_value.role == "admin") {
+        return res.status(200).json(req.token_value)
+    }
+    else {
+        return res.sendStatus(403)
+    }
 })
 
 apiRouter.post('/verifyurl', async (req, res) => {
