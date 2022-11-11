@@ -70,7 +70,7 @@ export default class Database {
     get_users(filter, authorized = false) {
         filter = filter || {};
 
-        let filter_values = "name role _id status order"
+        let filter_values = "name role _id status order latest_change"
 
         if (authorized) filter_values = "";
 
