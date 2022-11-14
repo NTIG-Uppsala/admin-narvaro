@@ -1,63 +1,81 @@
-from machine import Pin
+from machine import Pin, Timer, reset
 import network
 import time
 import urequests
 import json
-led = Pin(1, Pin.OUT)
-pin_in = Pin(2, Pin.IN)
+here_button_pin = Pin(2, Pin.IN)
+not_here_button_pin = Pin(3, Pin.IN) #
+pin_status_here = Pin(20, Pin.OUT)
+pin_status_not_here = Pin(21, Pin.OUT)
+# wifi_active_pin = Pin(20, Pin.OUT)
 
-pin_status_here = Pin(3, Pin.OUT)
-pin_status_not_here = Pin(4, Pin.OUT)
-wifi_active_pin = Pin(20, Pin.OUT)
+# Set up WLAN
 wlan = network.WLAN(network.STA_IF)
+wlan.active(True)
 
-USER_ID = "XXXXX"
-WIFI_SSID = "XXXX"
-WIFI_PASSWORD = "XXXX"
+# Secrets that should not be public
+USER_ID = "XXX"
+WIFI_SSID = "XXX"
+WIFI_PASSWORD = "XXX"
+TOKEN = "XXX"
 
 current_status = False
 is_pressed = False
 
+toggle_here_led = Timer(-1)
+toggle_not_here_led = Timer(-1)
+
 def get_user_status():
-    global current_status, user_ID
-    response = urequests.get("https://narvaro.ntig.net/api/getusers")
-    print(response.status_code)
-    print(response.text)
+    global current_status
+    pin_status_here.value(1)
+    pin_status_not_here.value(1)
+
+    print("Getting users...")
+    response = urequests.get("https://narvaro.ntig.net/api/get/users")
+    print("Getting users", response.status_code)
     users_json = response.json()
     for user in users_json:
         if user["_id"] == USER_ID:
             current_status = user["status"]
             print(f"{user}")  
-#    with open("users.txt", "w") as f:
-#        f.write(response.text)
 
-def set_user_status():
-    global user_ID, current_status
-    if current_status:
-        new_status = False
-    else:
-        new_status = True
-    data_to_send = {"id": USER_ID, "status": new_status}
-    response = urequests.post("https://narvaro.ntig.net/api/setstatus", data=json.dumps(data_to_send), headers={"Content-Type": "application/json"})
-    print(response.status_code)
-    print(response.text)
-    current_status = new_status
+    pin_status_here.value(0)
+    pin_status_not_here.value(0)
+
+
+def set_user_status(status):
+    data_to_send = {"id": USER_ID, "status": status}
+    print("Setting status...")
+    response = urequests.post("https://narvaro.ntig.net/api/setstatus", data=json.dumps(data_to_send), headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
+    print("Setting status", response.status_code)
 
 def button_handler():
-    global led, pin_in, is_pressed
+    global pin_status_here, pin_status_not_here, here_button_pin, not_here_button_pin, current_status
 
-    if pin_in.value() and not is_pressed:
-        is_pressed = True
-        led.value(1)
-        set_user_status()
+    any_button_pressed = False
+
+    if not_here_button_pin.value() and not any_button_pressed:
+        print("Not here button pressed")
+        any_button_pressed = True
+        pin_status_not_here.value(1)
+        pin_status_here.value(0)
+        current_status = False
+        set_user_status(current_status)
+    elif here_button_pin.value() and not any_button_pressed:
+        print("Here button pressed")
+        any_button_pressed = True
+        pin_status_not_here.value(0)
+        pin_status_here.value(1)
+        current_status = True
+        set_user_status(current_status)
     else:
-        led.value(0)
-        is_pressed = False
+        any_button_pressed = False
 
-def wifi_connect():
-    global wifi_active_pin, wlan
-    wlan.active(True)
+def wifi_connect():    
     wlan.connect(WIFI_SSID, WIFI_PASSWORD)
+
+    toggle_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
+    toggle_not_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
 
     max_wait = 10
     while max_wait > 0:
@@ -65,8 +83,10 @@ def wifi_connect():
             break
         print('waiting for connection...')
         max_wait -= 1
-        wifi_active_pin.toggle()
         time.sleep(1)
+
+    toggle_here_led.deinit()
+    toggle_not_here_led.deinit()
 
     print("Internal adress -> ", wlan.ifconfig())   
 
@@ -75,7 +95,7 @@ def main():
     main_led = Pin("LED", Pin.OUT)
     main_led.value(1)
 
-    last_fetched = time.time()
+    last_fetched = 0
     # Main loop
     while True:
         try:
@@ -84,17 +104,15 @@ def main():
                 # Try to connect to wifi
                 wifi_connect()
             else:
-                # If not connected, try to connect
-                wifi_active_pin.value(1)
-
-                if (abs(time.time() - last_fetched)) > 30:
+                # Check if the user status has been updated every 5 minutes
+                if (abs(time.time() - last_fetched)) > 300:
                     last_fetched = time.time()
                     get_user_status()
 
-
                 # Handles button presses
                 button_handler()
-    
+        
+                # Change leds        
                 if current_status:
                     pin_status_here.value(1)
                     pin_status_not_here.value(0)
@@ -103,5 +121,22 @@ def main():
                     pin_status_not_here.value(1)
         except Exception as e:
             print(e)
+            # If something goes wrong, start alternate blinking leds
+            start_time = time.time()
+            pin_status_not_here.value(1)
+            pin_status_here.value(0)
+
+            toggle_not_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
+            toggle_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
+            
+            while time.time() - start_time < 10:
+                pass
+            reset()
+            toggle_not_here_led.deinit()
+            toggle_here_led.deinit()
+
+
+
+        
 
 main()
