@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import io from 'socket.io-client';
 
 import { Container } from '../components/Containers'
@@ -19,9 +19,10 @@ const WebPage = (props) => {
 
         useEffect(() => {
             /* Will update the from Last Updated text every minute */
-            setInterval(() => {
+            let inter = setInterval(() => {
                 setLatestChange(moment(propscomp.latest_change).fromNow())
             }, 60000);
+            return () => clearInterval(inter);
         }, [])
 
         useEffect(() => {
@@ -51,7 +52,7 @@ const WebPage = (props) => {
     useEffect(() => {
         socket.on('status update', (response) => {
             console.log("STATUS UPDATE: \n", response)
-            axios.get('/api/getusers').then(res => {
+            axios.get('/api/get/users').then(res => {
                 console.log("data gotten from api: \n", res.data)
                 setPeople(res.data)
             });
@@ -69,6 +70,9 @@ const WebPage = (props) => {
             <div className="h-screen w-full grid place-items-center">
                 <Container>
                     <h1 className="font-lg text-5xl font-bold text-center">Status</h1>
+                    <noscript>
+                        <p className="text-center">Du har inte javascript aktiverat. Detta kan orsaka att webplatsen inte fungerar som den ska</p>
+                    </noscript>
                     <div className="flex flex-col md:pt-12">
                         {people && people.map((item, index) => { return <Person key={index} id={index + 1} {...item} /> })}
                     </div>
@@ -81,7 +85,7 @@ const WebPage = (props) => {
 }
 
 export async function getServerSideProps(context) {
-    let response = await axios.get(`${process.env.HOST_URL}api/getusers`)
+    let response = await axios.get(`${process.env.HOST_URL}api/get/users`)
 
     return {
         props: {
