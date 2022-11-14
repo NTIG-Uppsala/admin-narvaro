@@ -9,7 +9,7 @@ import { setCookie } from 'cookies-next';
 
 import { EyeIcon, EyeLineIcon, LockIcon } from '../components/Icons';
 
-export default () => {
+const LoginPage = () => {
 
     const [password, setPassword] = useState("");
     const [correctPassword, setCorrectPassword] = useState();
@@ -18,7 +18,7 @@ export default () => {
 
     const tryLogin = (e) => {
         if ((e.type == "click") || (e.type == "keypress" && e.key == 'Enter')) {
-            axios.post('/api/login', { password: password }).then(res => {
+            axios.post('/api/auth/login', { password: password }).then(res => {
                 console.log(res.data.token)
                 console.log(res.status)
                 if (res.status > 400) {
@@ -102,7 +102,7 @@ export default () => {
 export const getServerSideProps = async (context) => {
     try {
 
-        let response = await axios.get(`${process.env.HOST_URL}api/authorize`, {
+        let response = await axios.get(`${process.env.HOST_URL}api/auth/authorize`, {
             headers: {
                 'Authorization': `Bearer ${context.req.cookies.token}`
             }
@@ -116,9 +116,9 @@ export const getServerSideProps = async (context) => {
             }
 
     } catch (error) {
-        console.log(error)
         return { props: {} }
     }
 
 }
 
+export default LoginPage;

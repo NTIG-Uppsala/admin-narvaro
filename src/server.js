@@ -1,30 +1,21 @@
 import dotenv from 'dotenv'
 dotenv.config()
+if (process.env.HOST_URL == undefined) {
+    throw "HOST_URL is required as a variable in .env (eg. HOST_URL=http://localhost:3000/)";
+}
+const dev = process.env.NODE_ENV !== 'production'
 
 import express from 'express'
+import bodyParser from 'body-parser';
 import next from 'next';
 import http from 'http';
-import bodyParser from 'body-parser';
 import { Server as SocketServer } from 'socket.io'
-
-import Database from './libs/Database.js';
-import apiRouter from './routes/api.js';
-
-const database_instance = new Database();
-database_instance.print_uris()
 
 const server = express();
 const http_server = http.createServer(server);
 const io = new SocketServer(http_server);
 
-const dev = process.env.NODE_ENV !== 'production'
-
 const nextApp = next({ dev })
-const nextHandler = nextApp.getRequestHandler()
-
-if (process.env.HOST_URL == undefined) {
-    throw "HOST_URL is required as a variable in .env (eg. HOST_URL=http://localhost:3000/)";
-}
 
 nextApp.prepare().then(async () => {
 
@@ -35,18 +26,14 @@ nextApp.prepare().then(async () => {
 
     server.use(express.json());
 
-    server.use((req, res, callback) => {
+    /* Required for socker server to work with API routes */
+    server.use((req, res, _next) => {
         req.io = io;
-        callback();
+        _next();
     });
-
-    /* API router */
-    server.use('/api', apiRouter);
 
     /* Handle all requests through next */
-    server.get("*", (req, res) => {
-        return nextHandler(req, res)
-    });
+    server.use((req, res) => nextApp.getRequestHandler()(req, res))
 
     /* Listen on port 8000 */
     http_server.listen(8000, (err) => {
