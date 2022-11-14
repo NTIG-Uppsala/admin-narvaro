@@ -1,12 +1,15 @@
 import Link from 'next/link';
 import axios from 'axios';
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import io from 'socket.io-client';
 import Head from 'next/head';
 
 import Background from '../components/Background'
 import Logo from '../components/Logo'
 import { Container } from '../components/Containers'
+
+import { getCookie } from 'cookies-next';
+
 
 const Person = (propscomp) => {
     const [checked, setChecked] = useState(propscomp.status || false);
@@ -24,7 +27,7 @@ const Person = (propscomp) => {
 
         setChecked(event.target.checked)
 
-        axios.post('/api/setstatus', post_body, (res) => { console.log(res) })
+        axios.post('/api/setstatus', post_body, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } }, (res) => { console.log(res) })
         console.log(checked)
     }
 
@@ -62,7 +65,7 @@ const Input = (propscomp) => {
     useEffect(() => {
         socket.on('status update', () => {
             console.log("STATUS UPDATE")
-            axios.post('/api/verifyurl', { uri: propscomp.uri }).then(res => {
+            axios.post('/api/auth/verifyurl', { uri: propscomp.uri }).then(res => {
                 console.log(res.data)
                 setVerified(res.data.verified)
                 setPeople(() => {
@@ -107,8 +110,8 @@ const Input = (propscomp) => {
                                     })
                                 }
                             </div>
-                            <Link href="/">
-                                <a id="status-link-hover" className='text-center font-2xl font-bold pt-5 hover:text-slate-300 duration-100'>Visa Status</a>
+                            <Link href="/" className="text-center font-2xl font-bold pt-5 hover:text-slate-300 duration-100">
+                                Visa Status
                             </Link>
                         </>
                     }
@@ -129,12 +132,26 @@ export const getServerSideProps = async (context) => {
         }
     }
     else {
-        let res = await axios.post(`${process.env.HOST_URL}api/verifyurl`, { uri: context.query.auth })
-        return {
-            props: {
-                verified: res.data.verified,
-                users: res.data.users,
-                uri: context.query.auth
+        try {
+
+            let res = await axios.post(`${process.env.HOST_URL}api/auth/verifyurl`, { uri: context.query.auth })
+            context.res.setHeader('set-cookie', [`token=${res.data.token}`])
+            return {
+                props: {
+                    verified: true,
+                    users: res.data.users,
+                    uri: context.query.auth
+                }
+            }
+        } catch (error) {
+            console.log(error)
+            return {
+                props: {
+                    verified: false,
+                    users: [],
+                    uri: context.query.auth
+
+                }
             }
         }
     }

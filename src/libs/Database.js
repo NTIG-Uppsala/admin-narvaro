@@ -9,8 +9,7 @@ export default class Database {
     constructor() {
         mongoose.connect(database_url, (err) => {
             if (err) throw err;
-
-            return console.log("Connected to database");
+            return;
         })
 
         this.userSchema = new mongoose.Schema({
@@ -67,14 +66,20 @@ export default class Database {
         })
     }
 
-    get_users(filter) {
+    get_users(filter, authorized = false) {
         filter = filter || {};
+
+        let filter_values = "name role _id status order latest_change"
+
+        if (authorized) filter_values = "";
         return new Promise((resolve, reject) => {
-            this.models.users.find(filter, (err, result) => {
+            this.models.users.find(filter, filter_values, (err, result) => {
                 if (err) {
-                    reject(err);
+                    return reject(err);
                 }
-                if (result.length == 1) return resolve(result[0]);
+                console.log("result", result, typeof result)
+                if (result && result.length == 1) return resolve(result[0]);
+                else if (result.length == 0) return resolve([]);
 
                 /* Sort result array after priority key and resolve promise */
                 resolve(result.sort((a, b) => {

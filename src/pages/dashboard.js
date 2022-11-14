@@ -1,10 +1,10 @@
 import axios from 'axios';
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import Background from '../components/Background'
 import Logo from '../components/Logo'
-import { DashboardContainer } from '../components/Containers'
+import { Container } from '../components/Containers'
 import { CopyIcon, RefreshIcon } from '../components/Icons'
 import { AddUserButton, EditButton, BackButton, SaveButton, DeleteButton } from '../components/Buttons';
 
@@ -19,9 +19,9 @@ const InputField = (props) => {
 const Select = ({ options, defaultSelected, onChangeHandler }) => {
     return (
         <select className='bg-transparent text-white border-2 p-4 rounded-lg border-white mb-5 mt-5' defaultValue={defaultSelected} onChange={onChangeHandler}>
-            {options.map((option) => {
+            {options.map((option, key) => {
                 return (
-                    <option className='bg-black text-white' value={option._id}>{option.display_name}</option>
+                    <option key={key} className='bg-black text-white' value={option._id}>{option.display_name}</option>
                 )
             })}
         </select>
@@ -124,83 +124,86 @@ const DashboardItem = (props) => {
     }
 
     return (
+        <div className='basis-1/4'>
+            <Container>
+                {(editing) ?
+                    <div className='p-6'>
 
-        <DashboardContainer>
-            {(editing) ?
-                <>
-
-                    <p className='text-lg font-bold'>Ändrar...</p>
-                    <div>
-                        <InputField placeholder='Namn..' value={person.name} onChangeHandler={(e) => { setPerson({ ...person, name: e.target.value }) }} />
-                    </div>
-                    <div>
-                        <InputField placeholder='Roll..' value={person.role} onChangeHandler={(e) => { setPerson({ ...person, role: e.target.value }) }} />
-                    </div>
-                    <div>
-                        <p className='text-2xl uppercase font-bold'>Behörighet</p>
-                        <Select options={person.privileges} defaultSelected={person.privilege} onChangeHandler={(e) => { console.log(e); setPerson({ ...person, privilege: e.target.value }) }} />
-                    </div>
-                    <div>
-                        <p className='text-2xl uppercase font-bold'>Grupp</p>
-                        <Select options={person.groups} defaultSelected={person.group} onChangeHandler={(e) => { setPerson({ ...person, group: e.target.value }) }} />
-                    </div>
-                    <div>
-                        <p className='text-2xl uppercase font-bold'>Personlig Länk</p>
-                        <div className='flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5 mt-5'>
-                            {(person.uri) ? <p>https://narvaro.ntig.net/setstatus?auth={person.uri}</p> : regenerateUri(true)}
-                            <button onClick={regenerateUri}>
-                                <RefreshIcon />
-                            </button>
-                            <button onClick={copyToClipboard}>
-                                <CopyIcon />
-                            </button>
-                            {textCopied && <span>Länk kopierad!</span>}
+                        <p className='text-lg font-bold'>Ändrar...</p>
+                        <div>
+                            <InputField placeholder='Namn..' value={person.name} onChangeHandler={(e) => { setPerson({ ...person, name: e.target.value }) }} />
+                        </div>
+                        <div>
+                            <InputField placeholder='Roll..' value={person.role} onChangeHandler={(e) => { setPerson({ ...person, role: e.target.value }) }} />
+                        </div>
+                        <div>
+                            <p className='text-2xl uppercase font-bold'>Behörighet</p>
+                            <Select options={person.privileges} defaultSelected={person.privilege} onChangeHandler={(e) => { console.log(e); setPerson({ ...person, privilege: e.target.value }) }} />
+                        </div>
+                        <div>
+                            <p className='text-2xl uppercase font-bold'>Grupp</p>
+                            <Select options={person.groups} defaultSelected={person.group} onChangeHandler={(e) => { setPerson({ ...person, group: e.target.value }) }} />
+                        </div>
+                        <div>
+                            <p className='text-2xl uppercase font-bold'>Personlig Länk</p>
+                            <div className='flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5 mt-5'>
+                                {(person.uri) ? <p>https://narvaro.ntig.net/setstatus?auth={person.uri}</p> : regenerateUri(true)}
+                                <button onClick={regenerateUri}>
+                                    <RefreshIcon />
+                                </button>
+                                <button onClick={copyToClipboard}>
+                                    <CopyIcon />
+                                </button>
+                                {textCopied && <span>Länk kopierad!</span>}
+                            </div>
+                        </div>
+                        <div className='text-center flex flex-row gap-x-4 justify-center'>
+                            <BackButton onClickHandler={toggleEditing} />
+                            <SaveButton onClickHandler={submit} />
+                            <DeleteButton onClickHandler={() => { props.deleteHandler(person) }} />
                         </div>
                     </div>
-                    <div className='text-center flex flex-row gap-x-4 justify-center'>
-                        <BackButton onClickHandler={toggleEditing} />
-                        <SaveButton onClickHandler={submit} />
-                        <DeleteButton onClickHandler={deleteUser} />
-                    </div>
-                </>
-                :
-                <>
+                    :
+                    <div className='p-6'>
 
-                    <div>
-                        <p className='text-3xl mb-2'>{props.name}</p>
-                        <p className='text-2xl'>{props.role}</p>
+                        <div>
+                            <p className='text-3xl mb-2'>{props.name}</p>
+                            <p className='text-2xl'>{props.role}</p>
 
-                    </div>
-                    <div>
-                        <p className='text-2xl font-bold'>Behörighet</p>
-                        <p className='bg-transparent text-white border-2 p-4 rounded-lg border-white mb-5 mt-5'>{props.privilege_name}</p>
-                    </div>
-                    <div>
-                        <p className='text-2xl uppercase font-bold'>Grupp</p>
-                        <p className='bg-transparent text-white border-2 p-4 rounded-lg border-white mb-5 mt-5'>{props.group_name}</p>
-                    </div>
-                    <div>
-                        <p className='text-2xl uppercase font-bold'>Personlig Länk</p>
-                        <div className='flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5 mt-5'>
-                            <p>https://narvaro.ntig.net/setstatus?auth={props.uri}</p>
-                            <button onClick={copyToClipboard}>
-                                <CopyIcon />
-                            </button>
-                            {textCopied && <span>Länk kopierad!</span>}
+                        </div>
+                        <div>
+                            <p className='text-2xl font-bold'>Behörighet</p>
+                            <p className='bg-transparent text-white border-2 p-4 rounded-lg border-white mb-5 mt-5'>{props.privilege_name}</p>
+                        </div>
+                        <div>
+                            <p className='text-2xl uppercase font-bold'>Grupp</p>
+                            <p className='bg-transparent text-white border-2 p-4 rounded-lg border-white mb-5 mt-5'>{props.group_name}</p>
+                        </div>
+                        <div>
+                            <p className='text-2xl uppercase font-bold'>Personlig Länk</p>
+                            <div className='flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5 mt-5'>
+                                <p>https://narvaro.ntig.net/setstatus?auth={props.uri}</p>
+                                <button onClick={copyToClipboard}>
+                                    <CopyIcon />
+                                </button>
+                                {textCopied && <span>Länk kopierad!</span>}
+                            </div>
+                        </div>
+                        <div className='text-center'>
+                            <EditButton onClickHandler={toggleEditing} />
                         </div>
                     </div>
-                    <div className='text-center'>
-                        <EditButton onClickHandler={toggleEditing} />
-                    </div>
-                </>
-            }
+                }
 
-        </DashboardContainer>
+            </Container>
+        </div>
 
     )
 }
 
 const Dashboard = (props) => {
+    const Router = useRouter()
+
     const [people, setPeople] = useState(new Map(
         props.users.map((user) => [user._id, <DashboardItem
             key={user._id}
@@ -209,6 +212,21 @@ const Dashboard = (props) => {
             privileges={props.privileges}
             group_name={props.groups.find((group) => group._id == user.group).display_name}
             privilege_name={props.privileges.find((privilege) => privilege._id == user.privilege).display_name}
+            deleteHandler={() => {
+                const update_map = new Map(people)
+                update_map.delete(user._id)
+                if (typeof window !== 'undefined' && window.confirm("Är du säker på att du vill ta bort " + user.name + "?")) {
+                    axios.post('/api/deleteuser', { user: user }, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } })
+                        .then((response) => {
+                            if (response.status == 200) {
+                                console.log("Successfull update -> ", user)
+                                setPeople(update_map)
+                            }
+                        }).catch((err) => {
+                            Router.push("/login")
+                        })
+                }
+            }}
         />])
     ))
 
@@ -227,6 +245,11 @@ const Dashboard = (props) => {
             group_name={props.groups[0].display_name}
             privilege_name={props.privileges[0].display_name}
             editing={true}
+            deleteHandler={() => {
+                const update_map = new Map(people)
+                update_map.delete(update_map.size.toString())
+                setPeople(update_map)
+            }}
         />)
         setPeople(updated_map)
     }
@@ -239,8 +262,11 @@ const Dashboard = (props) => {
 
             <Background />
             <Logo />
-
-            <div className="h-screen w-full flex flex-wrap justify-center py-5 gap-[50px]">
+            <div className='pt-6 text-center'>
+                <p className='text-4xl font-bold'>Administration</p>
+                <p className='text-2xl'>Hantera användare</p>
+            </div>
+            <div className="h-screen flex flex-wrap justify-center basis-1/3 py-5 md:gap-[40px]">
                 {!people.length && [...people.keys()].map(item => people.get(item))}
                 <AddUserButton handler={addPerson} />
             </div>
@@ -251,16 +277,20 @@ const Dashboard = (props) => {
 export const getServerSideProps = async (context) => {
     try {
 
-        let response = await axios.get(`${process.env.HOST_URL}api/authorize`, {
+        let response = await axios.get(`${process.env.HOST_URL}api/auth/authorize`, {
             headers: {
                 'Authorization': `Bearer ${context.req.cookies.token}`
             }
         });
         if (response.status < 400) {
 
-            let privileges = await axios.get(`${process.env.HOST_URL}/api/getprivileges`)
-            let groups = await axios.get(`${process.env.HOST_URL}/api/getgroups`)
-            let users = await axios.get(`${process.env.HOST_URL}/api/getusers`)
+            let privileges = await axios.get(`${process.env.HOST_URL}/api/get/privileges`)
+            let groups = await axios.get(`${process.env.HOST_URL}/api/get/groups`)
+            let users = await axios.get(`${process.env.HOST_URL}/api/get/users`, {
+                headers: {
+                    'Authorization': `Bearer ${context.req.cookies.token}`
+                }
+            })
 
             return {
                 props: {
