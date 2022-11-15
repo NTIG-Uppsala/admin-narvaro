@@ -97,7 +97,11 @@ The verifyurl route is used for `/setstatus?auth={code}`. The route will take in
 The token route is used to generate JWT tokens. The route takes in a payload as the body which will be compiled into the tokens. The route will return a JWT access token which has a expiration time of 1 hour and a long lived refresh token.
 
 ## /get/:slug
-> Note: CORS is enabled for all requests to `/get/:slug` for the possibility to use the API in other projects
+> Note: CORS is enabled for all requests to `/get/:slug` for the possibility to use the API 
+in other projects
+
+> Note 2: if /get/user[s] is called a jwt token can be sent in the authorization header to get the all the information regarding the user
+
 The /get/:slug route is used to get a user, users, groups or privileges. The route takes in a slug as a parameter. The slug can be one of the following: `user`, `users`, `groups`, `privileges`. The route will then return the requested data after making a query to the database.
 
 if a specific user is requested, the body needs to contain the id of the user.
