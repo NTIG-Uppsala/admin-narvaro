@@ -60,7 +60,7 @@ export default class Database {
             "privileges": check_if_model_defined("privileges", this.privilegeSchema),
             "groups": check_if_model_defined("groups", this.groupSchema),
             "adminUsers": check_if_model_defined("adminusers", this.adminUserSchema),
-            "devices": check_if_model_defined("devices", this.devices),
+            "devices": check_if_model_defined("devices", this.deviceSchema),
             "tokens": check_if_model_defined("tokens", this.tokenSchema)
         }
     }
