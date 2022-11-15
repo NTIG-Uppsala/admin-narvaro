@@ -34,8 +34,9 @@ export default class Database {
         })
 
         this.deviceSchema = new mongoose.Schema({
-            user: { type: mongoose.Types.ObjectId, ref: "users" },
-            device_name: { type: String, required: true, 'default': "Inget namn specifierat" },
+            added: { type: Date, required: true, 'default': Date.now },
+            user: { type: mongoose.Types.ObjectId, ref: "users", unique: true, dropDups: true },
+            device_name: { type: String, required: true, 'default': "Inget namn specifierat", unique: true, dropDups: true },
             token: { type: String, unique: true, dropDups: true }
         })
 
@@ -89,20 +90,24 @@ export default class Database {
 
 
 
-    get_device(token) {
+    get_device(user_id) {
         return new Promise((resolve, reject) => {
-            this.models.devices.findOne({ token: token }, (err, result) => {
+            this.models.devices.findOne({ user: user_id }, (err, result) => {
                 if (err) reject(err);
-                if (result.length == 0) resolve(null);
+                if (!result) resolve(null);
                 else resolve(result);
             })
         })
 
     }
 
-    add_device(device_name, user_id) {
+    add_device(device_name, user_id, token) {
+        this.models.devices.deleteMany({ user: user_id }, (err, result) => {
+            if (err) console.log(err);
+        })
+
         return new Promise((resolve, reject) => {
-            this.models.devices.create({ device_name: device_name, user: user_id }, (err, result) => {
+            this.models.devices.create({ device_name: device_name, user: user_id, token: token }, (err, result) => {
                 if (err) reject(err);
                 else resolve(result);
             })
