@@ -2,6 +2,8 @@ import dotenv from 'dotenv'
 dotenv.config()
 import mongoose from 'mongoose';
 
+import { isTokenValid } from './jwt'
+
 
 export const database_url = (process.env.NODE_ENV == "production") ? process.env.MONGODB_URI : process.env.MONGODB_URI_DEV;
 
@@ -28,7 +30,7 @@ export default class Database {
         })
 
         this.tokenSchema = new mongoose.Schema({
-            token: String,
+            token: { type: String, unique: true, dropDups: true },
         })
 
         this.deviceSchema = new mongoose.Schema({
