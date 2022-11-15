@@ -27,6 +27,15 @@ export default class Database {
             display_name: String
         })
 
+        this.tokenSchema = new mongoose.Schema({
+            token: String,
+        })
+
+        this.deviceSchema = new mongoose.Schema({
+            user: { type: mongoose.Types.ObjectId, ref: "users" },
+            device_name: { type: String, required: true, 'default': "Inget namn specifierat" }
+        })
+
         this.privilegeSchema = new mongoose.Schema({
             display_name: String,
             control: Number
@@ -50,8 +59,42 @@ export default class Database {
             "users": check_if_model_defined("users", this.userSchema),
             "privileges": check_if_model_defined("privileges", this.privilegeSchema),
             "groups": check_if_model_defined("groups", this.groupSchema),
-            "adminUsers": check_if_model_defined("adminusers", this.adminUserSchema)
+            "adminUsers": check_if_model_defined("adminusers", this.adminUserSchema),
+            "devices": check_if_model_defined("devices", this.devices),
+            "tokens": check_if_model_defined("tokens", this.tokenSchema)
         }
+    }
+
+    get_token(token) {
+        return new Promise((resolve, reject) => {
+            this.models.tokens.findOne({ token: token }, (err, result) => {
+                if (err) return reject(err);
+                if (result) return resolve(result);
+                else return resolve(null);
+            })
+        })
+    }
+
+    save_token(token) {
+        return new Promise((resolve, reject) => {
+            this.models.tokens.create({ token: token }, (err, result) => {
+                if (err) reject(err);
+                else resolve(result);
+            })
+        })
+    }
+
+
+
+    get_device(device_id) {
+        return new Promise((resolve, reject) => {
+            this.models.devices.findOne({ _id: device_id }, (err, result) => {
+                if (err) reject(err);
+                if (result.length == 0) resolve(null);
+                else resolve(result);
+            })
+        })
+
     }
 
     get_privileges(filter) {
@@ -77,7 +120,10 @@ export default class Database {
                 if (err) {
                     return reject(err);
                 }
-                console.log("result", result, typeof result)
+                /* 
+                    If only one person return that person
+                    if no person return an empty
+                */
                 if (result && result.length == 1) return resolve(result[0]);
                 else if (result.length == 0) return resolve([]);
 
