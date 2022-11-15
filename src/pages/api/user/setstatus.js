@@ -19,15 +19,15 @@ export default async function handler(req, res) {
     if (typeof data?.status !== "boolean") return res.sendStatus(400)
     try {
         let token_payload = await isTokenValid(token)
-
+        console.log(token_payload)
         /* If token is role device, check if in database  */
         let device;
-        if (token_payload.role === "device") {
-            device = await database_instance.get_device(token)
+        if (token_payload.data.role === "device") {
+            device = await database_instance.get_device(token_payload.data.user_id)
             if (device === null) return res.sendStatus(401)
         }
 
-        let user_id = device?.user || data.id
+        let user_id = device.user || data.id
         let new_status = data.status
 
         req.io.emit("status update", data)
@@ -46,6 +46,7 @@ export default async function handler(req, res) {
             });
 
     } catch (error) {
+        console.log(error)
         return res.sendStatus(403)
     }
 
