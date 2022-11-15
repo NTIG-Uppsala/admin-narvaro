@@ -8,7 +8,7 @@ import Background from '../components/Background'
 import Logo from '../components/Logo'
 import { Container } from '../components/Containers'
 
-import { getCookie } from 'cookies-next';
+import { getCookie, setCookie } from 'cookies-next';
 
 
 const Person = (propscomp) => {
@@ -24,10 +24,12 @@ const Person = (propscomp) => {
             id: event.target.id,
             status: event.target.checked
         }
-
         setChecked(event.target.checked)
+        axios.post('/api/auth/verifyurl', { uri: propscomp.uri }).then(res => {
+            console.log(res.data)
+            axios.post('/api/user/setstatus', post_body, { headers: { 'Authorization': `Bearer ${res.data.token}` } }, (res) => { console.log(res) })
+        });
 
-        axios.post('/api/setstatus', post_body, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } }, (res) => { console.log(res) })
         console.log(checked)
     }
 
@@ -106,6 +108,7 @@ const Input = (propscomp) => {
                                             _id={item._id}
                                             name={item.name}
                                             status={item.status}
+                                            uri={propscomp.uri}
                                         />
                                     })
                                 }

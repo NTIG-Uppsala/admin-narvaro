@@ -2,6 +2,8 @@ import dotenv from 'dotenv'
 dotenv.config()
 import mongoose from 'mongoose';
 
+import { isTokenValid } from './jwt'
+
 
 export const database_url = (process.env.NODE_ENV == "production") ? process.env.MONGODB_URI : process.env.MONGODB_URI_DEV;
 
@@ -27,6 +29,17 @@ export default class Database {
             display_name: String
         })
 
+        this.tokenSchema = new mongoose.Schema({
+            token: { type: String, unique: true, dropDups: true },
+        })
+
+        this.deviceSchema = new mongoose.Schema({
+            added: { type: Date, required: true, 'default': Date.now },
+            user: { type: mongoose.Types.ObjectId, ref: "users", unique: true, dropDups: true },
+            device_name: { type: String, required: true, 'default': "Inget namn specifierat", unique: true, dropDups: true },
+            token: { type: String, unique: true, dropDups: true }
+        })
+
         this.privilegeSchema = new mongoose.Schema({
             display_name: String,
             control: Number
@@ -50,9 +63,57 @@ export default class Database {
             "users": check_if_model_defined("users", this.userSchema),
             "privileges": check_if_model_defined("privileges", this.privilegeSchema),
             "groups": check_if_model_defined("groups", this.groupSchema),
-            "adminUsers": check_if_model_defined("adminusers", this.adminUserSchema)
+            "adminUsers": check_if_model_defined("adminusers", this.adminUserSchema),
+            "devices": check_if_model_defined("devices", this.deviceSchema),
+            "tokens": check_if_model_defined("tokens", this.tokenSchema)
         }
     }
+
+    get_token(token) {
+        return new Promise((resolve, reject) => {
+            this.models.tokens.findOne({ token: token }, (err, result) => {
+                if (err) return reject(err);
+                if (result) return resolve(result);
+                else return resolve(null);
+            })
+        })
+    }
+
+    save_token(token) {
+        return new Promise((resolve, reject) => {
+            this.models.tokens.create({ token: token }, (err, result) => {
+                if (err) reject(err);
+                else resolve(result);
+            })
+        })
+    }
+
+
+
+    get_device(user_id) {
+        return new Promise((resolve, reject) => {
+            this.models.devices.findOne({ user: user_id }, (err, result) => {
+                if (err) reject(err);
+                if (!result) resolve(null);
+                else resolve(result);
+            })
+        })
+
+    }
+
+    add_device(device_name, user_id, token) {
+        this.models.devices.deleteMany({ user: user_id }, (err, result) => {
+            if (err) console.log(err);
+        })
+
+        return new Promise((resolve, reject) => {
+            this.models.devices.create({ device_name: device_name, user: user_id, token: token }, (err, result) => {
+                if (err) reject(err);
+                else resolve(result);
+            })
+        })
+    }
+
 
     get_privileges(filter) {
         filter = filter || {};
@@ -77,7 +138,10 @@ export default class Database {
                 if (err) {
                     return reject(err);
                 }
-                console.log("result", result, typeof result)
+                /* 
+                    If only one person return that person
+                    if no person return an empty
+                */
                 if (result && result.length == 1) return resolve(result[0]);
                 else if (result.length == 0) return resolve([]);
 

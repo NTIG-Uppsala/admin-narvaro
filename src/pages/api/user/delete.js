@@ -1,5 +1,5 @@
-import Database from "../../libs/Database";
-import { isTokenValid } from "../../libs/jwt";
+import Database from "../../../libs/Database";
+import { isTokenValid } from "../../../libs/jwt";
 
 const database_instance = new Database();
 
