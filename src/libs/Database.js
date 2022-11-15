@@ -35,7 +35,8 @@ export default class Database {
 
         this.deviceSchema = new mongoose.Schema({
             user: { type: mongoose.Types.ObjectId, ref: "users" },
-            device_name: { type: String, required: true, 'default': "Inget namn specifierat" }
+            device_name: { type: String, required: true, 'default': "Inget namn specifierat" },
+            token: { type: String, unique: true, dropDups: true }
         })
 
         this.privilegeSchema = new mongoose.Schema({
@@ -88,9 +89,9 @@ export default class Database {
 
 
 
-    get_device(device_id) {
+    get_device(token) {
         return new Promise((resolve, reject) => {
-            this.models.devices.findOne({ _id: device_id }, (err, result) => {
+            this.models.devices.findOne({ token: token }, (err, result) => {
                 if (err) reject(err);
                 if (result.length == 0) resolve(null);
                 else resolve(result);
@@ -98,6 +99,16 @@ export default class Database {
         })
 
     }
+
+    add_device(device_name, user_id) {
+        return new Promise((resolve, reject) => {
+            this.models.devices.create({ device_name: device_name, user: user_id }, (err, result) => {
+                if (err) reject(err);
+                else resolve(result);
+            })
+        })
+    }
+
 
     get_privileges(filter) {
         filter = filter || {};
