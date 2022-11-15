@@ -14,7 +14,7 @@ export const isTokenValid = (token) => {
 }
 
 export const generateAccessToken = (dataObject, ttl = undefined) => {
-    return jwt.sign(dataObject, process.env.JWT_SECRET, { expiresIn: ttl })
+    return jwt.sign(dataObject, process.env.JWT_SECRET, (ttl)? {expiresIn: ttl} : {} )
 }
 
 export const generateRefreshToken = () => {
