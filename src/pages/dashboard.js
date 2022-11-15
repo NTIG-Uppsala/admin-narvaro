@@ -162,13 +162,13 @@ const DashboardItem = (props) => {
                             <p className='text-2xl uppercase font-bold'>Enhet</p>
                             <div className='flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5 mt-5'>
                                 <p className='overflow-x-hidden'>{(!device) ? "Ingen enhet tilldelad" : ""}</p>
-                                <button onClick={regenerateUri}>
+                                {/* <button onClick={regenerateUri}>
                                     <RefreshIcon />
                                 </button>
                                 <button onClick={copyToClipboard}>
                                     <CopyIcon />
                                 </button>
-                                {textCopied && <span>Länk kopierad!</span>}
+                                {textCopied && <span>Länk kopierad!</span>} */}
                             </div>
                         </div>
                         <div className='text-center flex flex-row gap-x-4 justify-center'>
