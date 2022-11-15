@@ -12,7 +12,7 @@ import { getCookie } from 'cookies-next';
 
 const InputField = (props) => {
     return (
-        <input type='text' className='bg-transparent text-white border-b-4 border-white mb-5 mt-5' value={props.value} placeholder={props.placeholder} onChange={props.onChangeHandler} />
+        <input type='text' className='bg-transparent text-white border-b-4 border-white mb-5 mt-5' disabled={props.disabled || false} value={props.value} placeholder={props.placeholder} onChange={props.onChangeHandler} />
     )
 }
 
@@ -33,8 +33,19 @@ const DashboardItem = (props) => {
     const [person, setPerson] = useState(props);
     const [editing, setEditing] = useState(props.editing || false);
     const [textCopied, setTextCopied] = useState(false)
+    const [tokenCopied, setTokenCopied] = useState(false)
     const Router = useRouter()
-    const device = undefined
+    const [device, setDevice] = useState()
+
+    useEffect(() => {
+        axios.post('/api/device', { user: person._id }, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } })
+            .then((response) => {
+                setDevice(response.data)
+            })
+            .catch((error) => {
+            })
+    }, [])
+
     const toggleEditing = () => {
         setEditing(!editing);
     }
@@ -44,8 +55,6 @@ const DashboardItem = (props) => {
         let textToCopy = "https://narvaro.ntig.net/setstatus?auth=" + person.uri
         if (navigator.clipboard && window.isSecureContext) {
             // navigator clipboard api method'
-            setTextCopied(true)
-            setTimeout(() => setTextCopied(false), 2000)
             return navigator.clipboard.writeText(textToCopy);
         } else {
             // text area method
@@ -58,8 +67,14 @@ const DashboardItem = (props) => {
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
-            setTextCopied(true)
-            setTimeout(() => setTextCopied(false), 2000)
+            if (!content) {
+                setTextCopied(true)
+                setTimeout(() => setTextCopied(false), 2000)
+            }
+            else {
+                setTokenCopied(true)
+                setTimeout(() => setTokenCopied(false), 2000)
+            }
             return new Promise((res, rej) => {
                 // here the magic happens
                 document.execCommand('copy') ? res() : rej();
@@ -81,22 +96,15 @@ const DashboardItem = (props) => {
             })
     }
 
-    const deleteUser = () => {
-        if (typeof window !== 'undefined') {
-            if (window.confirm("Är du säker på att du vill ta bort " + person.name + "?")) {
+    const addDevice = () => {
+        axios.post('/api/device/add', { user: person._id, device_name: person._id || "" }, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } })
+            .then((response) => {
+                console.log("Successfull add device -> ", response.data)
+                setDevice(response.data.token)
+            }).catch((err) => {
+                Router.push("/login")
+            })
 
-                axios.post('/api/user/delete', { user: person }, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } })
-                    .then((response) => {
-                        if (response.status == 200) {
-                            console.log("Successfull update -> ", person)
-                            setEditing(false)
-                            Router.reload()
-                        }
-                    }).catch((err) => {
-                        Router.push("/login")
-                    })
-            }
-        }
     }
 
     const regenerateUri = (new_user) => {
@@ -160,15 +168,17 @@ const DashboardItem = (props) => {
                         </div>
                         <div>
                             <p className='text-2xl uppercase font-bold'>Enhet</p>
-                            <div className='flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5 mt-5'>
-                                <p className='overflow-x-hidden'>{(!device) ? "Ingen enhet tilldelad" : ""}</p>
-                                {/* <button onClick={regenerateUri}>
+                            <div className='flex flex-row gap-3 bg-transparent text-white w-auto mb-5 mt-5'>
+                                <InputField value={(!device) ? "Ingen enhet tilldelad" : device.token} disabled={true} />
+                                <button onClick={addDevice}>
                                     <RefreshIcon />
                                 </button>
-                                <button onClick={copyToClipboard}>
+                                <button onClick={() => {
+                                    navigator.clipboard.writeText(device.token)
+                                }}>
                                     <CopyIcon />
+                                    {tokenCopied && <span>Token kopierad!</span>}
                                 </button>
-                                {textCopied && <span>Länk kopierad!</span>} */}
                             </div>
                         </div>
                         <div className='text-center flex flex-row gap-x-4 justify-center'>
