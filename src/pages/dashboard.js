@@ -34,6 +34,7 @@ const DashboardItem = (props) => {
     const [editing, setEditing] = useState(props.editing || false);
     const [textCopied, setTextCopied] = useState(false)
     const Router = useRouter()
+    const device = undefined
     const toggleEditing = () => {
         setEditing(!editing);
     }
@@ -68,7 +69,7 @@ const DashboardItem = (props) => {
     }
 
     const submit = () => {
-        axios.post('/api/updateusers', { user: person }, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } })
+        axios.post('/api/user/update', { user: person }, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } })
             .then((response) => {
                 if (response.status == 200) {
                     console.log("Successfull update -> ", person)
@@ -84,7 +85,7 @@ const DashboardItem = (props) => {
         if (typeof window !== 'undefined') {
             if (window.confirm("Är du säker på att du vill ta bort " + person.name + "?")) {
 
-                axios.post('/api/deleteuser', { user: person }, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } })
+                axios.post('/api/user/delete', { user: person }, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } })
                     .then((response) => {
                         if (response.status == 200) {
                             console.log("Successfull update -> ", person)
@@ -157,6 +158,19 @@ const DashboardItem = (props) => {
                                 {textCopied && <span>Länk kopierad!</span>}
                             </div>
                         </div>
+                        <div>
+                            <p className='text-2xl uppercase font-bold'>Enhet</p>
+                            <div className='flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5 mt-5'>
+                                <p className='overflow-x-hidden'>{(!device) ? "Ingen enhet tilldelad" : ""}</p>
+                                <button onClick={regenerateUri}>
+                                    <RefreshIcon />
+                                </button>
+                                <button onClick={copyToClipboard}>
+                                    <CopyIcon />
+                                </button>
+                                {textCopied && <span>Länk kopierad!</span>}
+                            </div>
+                        </div>
                         <div className='text-center flex flex-row gap-x-4 justify-center'>
                             <BackButton onClickHandler={toggleEditing} />
                             <SaveButton onClickHandler={submit} />
@@ -216,7 +230,7 @@ const Dashboard = (props) => {
                 const update_map = new Map(people)
                 update_map.delete(user._id)
                 if (typeof window !== 'undefined' && window.confirm("Är du säker på att du vill ta bort " + user.name + "?")) {
-                    axios.post('/api/deleteuser', { user: user }, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } })
+                    axios.post('/api/user/delete', { user: user }, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } })
                         .then((response) => {
                             if (response.status == 200) {
                                 console.log("Successfull update -> ", user)
