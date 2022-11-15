@@ -29,9 +29,9 @@ export default async function handler(req, res) {
 
     console.log("generating short lived token to send to /auth/token")
     let token = generateAccessToken({ user: username, role: 'admin' }, '1m')
-    
+
     console.log(`making request to ${process.env.HOST_URL}/api/auth/token`)
-    return axios.post(`${process.env.HOST_URL}/api/auth/token`, payload, {
+    axios.post(`${process.env.HOST_URL}/api/auth/token`, payload, {
         headers: {
             'authorization': `Bearer ${token}`
         }
@@ -41,5 +41,6 @@ export default async function handler(req, res) {
     }).catch((err) => {
         console.log(err)
         return res.sendStatus(500)
-   })
+    })
+    return
 }
