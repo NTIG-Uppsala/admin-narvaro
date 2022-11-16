@@ -14,9 +14,9 @@ wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 
 # Secrets that should not be public
-WIFI_SSID = "XXX"
-WIFI_PASSWORD = "XXX"
-TOKEN = "XXX"
+WIFI_SSID = ""
+WIFI_PASSWORD = ""
+TOKEN = ""
 
 current_status = False
 is_pressed = False
@@ -44,7 +44,7 @@ def get_user_status(user_id):
     for user in users_json:
         if user["_id"] == user_id:
             status = user["status"]
-            latest_change = user["latest_change"]
+            latest_change = user["latest_change_diff"]
             print(f"{user}")  
             break
 
@@ -71,6 +71,7 @@ def button_handler():
         pin_status_here.value(0)
         current_status = False
         set_user_status(current_status)
+        return True
     elif here_button_pin.value() and not any_button_pressed:
         print("Here button pressed")
         any_button_pressed = True
@@ -78,8 +79,10 @@ def button_handler():
         pin_status_here.value(1)
         current_status = True
         set_user_status(current_status)
+        return True
     else:
         any_button_pressed = False
+    return False
 
 def wifi_connect():    
     wlan.connect(WIFI_SSID, WIFI_PASSWORD)
@@ -109,7 +112,8 @@ def main():
     last_fetched = 0
     initial_get = False
     user_id = None
-    latest_change = None
+    latest_change_diff = 0 
+    is_leds_blinking = False
     # Main loop
     while True:
         try:
@@ -124,27 +128,41 @@ def main():
                 # Check if the user status has been updated every 5 minutes
                 if (abs(time.time() - last_fetched)) > 300:
                     last_fetched = time.time()
-                    current_status, latest_change = get_user_status(user_id)
+                    current_status, latest_change_diff = get_user_status(user_id)
 
                 # Handles button presses
-                button_handler()
+                was_pressed = button_handler()
+                if was_pressed:
+                    latest_change_diff = 0
         
-                # Change leds        
-                if current_status:
-                    # Parses the latest change to epoch time and checks if its been more than 24 hours
-                    if (int(time.mktime(time.strptime(latest_change.split(".")[0], "%Y-%m-%dT%H:%M:%S")))- time.time()) > 86400 :
-                        toggle_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
-                    else:
-                        toggle_here_led.deinit()
-                        pin_status_here.value(1)
+                # Change leds  
+                if int(latest_change_diff) > 86400000:
+                    #print("Last changed:", latest_change_diff)
+                    if not is_leds_blinking:
+                        pin_status_here.value(0)
                         pin_status_not_here.value(0)
+    
+                    # If the change is oldar than 24 hours, start blinking leds
+                    if current_status:
+                        if not is_leds_blinking:
+                            is_leds_blinking = True
+                            toggle_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
+                    else:
+                        if not is_leds_blinking:
+                            is_leds_blinking = True
+                            toggle_not_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
                 else:
-                    if (int(time.mktime(time.strptime(latest_change.split(".")[0], "%Y-%m-%dT%H:%M:%S"))) - time.time()) > 10 :
-                        toggle_not_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
-                    else:
+                    if is_leds_blinking:
+                        is_leds_blinking = False
                         toggle_here_led.deinit()
+                        toggle_not_here_led.deinit()
+
+                    if current_status:
                         pin_status_here.value(1)
                         pin_status_not_here.value(0)
+                    else:
+                        pin_status_here.value(0)
+                        pin_status_not_here.value(1)
 
         except Exception as e:
             print(e)
