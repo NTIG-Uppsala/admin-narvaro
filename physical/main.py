@@ -31,7 +31,7 @@ def get_self_user_id():
     return response.json()["user"]
 
 def get_user_status(user_id):
-    global current_status
+    global current_status, latest_change
     pin_status_here.value(1)
     pin_status_not_here.value(1)
 
@@ -40,15 +40,17 @@ def get_user_status(user_id):
     print("Getting users", response.status_code)
     users_json = response.json()
     status = False
+    latest_change = None
     for user in users_json:
         if user["_id"] == user_id:
             status = user["status"]
+            latest_change = user["latest_change"]
             print(f"{user}")  
             break
 
     pin_status_here.value(0)
     pin_status_not_here.value(0)
-    return status
+    return status, latest_change
 
 
 def set_user_status(status):
@@ -107,6 +109,7 @@ def main():
     last_fetched = 0
     initial_get = False
     user_id = None
+    latest_change = None
     # Main loop
     while True:
         try:
@@ -121,18 +124,28 @@ def main():
                 # Check if the user status has been updated every 5 minutes
                 if (abs(time.time() - last_fetched)) > 300:
                     last_fetched = time.time()
-                    current_status = get_user_status(user_id)
+                    current_status, latest_change = get_user_status(user_id)
 
                 # Handles button presses
                 button_handler()
         
                 # Change leds        
                 if current_status:
-                    pin_status_here.value(1)
-                    pin_status_not_here.value(0)
+                    # Parses the latest change to epoch time and checks if its been more than 24 hours
+                    if (int(time.mktime(time.strptime(latest_change.split(".")[0], "%Y-%m-%dT%H:%M:%S")))- time.time()) > 86400 :
+                        toggle_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
+                    else:
+                        toggle_here_led.deinit()
+                        pin_status_here.value(1)
+                        pin_status_not_here.value(0)
                 else:
-                    pin_status_here.value(0)
-                    pin_status_not_here.value(1)
+                    if (int(time.mktime(time.strptime(latest_change.split(".")[0], "%Y-%m-%dT%H:%M:%S"))) - time.time()) > 10 :
+                        toggle_not_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
+                    else:
+                        toggle_here_led.deinit()
+                        pin_status_here.value(1)
+                        pin_status_not_here.value(0)
+
         except Exception as e:
             print(e)
             # If something goes wrong, start alternate blinking leds
