@@ -15,6 +15,9 @@ export default async function (req, res) {
         switch (slug) {
             case "users":
                 let users = await database_instance.get_users({}, authenticated)
+                users = users.map((user) => {
+                    return { ...user._doc, latest_change_diff: (new Date().getTime() - new Date(user.latest_change).getTime()) }
+                })
                 res.status(200).json(users)
                 break;
             case "user":
@@ -26,7 +29,7 @@ export default async function (req, res) {
                 let user = await database_instance.get_users({ _id: req.body.id }, authenticated)
 
                 if (user.length === 0) return res.status(404).send("User not found")
-
+                user = { ...user._doc, latest_change_diff: new Date().getTime() - new Date(user.latest_change).getTime() }
                 res.status(200).json(user)
                 break;
             case "privileges":
