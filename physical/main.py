@@ -14,7 +14,6 @@ wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 
 # Secrets that should not be public
-USER_ID = "XXX"
 WIFI_SSID = "XXX"
 WIFI_PASSWORD = "XXX"
 TOKEN = "XXX"
@@ -25,7 +24,13 @@ is_pressed = False
 toggle_here_led = Timer(-1)
 toggle_not_here_led = Timer(-1)
 
-def get_user_status():
+def get_self_user_id():
+    url = "https://narvaro.ntig.net/api/device"
+    headers = {"Authorization": "Bearer " + TOKEN}
+    response = urequests.post(url, headers=headers)
+    return response.json()["user"]
+
+def get_user_status(user_id):
     global current_status
     pin_status_here.value(1)
     pin_status_not_here.value(1)
@@ -34,19 +39,22 @@ def get_user_status():
     response = urequests.get("https://narvaro.ntig.net/api/get/users")
     print("Getting users", response.status_code)
     users_json = response.json()
+    status = False
     for user in users_json:
-        if user["_id"] == USER_ID:
-            current_status = user["status"]
+        if user["_id"] == user_id:
+            status = user["status"]
             print(f"{user}")  
+            break
 
     pin_status_here.value(0)
     pin_status_not_here.value(0)
+    return status
 
 
 def set_user_status(status):
-    data_to_send = {"id": USER_ID, "status": status}
+    data_to_send = {"status": status}
     print("Setting status...")
-    response = urequests.post("https://narvaro.ntig.net/api/setstatus", data=json.dumps(data_to_send), headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
+    response = urequests.post("https://narvaro.ntig.net/api/user/setstatus", data=json.dumps(data_to_send), headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
     print("Setting status", response.status_code)
 
 def button_handler():
@@ -91,11 +99,14 @@ def wifi_connect():
     print("Internal adress -> ", wlan.ifconfig())   
 
 def main():
+    global current_status
     # Tells us that the device is acutally running the script    
     main_led = Pin("LED", Pin.OUT)
     main_led.value(1)
 
     last_fetched = 0
+    initial_get = False
+    user_id = None
     # Main loop
     while True:
         try:
@@ -104,10 +115,13 @@ def main():
                 # Try to connect to wifi
                 wifi_connect()
             else:
+                if not initial_get or not user_id:
+                    user_id = get_self_user_id()
+                    initial_get = True
                 # Check if the user status has been updated every 5 minutes
                 if (abs(time.time() - last_fetched)) > 300:
                     last_fetched = time.time()
-                    get_user_status()
+                    current_status = get_user_status(user_id)
 
                 # Handles button presses
                 button_handler()
