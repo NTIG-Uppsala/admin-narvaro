@@ -33,18 +33,17 @@ const DashboardItem = (props) => {
     const [person, setPerson] = useState(props);
     const [editing, setEditing] = useState(props.editing || false);
     const [textCopied, setTextCopied] = useState(false)
-    const [tokenCopied, setTokenCopied] = useState(false)
     const Router = useRouter()
     const [device, setDevice] = useState()
 
-    useEffect(() => {
+    /* useEffect(() => {
         axios.post('/api/device', { user: person._id }, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } })
             .then((response) => {
                 setDevice(response.data)
             })
             .catch((error) => {
             })
-    }, [])
+    }, []) */
 
     const toggleEditing = () => {
         setEditing(!editing);
@@ -55,6 +54,8 @@ const DashboardItem = (props) => {
         let textToCopy = "https://narvaro.ntig.net/setstatus?auth=" + person.uri
         if (navigator.clipboard && window.isSecureContext) {
             // navigator clipboard api method'
+            setTextCopied(true)
+            setTimeout(() => setTextCopied(false), 2000)
             return navigator.clipboard.writeText(textToCopy);
         } else {
             // text area method
@@ -67,14 +68,9 @@ const DashboardItem = (props) => {
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
-            if (!content) {
-                setTextCopied(true)
-                setTimeout(() => setTextCopied(false), 2000)
-            }
-            else {
-                setTokenCopied(true)
-                setTimeout(() => setTokenCopied(false), 2000)
-            }
+            setTextCopied(true)
+            setTimeout(() => setTextCopied(false), 2000)
+
             return new Promise((res, rej) => {
                 // here the magic happens
                 document.execCommand('copy') ? res() : rej();
@@ -166,7 +162,7 @@ const DashboardItem = (props) => {
                                 {textCopied && <span>Länk kopierad!</span>}
                             </div>
                         </div>
-                        <div>
+                        {/*                         <div>
                             <p className='text-2xl uppercase font-bold'>Enhet</p>
                             <div className='flex flex-row gap-3 bg-transparent text-white w-auto mb-5 mt-5'>
                                 <InputField value={(!device) ? "Ingen enhet tilldelad" : device.token} disabled={true} />
@@ -180,7 +176,7 @@ const DashboardItem = (props) => {
                                     {tokenCopied && <span>Token kopierad!</span>}
                                 </button>
                             </div>
-                        </div>
+                        </div> */}
                         <div className='text-center flex flex-row gap-x-4 justify-center'>
                             <BackButton onClickHandler={toggleEditing} />
                             <SaveButton onClickHandler={submit} />
