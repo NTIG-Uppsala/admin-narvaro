@@ -27,7 +27,7 @@ export default async function handler(req, res) {
             if (device === null) return res.sendStatus(401)
         }
 
-        let user_id = device.user || data.id
+        let user_id = device?.user || data.id
         let new_status = data.status
 
         req.io.emit("status update", data)
