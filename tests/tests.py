@@ -14,7 +14,7 @@ class CheckWebsite(unittest.TestCase):
     def setUpClass(self):
         service = Service(executable_path=ChromeDriverManager().install())
         options = webdriver.ChromeOptions()
-        #options.add_argument('--headless')
+        options.add_argument('--headless')
         self.driver = webdriver.Chrome(service=service, options=options)
     
     @classmethod
