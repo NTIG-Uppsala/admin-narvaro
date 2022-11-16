@@ -14,9 +14,9 @@ wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 
 # Secrets that should not be public
-WIFI_SSID = "XXX"
-WIFI_PASSWORD = "XXX"
-TOKEN = "XXX"
+WIFI_SSID = ""
+WIFI_PASSWORD = ""
+TOKEN = ""
 
 current_status = False
 is_pressed = False
@@ -31,7 +31,7 @@ def get_self_user_id():
     return response.json()["user"]
 
 def get_user_status(user_id):
-    global current_status
+    global current_status, latest_change
     pin_status_here.value(1)
     pin_status_not_here.value(1)
 
@@ -40,15 +40,17 @@ def get_user_status(user_id):
     print("Getting users", response.status_code)
     users_json = response.json()
     status = False
+    latest_change = None
     for user in users_json:
         if user["_id"] == user_id:
             status = user["status"]
+            latest_change = user["latest_change_diff"]
             print(f"{user}")  
             break
 
     pin_status_here.value(0)
     pin_status_not_here.value(0)
-    return status
+    return status, latest_change
 
 
 def set_user_status(status):
@@ -69,6 +71,7 @@ def button_handler():
         pin_status_here.value(0)
         current_status = False
         set_user_status(current_status)
+        return True
     elif here_button_pin.value() and not any_button_pressed:
         print("Here button pressed")
         any_button_pressed = True
@@ -76,8 +79,10 @@ def button_handler():
         pin_status_here.value(1)
         current_status = True
         set_user_status(current_status)
+        return True
     else:
         any_button_pressed = False
+    return False
 
 def wifi_connect():    
     wlan.connect(WIFI_SSID, WIFI_PASSWORD)
@@ -107,6 +112,8 @@ def main():
     last_fetched = 0
     initial_get = False
     user_id = None
+    latest_change_diff = 0 
+    is_leds_blinking = False
     # Main loop
     while True:
         try:
@@ -121,18 +128,42 @@ def main():
                 # Check if the user status has been updated every 5 minutes
                 if (abs(time.time() - last_fetched)) > 300:
                     last_fetched = time.time()
-                    current_status = get_user_status(user_id)
+                    current_status, latest_change_diff = get_user_status(user_id)
 
                 # Handles button presses
-                button_handler()
+                was_pressed = button_handler()
+                if was_pressed:
+                    latest_change_diff = 0
         
-                # Change leds        
-                if current_status:
-                    pin_status_here.value(1)
-                    pin_status_not_here.value(0)
+                # Change leds  
+                if int(latest_change_diff) > 86400000:
+                    #print("Last changed:", latest_change_diff)
+                    if not is_leds_blinking:
+                        pin_status_here.value(0)
+                        pin_status_not_here.value(0)
+    
+                    # If the change is oldar than 24 hours, start blinking leds
+                    if current_status:
+                        if not is_leds_blinking:
+                            is_leds_blinking = True
+                            toggle_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
+                    else:
+                        if not is_leds_blinking:
+                            is_leds_blinking = True
+                            toggle_not_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
                 else:
-                    pin_status_here.value(0)
-                    pin_status_not_here.value(1)
+                    if is_leds_blinking:
+                        is_leds_blinking = False
+                        toggle_here_led.deinit()
+                        toggle_not_here_led.deinit()
+
+                    if current_status:
+                        pin_status_here.value(1)
+                        pin_status_not_here.value(0)
+                    else:
+                        pin_status_here.value(0)
+                        pin_status_not_here.value(1)
+
         except Exception as e:
             print(e)
             # If something goes wrong, start alternate blinking leds
