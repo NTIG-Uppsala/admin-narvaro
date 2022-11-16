@@ -14,7 +14,10 @@ export default async function handler(req, res) {
     }
     console.log("Request", req.body);
     try {
-        const user_id = req.body?.user || token_payload.data.user_id;
+        const user_id = req.body?.user || token_payload.data.user_id || null;
+
+        if (user_id == null) return res.sendStatus(401)
+
         const device = await database_instance.get_device(user_id);
         console.log("response", device)
         if (device) {
