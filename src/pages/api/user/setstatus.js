@@ -21,9 +21,8 @@ export default async function handler(req, res) {
         let token_payload = await isTokenValid(token)
         console.log(token_payload)
 
-        let user_id = token_payload.data?.user || data.id
+        let user_id = token_payload.data?.user_id || data.id
         let new_status = data.status
-
         req.io.emit("status update", data)
         // If token payload has a device id
         database_instance.update_user(user_id, {
