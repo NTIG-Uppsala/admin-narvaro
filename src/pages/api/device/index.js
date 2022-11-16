@@ -6,14 +6,15 @@ export default async function handler(req, res) {
 
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
+    let token_payload;
     try {
-        let token_payload = await isTokenValid(token)
+        token_payload = await isTokenValid(token)
     } catch (error) {
         return res.sendStatus(401)
     }
     console.log("Request", req.body);
     try {
-        const user_id = req.body.user;
+        const user_id = req.body?.user || token_payload.data.user_id;
         const device = await database_instance.get_device(user_id);
         console.log("response", device)
         if (device) {
