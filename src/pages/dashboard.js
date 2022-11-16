@@ -36,15 +36,6 @@ const DashboardItem = (props) => {
     const Router = useRouter()
     const [device, setDevice] = useState()
 
-    /* useEffect(() => {
-        axios.post('/api/device', { user: person._id }, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } })
-            .then((response) => {
-                setDevice(response.data)
-            })
-            .catch((error) => {
-            })
-    }, []) */
-
     const toggleEditing = () => {
         setEditing(!editing);
     }
@@ -96,7 +87,7 @@ const DashboardItem = (props) => {
         axios.post('/api/device/add', { user: person._id, device_name: person._id || "" }, { headers: { 'Authorization': `Bearer ${getCookie("token")}` } })
             .then((response) => {
                 console.log("Successfull add device -> ", response.data)
-                setDevice(response.data.token)
+                setDevice(response.data)
             }).catch((err) => {
                 Router.push("/login")
             })
@@ -162,10 +153,10 @@ const DashboardItem = (props) => {
                                 {textCopied && <span>Länk kopierad!</span>}
                             </div>
                         </div>
-                        {/*                         <div>
+                        <div>
                             <p className='text-2xl uppercase font-bold'>Enhet</p>
                             <div className='flex flex-row gap-3 bg-transparent text-white w-auto mb-5 mt-5'>
-                                <InputField value={(!device) ? "Ingen enhet tilldelad" : device.token} disabled={true} />
+                                <InputField value={(!device) ? "Klicka för att generera en enhetsnyckel" : device.token} disabled={true} />
                                 <button onClick={addDevice}>
                                     <RefreshIcon />
                                 </button>
@@ -173,10 +164,9 @@ const DashboardItem = (props) => {
                                     navigator.clipboard.writeText(device.token)
                                 }}>
                                     <CopyIcon />
-                                    {tokenCopied && <span>Token kopierad!</span>}
                                 </button>
                             </div>
-                        </div> */}
+                        </div>
                         <div className='text-center flex flex-row gap-x-4 justify-center'>
                             <BackButton onClickHandler={toggleEditing} />
                             <SaveButton onClickHandler={submit} />
