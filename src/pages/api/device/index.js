@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     }
     console.log("Request", req.body);
     try {
-        const user_id = req.body?.user || token_payload.data.user_id || null;
+        const user_id = req.body?.user || token_payload.data?.user_id || null;
 
         if (user_id == null) return res.sendStatus(401)
 
