@@ -168,7 +168,7 @@ const DashboardItem = (props) => {
                             </div>
                         </div>
                         <div className='text-center flex flex-row gap-x-4 justify-center'>
-                            <BackButton onClickHandler={toggleEditing} />
+                            {person._id && <BackButton onClickHandler={toggleEditing} />}
                             <SaveButton onClickHandler={submit} />
                             <DeleteButton onClickHandler={() => { props.deleteHandler(person) }} />
                         </div>
@@ -213,7 +213,7 @@ const DashboardItem = (props) => {
 
 const Dashboard = (props) => {
     const Router = useRouter()
-
+    const [showNewPersonButton, setShowNewPersonButton] = useState(true)
     const [people, setPeople] = useState(new Map(
         props.users.map((user) => [user._id, <DashboardItem
             key={user._id}
@@ -259,9 +259,11 @@ const Dashboard = (props) => {
                 const update_map = new Map(people)
                 update_map.delete(update_map.size.toString())
                 setPeople(update_map)
+                setShowNewPersonButton(true)
             }}
         />)
         setPeople(updated_map)
+        setShowNewPersonButton(false)
     }
 
     return (
@@ -278,7 +280,7 @@ const Dashboard = (props) => {
             </div>
             <div className="h-screen flex flex-wrap justify-center basis-1/3 py-5 md:gap-[40px]">
                 {!people.length && [...people.keys()].map(item => people.get(item))}
-                <AddUserButton handler={addPerson} />
+                {showNewPersonButton && <AddUserButton handler={addPerson} />}
             </div>
         </>
     );
