@@ -28,7 +28,9 @@ def get_self_user_id():
     url = "https://narvaro.ntig.net/api/device"
     headers = {"Authorization": "Bearer " + TOKEN}
     response = urequests.post(url, headers=headers)
-    return response.json()["user_id"]
+    return_data = response.json()["user_id"]
+    response.close()
+    return return_data
 
 def get_user_status(user_id):
     global current_status, latest_change
@@ -39,6 +41,7 @@ def get_user_status(user_id):
     response = urequests.get("https://narvaro.ntig.net/api/get/users")
     print("Getting users", response.status_code)
     users_json = response.json()
+    response.close()
     status = False
     latest_change = None
     for user in users_json:
@@ -58,6 +61,7 @@ def set_user_status(status):
     print("Setting status...")
     response = urequests.post("https://narvaro.ntig.net/api/user/setstatus", data=json.dumps(data_to_send), headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
     print("Setting status", response.status_code)
+    response.close()
 
 def button_handler():
     global pin_status_here, pin_status_not_here, here_button_pin, not_here_button_pin, current_status
