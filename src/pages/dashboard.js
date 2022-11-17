@@ -33,6 +33,7 @@ const DashboardItem = (props) => {
     const [person, setPerson] = useState(props);
     const [editing, setEditing] = useState(props.editing || false);
     const [textCopied, setTextCopied] = useState(false)
+    const [tokenCopied, setTokenCopied] = useState(false)
     const Router = useRouter()
     const [device, setDevice] = useState()
 
@@ -142,7 +143,7 @@ const DashboardItem = (props) => {
                         </div>
                         <div>
                             <p className='text-2xl uppercase font-bold'>Personlig Länk</p>
-                            <div className='flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5 mt-5'>
+                            <div className='flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5'>
                                 {(person.uri) ? <p>https://narvaro.ntig.net/setstatus?auth={person.uri}</p> : regenerateUri(true)}
                                 <button onClick={regenerateUri}>
                                     <RefreshIcon />
@@ -155,16 +156,31 @@ const DashboardItem = (props) => {
                         </div>
                         <div>
                             <p className='text-2xl uppercase font-bold'>Enhet</p>
-                            <div className='flex flex-row gap-3 bg-transparent text-white w-auto mb-5 mt-5'>
-                                <InputField value={(!device) ? "Klicka för att generera en enhetsnyckel" : device.token} disabled={true} />
+                            <div className='flex flex-row gap-3 bg-transparent items-center text-white w-auto mb-5'>
+                                {
+                                    (!device) ?
+                                        <p>Klicka för att generera en enhetsnyckel</p>
+                                    :
+                                        <InputField value={device.token} disabled={true} />
+                                }
                                 <button onClick={addDevice}>
                                     <RefreshIcon />
                                 </button>
-                                <button onClick={() => {
-                                    navigator.clipboard.writeText(device.token)
-                                }}>
-                                    <CopyIcon />
-                                </button>
+                                {
+                                    (device?.token) ?
+                                    <>
+                                        <button onClick={() => {
+                                            navigator.clipboard.writeText(device.token)
+                                            setTokenCopied(true)
+                                            setTimeout(() => setTokenCopied(false), 2000)
+                                        }}>
+                                            <CopyIcon />
+                                        </button>
+                                        {tokenCopied && <span>Nyckel kopierad!</span>}
+                                    </>
+                                    :
+                                    ""
+                                }
                             </div>
                         </div>
                         <div className='text-center flex flex-row gap-x-4 justify-center'>
@@ -176,22 +192,22 @@ const DashboardItem = (props) => {
                     :
                     <div className='p-6'>
 
-                        <div>
+                        <div className='mb-5'>
                             <p className='text-3xl mb-2'>{props.name}</p>
                             <p className='text-2xl'>{props.role}</p>
 
                         </div>
-                        <div>
-                            <p className='text-2xl font-bold'>Behörighet</p>
-                            <p className='bg-transparent text-white border-2 p-4 rounded-lg border-white mb-5 mt-5'>{props.privilege_name}</p>
+                        <div className='mb-5'>
+                            <p className='text-2xl uppercase font-bold'>Behörighet</p>
+                            <p className='bg-transparent text-white border-2 p-4 rounded-lg border-white mb-5'>{props.privilege_name}</p>
                         </div>
-                        <div>
+                        <div className='mb-5'>
                             <p className='text-2xl uppercase font-bold'>Grupp</p>
-                            <p className='bg-transparent text-white border-2 p-4 rounded-lg border-white mb-5 mt-5'>{props.group_name}</p>
+                            <p className='bg-transparent text-white border-2 p-4 rounded-lg border-white mb-5'>{props.group_name}</p>
                         </div>
-                        <div>
+                        <div className='mb-5'>
                             <p className='text-2xl uppercase font-bold'>Personlig Länk</p>
-                            <div className='flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5 mt-5'>
+                            <div className='flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5'>
                                 <p>https://narvaro.ntig.net/setstatus?auth={props.uri}</p>
                                 <button onClick={copyToClipboard}>
                                     <CopyIcon />
@@ -273,7 +289,6 @@ const Dashboard = (props) => {
             </Head>
 
             <Background />
-            <Logo />
             <div className='pt-6 text-center'>
                 <p className='text-4xl font-bold'>Administration</p>
                 <p className='text-2xl'>Hantera användare</p>
