@@ -28,7 +28,7 @@ def get_self_user_id():
     url = "https://narvaro.ntig.net/api/device"
     headers = {"Authorization": "Bearer " + TOKEN}
     response = urequests.post(url, headers=headers)
-    return response.json()["user"]
+    return response.json()["user_id"]
 
 def get_user_status(user_id):
     global current_status, latest_change
