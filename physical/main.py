@@ -15,6 +15,8 @@ pin_status_not_here = Pin(21, Pin.OUT)
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 
+enable_logs = True
+
 rtc = machine.RTC()
 
 # Secrets that should not be public
@@ -29,7 +31,6 @@ toggle_here_led = Timer(-1)
 toggle_not_here_led = Timer(-1)
 correct_time_timer = Timer(-1)
 
-
 def get_self_user_id():
     url = "https://narvaro.ntig.net/api/device"
     headers = {"Authorization": "Bearer " + TOKEN}
@@ -37,7 +38,6 @@ def get_self_user_id():
     return_data = response.json()["user_id"]
     response.close()
     return return_data
-
 
 def get_user_status(user_id):
     global current_status, latest_change
@@ -55,9 +55,10 @@ def get_user_status(user_id):
         if user["_id"] == user_id:
             status = user["status"]
             latest_change = user["latest_change_diff"]
-            print(f"{user}")
+            print(f"{user}")  
             break
 
+    print(latest_change)
     pin_status_here.value(0)
     pin_status_not_here.value(0)
     return status, latest_change
@@ -66,17 +67,9 @@ def get_user_status(user_id):
 def set_user_status(status):
     data_to_send = {"status": status}
     print("Setting status...")
-    response = urequests.post(
-        "https://narvaro.ntig.net/api/user/setstatus",
-        data=json.dumps(data_to_send),
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {TOKEN}",
-        },
-    )
+    response = urequests.post("https://narvaro.ntig.net/api/user/setstatus", data=json.dumps(data_to_send), headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
     print("Setting status", response.status_code)
     response.close()
-
 
 def button_handler():
     global pin_status_here, pin_status_not_here, here_button_pin, not_here_button_pin, current_status
@@ -103,20 +96,11 @@ def button_handler():
         any_button_pressed = False
     return False
 
-
-def wifi_connect():
+def wifi_connect():    
     wlan.connect(WIFI_SSID, WIFI_PASSWORD)
 
-    toggle_here_led.init(
-        period=500,
-        mode=Timer.PERIODIC,
-        callback=lambda t: pin_status_here.value(not pin_status_here.value()),
-    )
-    toggle_not_here_led.init(
-        period=500,
-        mode=Timer.PERIODIC,
-        callback=lambda t: pin_status_not_here.value(not pin_status_not_here.value()),
-    )
+    toggle_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
+    toggle_not_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
 
     max_wait = 10
     while max_wait > 0:
@@ -130,42 +114,43 @@ def wifi_connect():
     toggle_not_here_led.deinit()
 
     print("Internal adress -> ", wlan.ifconfig())
-
-
+    
+    
 def set_current_time(t):
     if wlan.status() == 3:
         ntptime.settime()
-
-
+    
 def main():
     global current_status
-    # Tells us that the device is acutally running the script
+    # Tells us that the device is acutally running the script    
     main_led = Pin("LED", Pin.OUT)
     main_led.value(1)
 
     last_fetched = 0
     initial_get = False
     user_id = None
-    latest_change_diff = 0
+    latest_change_diff = 0 
     is_leds_blinking = False
-
-    hour_in_ms = 3600000
-
+    
+    hour_in_ms = 3600000        
+        
     wlan.disconnect()
-
-    correct_time_timer.init(
-        mode=Timer.PERIODIC, callback=set_current_time, period=hour_in_ms
-    )
-
+            
+    correct_time_timer.init(mode=Timer.PERIODIC, callback=set_current_time , period=hour_in_ms)
+        
     # Main loop
     while True:
+        
         time.sleep_ms(200)
         try:
+                        
             # Checks if the wifi is connected
             if wlan.status() != 3:
+                # Try to connect to wifi
                 print("trying to connect")
                 wifi_connect()
             else:
+                                
                 if not initial_get or not user_id:
                     user_id = get_self_user_id()
                     initial_get = True
@@ -178,35 +163,24 @@ def main():
                 was_pressed = button_handler()
                 if was_pressed:
                     latest_change_diff = 0
-
-                # Change the leds to start blinking after 24 hours of no input
+        
+                # Change leds  
                 if int(latest_change_diff) > 86400000:
-                    # print("Last changed:", latest_change_diff)
+                    
+                    #print("Last changed:", latest_change_diff)
                     if not is_leds_blinking:
                         pin_status_here.value(0)
                         pin_status_not_here.value(0)
-
-                    # If the change is older than 24 hours, start blinking leds
+    
+                    # If the change is oldar than 24 hours, start blinking leds
                     if current_status:
                         if not is_leds_blinking:
                             is_leds_blinking = True
-                            toggle_here_led.init(
-                                period=500,
-                                mode=Timer.PERIODIC,
-                                callback=lambda t: pin_status_here.value(
-                                    not pin_status_here.value()
-                                ),
-                            )
+                            toggle_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
                     else:
                         if not is_leds_blinking:
                             is_leds_blinking = True
-                            toggle_not_here_led.init(
-                                period=500,
-                                mode=Timer.PERIODIC,
-                                callback=lambda t: pin_status_not_here.value(
-                                    not pin_status_not_here.value()
-                                ),
-                            )
+                            toggle_not_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
                 else:
                     if is_leds_blinking:
                         is_leds_blinking = False
@@ -222,29 +196,20 @@ def main():
 
         except Exception as e:
             print(e)
-
-            file = open("errors.txt", "a")
-            file.write(f"{rtc.datetime()}: {e}\n")
-            file.close()
+        
+            if enable_logs:
+                file = open("errors.txt","a")
+                file.write(f"{rtc.datetime()}: {e}\n")
+                file.close()
             # If something goes wrong, start alternate blinking leds
             start_time = time.time()
             pin_status_not_here.value(1)
             pin_status_here.value(0)
 
             print("here")
-            toggle_not_here_led.init(
-                period=500,
-                mode=Timer.PERIODIC,
-                callback=lambda t: pin_status_not_here.value(
-                    not pin_status_not_here.value()
-                ),
-            )
-            toggle_here_led.init(
-                period=500,
-                mode=Timer.PERIODIC,
-                callback=lambda t: pin_status_here.value(not pin_status_here.value()),
-            )
-
+            toggle_not_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
+            toggle_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
+            
             while time.time() - start_time < 10:
                 pass
             reset()
@@ -252,4 +217,8 @@ def main():
             toggle_here_led.deinit()
 
 
+
+        
+
 main()
+
