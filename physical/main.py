@@ -144,6 +144,8 @@ def main():
     
     hour_in_ms = 3600000        
         
+    ntptime.settime()
+
     wlan.disconnect()
             
     correct_time_timer.init(mode=Timer.PERIODIC, callback=set_current_time , period=hour_in_ms)
