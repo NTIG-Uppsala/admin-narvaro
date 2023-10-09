@@ -31,6 +31,13 @@ toggle_here_led = Timer(-1)
 toggle_not_here_led = Timer(-1)
 correct_time_timer = Timer(-1)
 
+
+def add_to_log(message):
+    if enable_logs:
+        file = open("errors.txt","a")
+        file.write(f"{rtc.datetime()}: {message}\n")
+        file.close()
+
 def get_self_user_id():
     url = "https://narvaro.ntig.net/api/device"
     headers = {"Authorization": "Bearer " + TOKEN}
@@ -115,6 +122,9 @@ def wifi_connect():
 
     print("Internal adress -> ", wlan.ifconfig())
     
+    if wlan.status() == network.STAT_GOT_IP:
+        add_to_log("successfully connected to wifi")
+        
     
 def set_current_time(t):
     if wlan.status() == 3:
@@ -148,6 +158,7 @@ def main():
             if wlan.status() != 3:
                 # Try to connect to wifi
                 print("trying to connect")
+                add_to_log("trying to connect to wifi")
                 wifi_connect()
             else:
                                 
@@ -197,10 +208,7 @@ def main():
         except Exception as e:
             print(e)
         
-            if enable_logs:
-                file = open("errors.txt","a")
-                file.write(f"{rtc.datetime()}: {e}\n")
-                file.close()
+            add_to_log(e)
             # If something goes wrong, start alternate blinking leds
             start_time = time.time()
             pin_status_not_here.value(1)
