@@ -123,7 +123,6 @@ def main():
         try:
             # Checks if the wifi is connected
             if wlan.status() != 3:
-                # Try to connect to wifi
                 wifi_connect()
             else:
                 if not initial_get or not user_id:
@@ -139,14 +138,14 @@ def main():
                 if was_pressed:
                     latest_change_diff = 0
         
-                # Change leds  
+                # Change the leds to start blinking after 24 hours of no input
                 if int(latest_change_diff) > 86400000:
                     #print("Last changed:", latest_change_diff)
                     if not is_leds_blinking:
                         pin_status_here.value(0)
                         pin_status_not_here.value(0)
     
-                    # If the change is oldar than 24 hours, start blinking leds
+                    # If the change is older than 24 hours, start blinking leds
                     if current_status:
                         if not is_leds_blinking:
                             is_leds_blinking = True
