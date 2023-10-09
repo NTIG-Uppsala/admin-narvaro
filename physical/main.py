@@ -52,6 +52,7 @@ def get_user_status(user_id):
     pin_status_not_here.value(1)
 
     print("Getting users...")
+    add_to_log("trying to get user data")
     response = urequests.get("https://narvaro.ntig.net/api/get/users")
     print("Getting users", response.status_code)
     users_json = response.json()
@@ -62,7 +63,9 @@ def get_user_status(user_id):
         if user["_id"] == user_id:
             status = user["status"]
             latest_change = user["latest_change_diff"]
-            print(f"{user}")  
+            print(f"{user}")
+            add_to_log(f"user data retrieved: {user}")
+
             break
 
     print(latest_change)
