@@ -140,6 +140,7 @@ def main():
     is_leds_blinking = False
 
             
+    wlan.disconnect()
         
     # Main loop
     while True:
