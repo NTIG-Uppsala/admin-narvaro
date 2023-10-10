@@ -29,8 +29,6 @@ is_pressed = False
 
 toggle_here_led = Timer(-1)
 toggle_not_here_led = Timer(-1)
-correct_time_timer = Timer(-1)
-
 
 def add_to_log(message):
     if enable_logs:
@@ -127,10 +125,6 @@ def wifi_connect():
     
     if wlan.status() == network.STAT_GOT_IP:
         add_to_log("successfully connected to wifi")
-        
-    
-def set_current_time(t):
-    if wlan.status() == 3:
         ntptime.settime()
     
 def main():
@@ -144,14 +138,9 @@ def main():
     user_id = None
     latest_change_diff = 0 
     is_leds_blinking = False
-    
-    hour_in_ms = 3600000        
-        
-    ntptime.settime()
 
     wlan.disconnect()
             
-    correct_time_timer.init(mode=Timer.PERIODIC, callback=set_current_time , period=hour_in_ms)
         
     # Main loop
     while True:
