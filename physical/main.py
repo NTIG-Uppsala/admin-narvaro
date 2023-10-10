@@ -29,6 +29,7 @@ is_pressed = False
 
 toggle_here_led = Timer(-1)
 toggle_not_here_led = Timer(-1)
+update_time_timer = Timer(-1)
 
 def add_to_log(message):
     if enable_logs:
@@ -125,7 +126,15 @@ def wifi_connect():
     
     if wlan.status() == network.STAT_GOT_IP:
         add_to_log("successfully connected to wifi")
+        update_time()
+    
+def update_time():
+    try:
         ntptime.settime()
+    except:
+        add_to_log("failed to update time")
+        try_again_in_ms = 60_000
+        update_time_timer.init(mode=Timer.ONE_SHOT, callback=lambda t: update_time(), period=try_again_in_ms)
     
 def main():
     global current_status
