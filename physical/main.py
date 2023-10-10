@@ -208,7 +208,6 @@ def main():
             pin_status_not_here.value(1)
             pin_status_here.value(0)
 
-            print("here")
             toggle_not_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
             toggle_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
             
