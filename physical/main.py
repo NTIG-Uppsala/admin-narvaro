@@ -63,7 +63,7 @@ def get_user_status(user_id):
             status = user["status"]
             latest_change = user["latest_change_diff"]
             print(f"{user}")
-            add_to_log(f"user data retrieved: {user}")
+            add_to_log(f"user data retrieved: {user['name']}, status: {user['status']}")
 
             break
 
