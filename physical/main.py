@@ -125,8 +125,8 @@ def wifi_connect():
     print("Internal adress -> ", wlan.ifconfig())
     
     if wlan.status() == network.STAT_GOT_IP:
-        add_to_log("successfully connected to wifi")
         update_time()
+        add_to_log("successfully connected to wifi")
     
 def update_time():
     try:
