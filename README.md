@@ -1,15 +1,6 @@
 # Admin närvaro
 In this project a system for registering attendance for administrators at NTI gymnasiet Uppsala. This system is intended to be used by the school's admin department.
 
-## [Definition of Done](https://docs.google.com/document/d/1nFov6OfS3KaviBkWdDGdLUGio0Qt3hujJUGrA251HUg) 
-- All code needs to be auditied by all members present
-- All code needs to be added to the presentation document
-- All members present needs to understand what is being done
-- Code needs to follow coding standards
-- Code needs to be commented
-- Code needs to be validated
-
-
 ## [Codingstandard](https://docs.google.com/document/d/131W1bUSoyt6cgcMWJ0351T7rCdNp8Y3KoZeaQxhfvpE/)
 
 ## [Development environment](https://docs.google.com/document/d/1a-pp_Vd-XVFjH9qxnXjHDsL0S8OLv-I7n9eCeU7P8Pw/)
