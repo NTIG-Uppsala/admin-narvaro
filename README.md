@@ -12,7 +12,7 @@ In this project a system for registering attendance for administrators at NTI gy
 
 ## [Codingstandard](https://docs.google.com/document/d/131W1bUSoyt6cgcMWJ0351T7rCdNp8Y3KoZeaQxhfvpE/)
 
-## [Development enviroment](https://docs.google.com/document/d/1a-pp_Vd-XVFjH9qxnXjHDsL0S8OLv-I7n9eCeU7P8Pw/)
+## [Development environment](https://docs.google.com/document/d/1a-pp_Vd-XVFjH9qxnXjHDsL0S8OLv-I7n9eCeU7P8Pw/)
 
 ## Project dependencies
 This project uses the following dependencies: \
