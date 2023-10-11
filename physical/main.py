@@ -34,7 +34,7 @@ update_time_timer = Timer(-1)
 def add_to_log(message):
     if enable_logs:
         file = open("errors.txt","a")
-        file.write(f"{rtc.datetime()}: {message}\n")
+        file.write(f"{rtc.datetime()}: {message}, signal strength: {wlan.status('rssi')} dBm\n")
         file.close()
 
 def get_self_user_id():
