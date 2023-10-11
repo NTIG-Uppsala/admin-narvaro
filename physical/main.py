@@ -211,7 +211,7 @@ def main():
         except Exception as e:
             print(e)
         
-            add_to_log(e)
+            add_to_log(str(e))
             # If something goes wrong, start alternate blinking leds
             start_time = time.time()
             pin_status_not_here.value(1)
