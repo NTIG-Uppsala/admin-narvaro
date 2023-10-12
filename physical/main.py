@@ -1,9 +1,11 @@
 from machine import Pin, Timer, reset
+import micropython
 import network
 import time
 import urequests
 import json
 import ntptime
+import gc
 
 here_button_pin = Pin(2, Pin.IN)
 not_here_button_pin = Pin(3, Pin.IN)
@@ -21,6 +23,9 @@ rtc = machine.RTC()
 
 sensor_temp = machine.ADC(4)
 
+gc.collect()
+micropython.mem_info()
+
 # Secrets that should not be public
 WIFI_SSID = ""
 WIFI_PASSWORD = ""
@@ -35,8 +40,10 @@ update_time_timer = Timer(-1)
 
 def add_to_log(message):
     if enable_logs:
+        total_ram_kibibytes = (gc.mem_free() + gc.mem_alloc()) / 1024
+        used_ram_kibibytes = gc.mem_alloc() / 1024
         file = open("log.txt","a")
-        file.write(f"{rtc.datetime()}: {message}, signal strength: {wlan.status('rssi')} dBm, temp: {get_temperature_celsius()}°C\n")
+        file.write(f"{rtc.datetime()}: {message}, signal strength: {wlan.status('rssi')} dBm, temp: {get_temperature_celsius()}°C, RAM usage: {used_ram_kibibytes}/{total_ram_kibibytes} KiB\n")
         file.close()
         
 def get_temperature_celsius():
