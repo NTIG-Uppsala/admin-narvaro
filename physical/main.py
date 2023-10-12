@@ -19,6 +19,8 @@ enable_logs = True
 
 rtc = machine.RTC()
 
+sensor_temp = machine.ADC(4)
+
 # Secrets that should not be public
 WIFI_SSID = ""
 WIFI_PASSWORD = ""
@@ -34,8 +36,19 @@ update_time_timer = Timer(-1)
 def add_to_log(message):
     if enable_logs:
         file = open("log.txt","a")
-        file.write(f"{rtc.datetime()}: {message}, signal strength: {wlan.status('rssi')} dBm\n")
+        file.write(f"{rtc.datetime()}: {message}, signal strength: {wlan.status('rssi')} dBm, temp: {get_temperature_celsius()}°C\n")
         file.close()
+        
+def get_temperature_celsius():
+    # RP2040 datasheet 4.9.5. Temperature Sensor
+    max_voltage = 3.3
+    conversion_factor = max_voltage / (65535)
+    # voltage of base emitter
+    voltage = 0.706
+    voltage_slope = 0.001721
+    reading = sensor_temp.read_u16() * conversion_factor
+    degrees_celsius = 27 - (reading - voltage)/voltage_slope
+    return degrees_celsius
 
 def get_self_user_id():
     url = "https://narvaro.ntig.net/api/device"
