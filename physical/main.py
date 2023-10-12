@@ -107,6 +107,7 @@ def button_handler():
 
     if not_here_button_pin.value() and not any_button_pressed and current_status == True:
         print("Not here button pressed")
+        add_to_log("not here button pressed")
         any_button_pressed = True
         pin_status_not_here.value(1)
         pin_status_here.value(0)
@@ -115,6 +116,7 @@ def button_handler():
         return True
     elif here_button_pin.value() and not any_button_pressed and current_status == False:
         print("Here button pressed")
+        add_to_log("here button pressed")
         any_button_pressed = True
         pin_status_not_here.value(0)
         pin_status_here.value(1)
