@@ -14,10 +14,10 @@ Python 3.10.6
 The environment file is used to store sensetive data that is included in the project. The file is located in the root folder of the project and should be namned `.env` \
 Required variables:
 ```
-MONGODB_URI="XXX"
-MONGODB_URI_DEV='XXX'
-HOST_URL="XXX"
-JWT_SECRET='XXX'
+MONGODB_URI=""
+MONGODB_URI_DEV=""
+HOST_URL=""
+JWT_SECRET=""
 ```
 > `MONGODB_URI` is the connection string to the production database.
 
