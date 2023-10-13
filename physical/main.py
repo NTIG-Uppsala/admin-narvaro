@@ -190,8 +190,10 @@ def main():
                 if not initial_get or not user_id:
                     user_id = get_self_user_id()
                     initial_get = True
-                # Check if the user status has been updated every 5 minutes
-                if (abs(time.time() - last_fetched)) > 300:
+
+                # Check if the user status has been updated every 15 minutes
+                get_user_status_interval = 900
+                if (abs(time.time() - last_fetched)) > get_user_status_interval:
                     last_fetched = time.time()
                     current_status, latest_change_diff = get_user_status(user_id)
 
