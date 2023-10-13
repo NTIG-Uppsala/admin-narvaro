@@ -21,7 +21,9 @@ enable_logs = True
 
 rtc = machine.RTC()
 
-sensor_temp = machine.ADC(4)
+selected_pin_on_pico = 4
+
+sensor_temp = machine.ADC(selected_pin_on_pico)
 
 gc.collect()
 micropython.mem_info()
