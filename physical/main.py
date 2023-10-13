@@ -36,6 +36,8 @@ TOKEN = ""
 current_status = False
 is_pressed = False
 
+blinking_interval_ms = 500
+
 #Create virtual timers
 toggle_here_led = Timer(-1)
 toggle_not_here_led = Timer(-1)
@@ -134,15 +136,16 @@ def button_handler():
 def wifi_connect():    
     wlan.connect(WIFI_SSID, WIFI_PASSWORD)
 
-    toggle_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
-    toggle_not_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
+    toggle_here_led.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
+    toggle_not_here_led.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
 
-    max_wait = 10
-    while max_wait > 0:
-        if wlan.status() < 0 or wlan.status() >= 3:
+
+    max_wait_seconds = 10
+    while max_wait_seconds > 0:
+        if wlan.status() < network.STAT_IDLE or wlan.status() >= network.STAT_GOT_IP:
             break
 
-        max_wait -= 1
+        max_wait_seconds -= 1
         time.sleep(1)
 
     toggle_here_led.deinit()
@@ -220,11 +223,11 @@ def main():
                     if current_status:
                         if not is_leds_blinking:
                             is_leds_blinking = True
-                            toggle_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
+                            toggle_here_led.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
                     else:
                         if not is_leds_blinking:
                             is_leds_blinking = True
-                            toggle_not_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
+                            toggle_not_here_led.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
                 else:
                     if is_leds_blinking:
                         is_leds_blinking = False
@@ -247,8 +250,6 @@ def main():
             pin_status_not_here.value(1)
             pin_status_here.value(0)
 
-
-            blinking_interval_ms = 500
             toggle_not_here_led.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
             toggle_here_led.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
             
@@ -260,4 +261,5 @@ def main():
 
 
 main()
+
 
