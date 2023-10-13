@@ -160,7 +160,7 @@ def update_time():
     
 def main():
     global current_status
-    # Tells us that the device is acutally running the script    
+    # Tells us that the device is actually running the script
     main_led = Pin("LED", Pin.OUT)
     main_led.value(1)
 
