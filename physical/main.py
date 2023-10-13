@@ -245,8 +245,10 @@ def main():
             pin_status_not_here.value(1)
             pin_status_here.value(0)
 
-            toggle_not_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
-            toggle_here_led.init(period=500, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
+
+            blinking_interval_ms = 500
+            toggle_not_here_led.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
+            toggle_here_led.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
             
             while time.time() - start_time < 10:
                 pass
