@@ -34,14 +34,16 @@ TOKEN = ""
 current_status = False
 is_pressed = False
 
+#Create virtual timers
 toggle_here_led = Timer(-1)
 toggle_not_here_led = Timer(-1)
 update_time_timer = Timer(-1)
 
 def add_to_log(message):
     if enable_logs:
-        total_ram_kibibytes = (gc.mem_free() + gc.mem_alloc()) / 1024
-        used_ram_kibibytes = gc.mem_alloc() / 1024
+        bytes_per_kibibyte = 1024
+        total_ram_kibibytes = (gc.mem_free() + gc.mem_alloc()) / bytes_per_kibibyte
+        used_ram_kibibytes = gc.mem_alloc() / bytes_per_kibibyte
         file = open("log.txt","a")
         file.write(f"{rtc.datetime()}: {message}, signal strength: {wlan.status('rssi')} dBm, temp: {get_temperature_celsius()}°C, RAM usage: {used_ram_kibibytes}/{total_ram_kibibytes} KiB\n")
         file.close()
@@ -180,7 +182,7 @@ def main():
         try:
                         
             # Checks if the wifi is connected
-            if wlan.status() != 3:
+            if wlan.status() != network.STAT_GOT_IP:
                 # Try to connect to wifi
                 print("trying to connect")
                 add_to_log("trying to connect to wifi")
@@ -199,9 +201,11 @@ def main():
                 was_pressed = button_handler()
                 if was_pressed:
                     latest_change_diff = 0
+
+                day_seconds = 86400000
         
                 # Change leds  
-                if int(latest_change_diff) > 86400000:
+                if int(latest_change_diff) > day_seconds:
                     
                     #print("Last changed:", latest_change_diff)
                     if not is_leds_blinking:
@@ -248,9 +252,6 @@ def main():
             toggle_not_here_led.deinit()
             toggle_here_led.deinit()
 
-
-
-        
 
 main()
 
