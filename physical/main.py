@@ -208,38 +208,19 @@ def main():
                 was_pressed = button_handler()
                 if was_pressed:
                     latest_change_diff = 0
-
-                day_seconds = 86400000
         
                 # Change leds  
-                if int(latest_change_diff) > day_seconds:
-                    
-                    #print("Last changed:", latest_change_diff)
-                    if not is_leds_blinking:
-                        pin_status_here.value(0)
-                        pin_status_not_here.value(0)
-    
-                    # If the change is oldar than 24 hours, start blinking leds
-                    if current_status:
-                        if not is_leds_blinking:
-                            is_leds_blinking = True
-                            toggle_here_led.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
-                    else:
-                        if not is_leds_blinking:
-                            is_leds_blinking = True
-                            toggle_not_here_led.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
-                else:
-                    if is_leds_blinking:
-                        is_leds_blinking = False
-                        toggle_here_led.deinit()
-                        toggle_not_here_led.deinit()
+                if is_leds_blinking:
+                    is_leds_blinking = False
+                    toggle_here_led.deinit()
+                    toggle_not_here_led.deinit()
 
-                    if current_status:
-                        pin_status_here.value(1)
-                        pin_status_not_here.value(0)
-                    else:
-                        pin_status_here.value(0)
-                        pin_status_not_here.value(1)
+                if current_status:
+                    pin_status_here.value(1)
+                    pin_status_not_here.value(0)
+                else:
+                    pin_status_here.value(0)
+                    pin_status_not_here.value(1)
 
         except Exception as e:
             print(e)
