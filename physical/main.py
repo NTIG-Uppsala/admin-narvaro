@@ -86,7 +86,7 @@ def get_self_user_id():
     return return_data
 
 def get_user_status(user_id):
-    global current_status, latest_change
+    global current_status
     pin_status_here.value(1)
     pin_status_not_here.value(1)
 
@@ -96,18 +96,16 @@ def get_user_status(user_id):
     users_json = response.json()
     response.close()
     status = False
-    latest_change = None
     for user in users_json:
         if user["_id"] == user_id:
             status = user["status"]
-            latest_change = user["latest_change_diff"]
             add_to_log(f"user data retrieved: {user['name']}, status: {user['status']}")
 
             break
 
     pin_status_here.value(0)
     pin_status_not_here.value(0)
-    return status, latest_change
+    return status
 
 
 def set_user_status(status):
@@ -183,7 +181,6 @@ def main():
     last_fetched = 0
     initial_get = False
     user_id = None
-    latest_change_diff = 0 
     is_leds_blinking = False
 
             
@@ -210,12 +207,9 @@ def main():
                 get_user_status_interval = 900
                 if (abs(time.time() - last_fetched)) > get_user_status_interval:
                     last_fetched = time.time()
-                    current_status, latest_change_diff = get_user_status(user_id)
+                    current_status = get_user_status(user_id)
 
-                # Handles button presses
-                was_pressed = button_handler()
-                if was_pressed:
-                    latest_change_diff = 0
+                button_handler()
         
                 # Change leds  
                 if is_leds_blinking:
