@@ -181,7 +181,6 @@ def main():
     last_fetched = 0
     initial_get = False
     user_id = None
-    is_leds_blinking = False
 
             
     wlan.disconnect()
@@ -212,11 +211,6 @@ def main():
                 button_handler()
         
                 # Change leds  
-                if is_leds_blinking:
-                    is_leds_blinking = False
-                    toggle_here_led.deinit()
-                    toggle_not_here_led.deinit()
-
                 if current_status:
                     pin_status_here.value(1)
                     pin_status_not_here.value(0)
