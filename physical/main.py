@@ -44,10 +44,22 @@ toggle_not_here_led = Timer(-1)
 update_time_timer = Timer(-1)
 
 def add_to_log(message):
+    datetime = rtc.datetime()
+    year = datetime[0]
+    month = datetime[1]
+    day = datetime[2]
+    hour = datetime[4]
+    minute = datetime[5]
+    second = datetime[6]
+    formatted_datetime = f"{year:04d}-{month:02d}-{day:02d} {hour:02d}:{minute:02d}:{second:02d} UTC"
     bytes_per_kibibyte = 1024
     total_ram_kibibytes = (gc.mem_free() + gc.mem_alloc()) / bytes_per_kibibyte
     used_ram_kibibytes = gc.mem_alloc() / bytes_per_kibibyte
-    log_message = f"{rtc.datetime()}: {message}, signal strength: {wlan.status('rssi')} dBm, temp: {get_temperature_celsius()}°C, RAM usage: {used_ram_kibibytes}/{total_ram_kibibytes} KiB\n"
+    log_message = f"{formatted_datetime}:\n"
+    log_message += f"\t{message}\n"
+    log_message += f"\tsignal strength: {wlan.status('rssi')} dBm\n"
+    log_message += f"\ttemp: {get_temperature_celsius()}°C\n"
+    log_message += f"\tRAM usage: {used_ram_kibibytes}/{total_ram_kibibytes} KiB\n"
     print("Logged message:", log_message)
     if enable_logs:
         file = open("log.txt","a")
