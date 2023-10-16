@@ -1,8 +1,19 @@
-# Setting up rasberry pi pico W
-To use python with rasberry pico, the micropython firmware needs to be installed.
-Follow [this](https://www.raspberrypi.com/documentation/microcontrollers/micropython.html#drag-and-drop-micropython) guide to install the firmware.
+# Setting up Rasberry Pi Pico W
 
-# Loading main.py to Pico W
-Before running the script ensure that the main.py file has the correct WIFI credentials and the correct TOKEN.
+To use Python with Rasberry Pi Pico, the MicroPython firmware needs to be installed. Follow [this guide](https://www.raspberrypi.com/documentation/microcontrollers/micropython.html#drag-and-drop-micropython) to install the firmware.
 
-Connect the rasberry pi to the computer and navigate to the physical folder in the repo using the terminal and run `./upload.sh`
+A `secrets.json` file must be created with the following keys:
+```json
+{
+    "WIFI_SSID": "",
+    "WIFI_PASSWORD": "",
+    "TOKEN": ""
+}
+```
+`WIFI_SSID` and `WIFI_PASSWORD` are the Wi-Fi credentials. `TOKEN` is used to get the user data. Each user has a unique token. A token can be found/generated in the admin dashboard.
+
+Thonny can be used to move the `main.py` and `secrets.json` files to the Raspberry Pi Pico. Installation instructions for Thonny can be found [here](https://projects.raspberrypi.org/en/projects/getting-started-with-the-pico/2).
+
+# Retrieving logs from Raspberry Pi Pico
+
+Thonny can also be used to view the log file (`log.txt`) saved on the Raspberry Pi Pico.
