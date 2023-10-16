@@ -44,12 +44,14 @@ toggle_not_here_led = Timer(-1)
 update_time_timer = Timer(-1)
 
 def add_to_log(message):
+    bytes_per_kibibyte = 1024
+    total_ram_kibibytes = (gc.mem_free() + gc.mem_alloc()) / bytes_per_kibibyte
+    used_ram_kibibytes = gc.mem_alloc() / bytes_per_kibibyte
+    log_message = f"{rtc.datetime()}: {message}, signal strength: {wlan.status('rssi')} dBm, temp: {get_temperature_celsius()}°C, RAM usage: {used_ram_kibibytes}/{total_ram_kibibytes} KiB\n"
+    print("Logged message:", log_message)
     if enable_logs:
-        bytes_per_kibibyte = 1024
-        total_ram_kibibytes = (gc.mem_free() + gc.mem_alloc()) / bytes_per_kibibyte
-        used_ram_kibibytes = gc.mem_alloc() / bytes_per_kibibyte
         file = open("log.txt","a")
-        file.write(f"{rtc.datetime()}: {message}, signal strength: {wlan.status('rssi')} dBm, temp: {get_temperature_celsius()}°C, RAM usage: {used_ram_kibibytes}/{total_ram_kibibytes} KiB\n")
+        file.write(log_message)
         file.close()
         
 def get_temperature_celsius():
@@ -76,7 +78,6 @@ def get_user_status(user_id):
     pin_status_here.value(1)
     pin_status_not_here.value(1)
 
-    print("Getting users...")
     add_to_log("trying to get user data")
     response = urequests.get("https://narvaro.ntig.net/api/get/users")
     print("Getting users", response.status_code)
@@ -88,12 +89,10 @@ def get_user_status(user_id):
         if user["_id"] == user_id:
             status = user["status"]
             latest_change = user["latest_change_diff"]
-            print(f"{user}")
             add_to_log(f"user data retrieved: {user['name']}, status: {user['status']}")
 
             break
 
-    print(latest_change)
     pin_status_here.value(0)
     pin_status_not_here.value(0)
     return status, latest_change
@@ -112,7 +111,6 @@ def button_handler():
     any_button_pressed = False
 
     if not_here_button_pin.value() and not any_button_pressed and current_status == True:
-        print("Not here button pressed")
         add_to_log("not here button pressed")
         any_button_pressed = True
         pin_status_not_here.value(1)
@@ -121,7 +119,6 @@ def button_handler():
         set_user_status(current_status)
         return True
     elif here_button_pin.value() and not any_button_pressed and current_status == False:
-        print("Here button pressed")
         add_to_log("here button pressed")
         any_button_pressed = True
         pin_status_not_here.value(0)
@@ -151,7 +148,7 @@ def wifi_connect():
     toggle_here_led.deinit()
     toggle_not_here_led.deinit()
 
-    print("Internal adress -> ", wlan.ifconfig())
+    add_to_log(f"internal adress: {wlan.ifconfig()}")
     
     if wlan.status() == network.STAT_GOT_IP:
         update_time()
@@ -189,7 +186,6 @@ def main():
             # Checks if the wifi is connected
             if wlan.status() != network.STAT_GOT_IP:
                 # Try to connect to wifi
-                print("trying to connect")
                 add_to_log("trying to connect to wifi")
                 wifi_connect()
             else:
@@ -223,8 +219,6 @@ def main():
                     pin_status_not_here.value(1)
 
         except Exception as e:
-            print(e)
-        
             add_to_log(str(e))
             # If something goes wrong, start alternate blinking leds
             start_time = time.time()
@@ -242,5 +236,3 @@ def main():
 
 
 main()
-
-
