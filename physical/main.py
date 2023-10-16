@@ -80,7 +80,7 @@ def get_user_status(user_id):
 
     add_to_log("trying to get user data")
     response = urequests.get("https://narvaro.ntig.net/api/get/users")
-    print("Getting users", response.status_code)
+    add_to_log(f"getting users response: {response.status_code}")
     users_json = response.json()
     response.close()
     status = False
@@ -100,9 +100,9 @@ def get_user_status(user_id):
 
 def set_user_status(status):
     data_to_send = {"status": status}
-    print("Setting status...")
+    add_to_log("setting status")
     response = urequests.post("https://narvaro.ntig.net/api/user/setstatus", data=json.dumps(data_to_send), headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
-    print("Setting status", response.status_code)
+    add_to_log(f"setting status response: {response.status_code}")
     response.close()
 
 def button_handler():
