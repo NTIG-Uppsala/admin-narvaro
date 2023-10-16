@@ -28,11 +28,6 @@ sensor_temp = machine.ADC(selected_pin_on_pico)
 gc.collect()
 micropython.mem_info()
 
-# Secrets that should not be public
-WIFI_SSID = ""
-WIFI_PASSWORD = ""
-TOKEN = ""
-
 current_status = False
 is_pressed = False
 
@@ -42,6 +37,15 @@ blinking_interval_ms = 500
 toggle_here_led = Timer(-1)
 toggle_not_here_led = Timer(-1)
 update_time_timer = Timer(-1)
+
+def load_secrets():
+    global WIFI_SSID, WIFI_PASSWORD, TOKEN
+    secrets_file = open("secrets.json")
+    json_string = ''.join(secrets_file.readlines())
+    secrets = json.loads(json_string)
+    WIFI_SSID = secrets["WIFI_SSID"]
+    WIFI_PASSWORD = secrets["WIFI_PASSWORD"]
+    TOKEN = secrets["TOKEN"]
 
 def add_to_log(message):
     datetime = rtc.datetime()
@@ -182,6 +186,7 @@ def main():
     initial_get = False
     user_id = None
 
+    load_secrets()
             
     wlan.disconnect()
         
