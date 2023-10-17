@@ -1,5 +1,4 @@
 from machine import Pin, Timer, reset
-import micropython
 import network
 import time
 import urequests
@@ -20,8 +19,6 @@ enable_logs = True
 # Real time clock
 rtc = machine.RTC()
 
-gc.collect()
-micropython.mem_info()
 temperature_pin = 4
 sensor_temperature = machine.ADC(temperature_pin)
 
