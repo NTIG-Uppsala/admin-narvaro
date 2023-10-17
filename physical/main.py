@@ -33,18 +33,20 @@ is_pressed = False
 
 blinking_interval_ms = 500
 
-#Create virtual timers
+# Create virtual timers
 led_timer = Timer(-1)
 update_time_timer = Timer(-1)
+
 
 def load_secrets():
     global WIFI_SSID, WIFI_PASSWORD, TOKEN
     secrets_file = open("secrets.json")
-    json_string = ''.join(secrets_file.readlines())
+    json_string = "".join(secrets_file.readlines())
     secrets = json.loads(json_string)
     WIFI_SSID = secrets["WIFI_SSID"]
     WIFI_PASSWORD = secrets["WIFI_PASSWORD"]
     TOKEN = secrets["TOKEN"]
+
 
 def add_to_log(message):
     datetime = rtc.datetime()
@@ -54,7 +56,9 @@ def add_to_log(message):
     hour = datetime[4]
     minute = datetime[5]
     second = datetime[6]
-    formatted_datetime = f"{year:04d}-{month:02d}-{day:02d} {hour:02d}:{minute:02d}:{second:02d} UTC"
+    formatted_datetime = (
+        f"{year:04d}-{month:02d}-{day:02d} {hour:02d}:{minute:02d}:{second:02d} UTC"
+    )
     bytes_per_kibibyte = 1024
     total_ram_kibibytes = (gc.mem_free() + gc.mem_alloc()) / bytes_per_kibibyte
     used_ram_kibibytes = gc.mem_alloc() / bytes_per_kibibyte
@@ -65,10 +69,11 @@ def add_to_log(message):
     log_message += f"\tRAM usage: {used_ram_kibibytes}/{total_ram_kibibytes} KiB\n"
     print("Logged message:", log_message)
     if enable_logs:
-        file = open("log.txt","a")
+        file = open("log.txt", "a")
         file.write(log_message)
         file.close()
-        
+
+
 def get_temperature_celsius():
     # RP2040 datasheet 4.9.5. Temperature Sensor
     max_voltage = 3.3
@@ -77,8 +82,9 @@ def get_temperature_celsius():
     voltage = 0.706
     voltage_slope = 0.001721
     reading = sensor_temp.read_u16() * conversion_factor
-    degrees_celsius = 27 - (reading - voltage)/voltage_slope
+    degrees_celsius = 27 - (reading - voltage) / voltage_slope
     return degrees_celsius
+
 
 def get_self_user_id():
     url = "https://narvaro.ntig.net/api/device"
@@ -87,6 +93,7 @@ def get_self_user_id():
     return_data = response.json()["user_id"]
     response.close()
     return return_data
+
 
 def get_user_status(user_id):
     global current_status
@@ -109,16 +116,28 @@ def get_user_status(user_id):
 def set_user_status(status):
     data_to_send = {"status": status}
     add_to_log(f"setting status: {status}")
-    response = urequests.post("https://narvaro.ntig.net/api/user/setstatus", data=json.dumps(data_to_send), headers={"Content-Type": "application/json", "Authorization": f"Bearer {TOKEN}"})
+    response = urequests.post(
+        "https://narvaro.ntig.net/api/user/setstatus",
+        data=json.dumps(data_to_send),
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {TOKEN}",
+        },
+    )
     add_to_log(f"setting status response: {response.status_code}")
     response.close()
+
 
 def button_handler():
     global pin_status_here, pin_status_not_here, here_button_pin, not_here_button_pin, current_status
 
     any_button_pressed = False
 
-    if not_here_button_pin.value() and not any_button_pressed and current_status == True:
+    if (
+        not_here_button_pin.value()
+        and not any_button_pressed
+        and current_status == True
+    ):
         add_to_log("not here button pressed")
         any_button_pressed = True
         pin_status_not_here.value(1)
@@ -138,20 +157,25 @@ def button_handler():
         any_button_pressed = False
     return False
 
+
 def toggle_leds_state():
     pin_status_here.value(not pin_status_here.value())
     pin_status_not_here.value(not pin_status_not_here.value())
 
-def wifi_connect():    
+
+def wifi_connect():
     wlan.connect(WIFI_SSID, WIFI_PASSWORD)
-    
+
     def set_leds_state(state):
         pin_status_here.value(state)
         pin_status_not_here.value(state)
 
     set_leds_state(0)
-    led_timer.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t: toggle_leds_state())
-
+    led_timer.init(
+        period=blinking_interval_ms,
+        mode=Timer.PERIODIC,
+        callback=lambda t: toggle_leds_state(),
+    )
 
     max_wait_seconds = 10
     while max_wait_seconds > 0:
@@ -164,19 +188,25 @@ def wifi_connect():
     led_timer.deinit()
 
     add_to_log(f"internal adress: {wlan.ifconfig()}")
-    
+
     if wlan.status() == network.STAT_GOT_IP:
         update_time()
         add_to_log("successfully connected to wifi")
-    
+
+
 def update_time():
     try:
         ntptime.settime()
     except:
         add_to_log("failed to update time")
         try_again_in_ms = 60_000
-        update_time_timer.init(mode=Timer.ONE_SHOT, callback=lambda t: update_time(), period=try_again_in_ms)
-    
+        update_time_timer.init(
+            mode=Timer.ONE_SHOT,
+            callback=lambda t: update_time(),
+            period=try_again_in_ms,
+        )
+
+
 def main():
     global current_status
     # Tells us that the device is actually running the script
@@ -188,22 +218,19 @@ def main():
     user_id = None
 
     load_secrets()
-            
+
     wlan.disconnect()
-        
+
     # Main loop
     while True:
-        
         time.sleep_ms(200)
         try:
-                        
             # Checks if the wifi is connected
             if wlan.status() != network.STAT_GOT_IP:
                 # Try to connect to wifi
                 add_to_log("trying to connect to wifi")
                 wifi_connect()
             else:
-                                
                 if not initial_get or not user_id:
                     user_id = get_self_user_id()
                     initial_get = True
@@ -215,8 +242,8 @@ def main():
                     current_status = get_user_status(user_id)
 
                 button_handler()
-        
-                # Change leds  
+
+                # Change leds
                 if current_status:
                     pin_status_here.value(1)
                     pin_status_not_here.value(0)
@@ -231,8 +258,12 @@ def main():
             pin_status_not_here.value(1)
             pin_status_here.value(0)
 
-            led_timer.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t: toggle_leds_state())
-            
+            led_timer.init(
+                period=blinking_interval_ms,
+                mode=Timer.PERIODIC,
+                callback=lambda t: toggle_leds_state(),
+            )
+
             while time.time() - start_time < 10:
                 pass
             reset()

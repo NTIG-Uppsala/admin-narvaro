@@ -3,20 +3,20 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
-import time 
-
+import time
 
 
 class CheckWebsite(unittest.TestCase):
     website_url = "http://localhost:8000/"  # Standard URL
     is_checked = None
+
     @classmethod
     def setUpClass(self):
         service = Service(executable_path=ChromeDriverManager().install())
         options = webdriver.ChromeOptions()
-        options.add_argument('--headless')
+        options.add_argument("--headless")
         self.driver = webdriver.Chrome(service=service, options=options)
-    
+
     @classmethod
     def tearDownClass(self):
         self.driver.quit()
@@ -37,6 +37,7 @@ class CheckWebsite(unittest.TestCase):
             self.assertEqual(avalibility.text, "Tillgänglig")
         else:
             self.assertEqual(avalibility.text, "Ej tillgänglig")
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
