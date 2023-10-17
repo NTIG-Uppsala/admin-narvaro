@@ -22,14 +22,14 @@ rtc = machine.RTC()
 temperature_pin = 4
 sensor_temperature = machine.ADC(temperature_pin)
 
-current_status = False
+user_available = False
 is_pressed = False
 
 blinking_interval_ms = 500
 
 # Create virtual timers
 led_timer = Timer(-1)
-update_time_timer = Timer(-1)
+update_time_retry_timer = Timer(-1)
 
 
 def load_secrets():
@@ -54,8 +54,8 @@ def add_to_log(message):
         f"{year:04d}-{month:02d}-{day:02d} {hour:02d}:{minute:02d}:{second:02d} UTC"
     )
     bytes_per_kibibyte = 1024
-    total_ram_kibibytes = (gc.mem_free() + gc.mem_alloc()) / bytes_per_kibibyte
     used_ram_kibibytes = gc.mem_alloc() / bytes_per_kibibyte
+    total_ram_kibibytes = (gc.mem_free() + gc.mem_alloc()) / bytes_per_kibibyte
     log_message = f"{formatted_datetime}:\n"
     log_message += f"\t{message}\n"
     log_message += f"\tsignal strength: {wlan.status('rssi')} dBm\n"
@@ -90,8 +90,6 @@ def get_self_user_id():
 
 
 def get_user_status(user_id):
-    global current_status
-
     add_to_log("trying to get user data")
     response = urequests.get("https://narvaro.ntig.net/api/get/users")
     add_to_log(f"getting users response: {response.status_code}")
@@ -102,7 +100,6 @@ def get_user_status(user_id):
         if user["_id"] == user_id:
             status = user["status"]
             add_to_log(f"user data retrieved: {user['name']}, status: {user['status']}")
-
             break
     return status
 
@@ -123,31 +120,31 @@ def set_user_status(status):
 
 
 def button_handler():
-    global available_led, not_available_led, available_button, not_available_button, current_status
+    global user_available
 
     any_button_pressed = False
 
     if (
         not_available_button.value()
         and not any_button_pressed
-        and current_status == True
+        and user_available == True
     ):
         add_to_log("not available button pressed")
         any_button_pressed = True
         not_available_led.value(1)
         available_led.value(0)
-        current_status = False
-        set_user_status(current_status)
+        user_available = False
+        set_user_status(user_available)
         return True
     elif (
-        available_button.value() and not any_button_pressed and current_status == False
+        available_button.value() and not any_button_pressed and user_available == False
     ):
         add_to_log("available button pressed")
         any_button_pressed = True
         not_available_led.value(0)
         available_led.value(1)
-        current_status = True
-        set_user_status(current_status)
+        user_available = True
+        set_user_status(user_available)
         return True
     else:
         any_button_pressed = False
@@ -195,21 +192,21 @@ def update_time():
         ntptime.settime()
     except:
         add_to_log("failed to update time")
-        try_again_in_ms = 60_000
-        update_time_timer.init(
+        try_again_ms = 60_000
+        update_time_retry_timer.init(
             mode=Timer.ONE_SHOT,
             callback=lambda t: update_time(),
-            period=try_again_in_ms,
+            period=try_again_ms,
         )
 
 
 def main():
-    global current_status
+    global user_available
     # Tells us that the device is actually running the script
     main_led = Pin("LED", Pin.OUT)
     main_led.value(1)
 
-    last_fetched = 0
+    user_data_last_fetched = 0
     initial_get = False
     user_id = None
 
@@ -233,14 +230,16 @@ def main():
 
                 # Check if the user status has been updated every 15 minutes
                 get_user_status_interval = 900
-                if (abs(time.time() - last_fetched)) > get_user_status_interval:
-                    last_fetched = time.time()
-                    current_status = get_user_status(user_id)
+                if (
+                    abs(time.time() - user_data_last_fetched)
+                ) > get_user_status_interval:
+                    user_data_last_fetched = time.time()
+                    user_available = get_user_status(user_id)
 
                 button_handler()
 
                 # Change leds
-                if current_status:
+                if user_available:
                     available_led.value(1)
                     not_available_led.value(0)
                 else:
@@ -250,7 +249,7 @@ def main():
         except Exception as e:
             add_to_log(str(e))
             # If something goes wrong, start alternate blinking leds
-            start_time = time.time()
+            error_raised_time = time.time()
             not_available_led.value(1)
             available_led.value(0)
 
@@ -260,7 +259,7 @@ def main():
                 callback=lambda t: toggle_leds_state(),
             )
 
-            while time.time() - start_time < 10:
+            while time.time() - error_raised_time < 10:
                 pass
             reset()
             led_timer.deinit()
