@@ -43,17 +43,18 @@ def load_secrets():
     TOKEN = secrets["TOKEN"]
 
 
-def add_to_log(message):
-    datetime = rtc.datetime()
+def format_time(datetime):
     year = datetime[0]
     month = datetime[1]
     day = datetime[2]
     hour = datetime[4]
     minute = datetime[5]
     second = datetime[6]
-    formatted_datetime = (
-        f"{year:04d}-{month:02d}-{day:02d} {hour:02d}:{minute:02d}:{second:02d} UTC"
-    )
+    return f"{year:04d}-{month:02d}-{day:02d} {hour:02d}:{minute:02d}:{second:02d} UTC"
+
+
+def add_to_log(message):
+    formatted_datetime = format_time(rtc.datetime())
     bytes_per_kibibyte = 1024
     used_ram_kibibytes = gc.mem_alloc() / bytes_per_kibibyte
     total_ram_kibibytes = (gc.mem_free() + gc.mem_alloc()) / bytes_per_kibibyte
