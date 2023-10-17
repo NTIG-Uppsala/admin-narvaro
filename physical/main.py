@@ -173,11 +173,11 @@ def wifi_connect():
     )
 
     max_wait_seconds = 10
-    while max_wait_seconds > 0:
-        if wlan.status() < network.STAT_IDLE or wlan.status() >= network.STAT_GOT_IP:
-            break
-
-        max_wait_seconds -= 1
+    current_wait_seconds = 0
+    while current_wait_seconds <= max_wait_seconds and (
+        wlan.status() == network.STAT_IDLE or wlan.status() == network.STAT_CONNECTING
+    ):
+        current_wait_seconds += 1
         time.sleep(1)
 
     led_timer.deinit()
