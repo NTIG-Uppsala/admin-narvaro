@@ -85,7 +85,9 @@ def get_temperature_celsius():
 def get_self_user_id():
     url = "https://narvaro.ntig.net/api/device"
     headers = {"Authorization": "Bearer " + TOKEN}
+    add_to_log("trying to get user_id")
     response = urequests.post(url, headers=headers)
+    add_to_log(f"getting user_id response: {response.status_code}")
     return_data = response.json()["user_id"]
     response.close()
     return return_data
