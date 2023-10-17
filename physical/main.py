@@ -20,12 +20,10 @@ enable_logs = True
 # Real time clock
 rtc = machine.RTC()
 
-selected_pin_on_pico = 4
-
-sensor_temp = machine.ADC(selected_pin_on_pico)
-
 gc.collect()
 micropython.mem_info()
+temperature_pin = 4
+sensor_temperature = machine.ADC(temperature_pin)
 
 current_status = False
 is_pressed = False
@@ -80,7 +78,7 @@ def get_temperature_celsius():
     # voltage of base emitter
     voltage = 0.706
     voltage_slope = 0.001721
-    reading = sensor_temp.read_u16() * conversion_factor
+    reading = sensor_temperature.read_u16() * conversion_factor
     degrees_celsius = 27 - (reading - voltage) / voltage_slope
     return degrees_celsius
 
