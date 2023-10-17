@@ -304,4 +304,4 @@ cython_debug/
 *.REST
 
 # Secrets file used for physical box
-physical/secrets.json
+secrets.json
