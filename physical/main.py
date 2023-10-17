@@ -159,6 +159,8 @@ def toggle_leds_state():
 
 
 def wifi_connect():
+    add_to_log("trying to connect to wifi")
+
     wlan.connect(WIFI_SSID, WIFI_PASSWORD)
 
     def set_leds_state(state):
@@ -213,8 +215,6 @@ def main_loop():
 
         # Checks if the wifi is connected
         if wlan.status() != network.STAT_GOT_IP:
-            # Try to connect to wifi
-            add_to_log("trying to connect to wifi")
             wifi_connect()
         else:
             if not user_id:
