@@ -36,6 +36,7 @@ def load_secrets():
     global WIFI_SSID, WIFI_PASSWORD, TOKEN
     secrets_file = open("secrets.json")
     json_string = "".join(secrets_file.readlines())
+    secrets_file.close()
     secrets = json.loads(json_string)
     WIFI_SSID = secrets["WIFI_SSID"]
     WIFI_PASSWORD = secrets["WIFI_PASSWORD"]
