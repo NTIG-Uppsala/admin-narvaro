@@ -209,7 +209,6 @@ def main():
     main_led.value(1)
 
     user_data_last_fetched = 0
-    initial_get = False
     user_id = None
 
     load_secrets()
@@ -226,9 +225,8 @@ def main():
                 add_to_log("trying to connect to wifi")
                 wifi_connect()
             else:
-                if not initial_get or not user_id:
+                if not user_id:
                     user_id = get_self_user_id()
-                    initial_get = True
 
                 # Check if the user status has been updated every 15 minutes
                 get_user_status_interval = 900
