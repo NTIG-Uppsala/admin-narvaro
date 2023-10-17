@@ -34,8 +34,7 @@ is_pressed = False
 blinking_interval_ms = 500
 
 #Create virtual timers
-toggle_here_led = Timer(-1)
-toggle_not_here_led = Timer(-1)
+led_timer = Timer(-1)
 update_time_timer = Timer(-1)
 
 def load_secrets():
@@ -91,8 +90,6 @@ def get_self_user_id():
 
 def get_user_status(user_id):
     global current_status
-    pin_status_here.value(1)
-    pin_status_not_here.value(1)
 
     add_to_log("trying to get user data")
     response = urequests.get("https://narvaro.ntig.net/api/get/users")
@@ -106,9 +103,6 @@ def get_user_status(user_id):
             add_to_log(f"user data retrieved: {user['name']}, status: {user['status']}")
 
             break
-
-    pin_status_here.value(0)
-    pin_status_not_here.value(0)
     return status
 
 
@@ -144,11 +138,19 @@ def button_handler():
         any_button_pressed = False
     return False
 
+def toggle_leds_state():
+    pin_status_here.value(not pin_status_here.value())
+    pin_status_not_here.value(not pin_status_not_here.value())
+
 def wifi_connect():    
     wlan.connect(WIFI_SSID, WIFI_PASSWORD)
+    
+    def set_leds_state(state):
+        pin_status_here.value(state)
+        pin_status_not_here.value(state)
 
-    toggle_here_led.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
-    toggle_not_here_led.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
+    set_leds_state(0)
+    led_timer.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t: toggle_leds_state())
 
 
     max_wait_seconds = 10
@@ -159,8 +161,7 @@ def wifi_connect():
         max_wait_seconds -= 1
         time.sleep(1)
 
-    toggle_here_led.deinit()
-    toggle_not_here_led.deinit()
+    led_timer.deinit()
 
     add_to_log(f"internal adress: {wlan.ifconfig()}")
     
@@ -230,14 +231,12 @@ def main():
             pin_status_not_here.value(1)
             pin_status_here.value(0)
 
-            toggle_not_here_led.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t:pin_status_not_here.value(not pin_status_not_here.value()))
-            toggle_here_led.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t:pin_status_here.value(not pin_status_here.value()))
+            led_timer.init(period=blinking_interval_ms, mode=Timer.PERIODIC, callback=lambda t: toggle_leds_state())
             
             while time.time() - start_time < 10:
                 pass
             reset()
-            toggle_not_here_led.deinit()
-            toggle_here_led.deinit()
+            led_timer.deinit()
 
 
 main()
