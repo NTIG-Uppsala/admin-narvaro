@@ -12,12 +12,12 @@ not_available_button = Pin(3, Pin.IN)
 available_led = Pin(20, Pin.OUT)
 not_available_led = Pin(21, Pin.OUT)
 
-# Set up WLAN
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 
 enable_logs = True
 
+# Real time clock
 rtc = machine.RTC()
 
 selected_pin_on_pico = 4
