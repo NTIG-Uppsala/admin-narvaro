@@ -202,67 +202,69 @@ def update_time():
         )
 
 
-def main():
+def main_loop():
     global user_available
-    # Tells us that the device is actually running the script
-    main_led = Pin("LED", Pin.OUT)
-    main_led.value(1)
 
     user_data_last_fetched = 0
     user_id = None
+
+    while True:
+        time.sleep_ms(200)
+
+        # Checks if the wifi is connected
+        if wlan.status() != network.STAT_GOT_IP:
+            # Try to connect to wifi
+            add_to_log("trying to connect to wifi")
+            wifi_connect()
+        else:
+            if not user_id:
+                user_id = get_self_user_id()
+
+            # Check if the user status has been updated every 15 minutes
+            get_user_status_interval = 900
+            if (abs(time.time() - user_data_last_fetched)) > get_user_status_interval:
+                user_data_last_fetched = time.time()
+                user_available = get_user_status(user_id)
+
+            button_handler()
+
+            # Change leds
+            if user_available:
+                available_led.value(1)
+                not_available_led.value(0)
+            else:
+                available_led.value(0)
+                not_available_led.value(1)
+
+
+def main():
+    # Tells us that the device is actually running the script
+    main_led = Pin("LED", Pin.OUT)
+    main_led.value(1)
 
     load_secrets()
 
     wlan.disconnect()
 
-    # Main loop
-    while True:
-        time.sleep_ms(200)
-        try:
-            # Checks if the wifi is connected
-            if wlan.status() != network.STAT_GOT_IP:
-                # Try to connect to wifi
-                add_to_log("trying to connect to wifi")
-                wifi_connect()
-            else:
-                if not user_id:
-                    user_id = get_self_user_id()
+    try:
+        main_loop()
+    except Exception as e:
+        add_to_log(str(e))
+        # If something goes wrong, start alternate blinking leds
+        error_raised_time = time.time()
+        not_available_led.value(1)
+        available_led.value(0)
 
-                # Check if the user status has been updated every 15 minutes
-                get_user_status_interval = 900
-                if (
-                    abs(time.time() - user_data_last_fetched)
-                ) > get_user_status_interval:
-                    user_data_last_fetched = time.time()
-                    user_available = get_user_status(user_id)
+        led_timer.init(
+            period=blinking_interval_ms,
+            mode=Timer.PERIODIC,
+            callback=lambda t: toggle_leds_state(),
+        )
 
-                button_handler()
-
-                # Change leds
-                if user_available:
-                    available_led.value(1)
-                    not_available_led.value(0)
-                else:
-                    available_led.value(0)
-                    not_available_led.value(1)
-
-        except Exception as e:
-            add_to_log(str(e))
-            # If something goes wrong, start alternate blinking leds
-            error_raised_time = time.time()
-            not_available_led.value(1)
-            available_led.value(0)
-
-            led_timer.init(
-                period=blinking_interval_ms,
-                mode=Timer.PERIODIC,
-                callback=lambda t: toggle_leds_state(),
-            )
-
-            while time.time() - error_raised_time < 10:
-                pass
-            reset()
-            led_timer.deinit()
+        while time.time() - error_raised_time < 10:
+            pass
+        reset()
+        led_timer.deinit()
 
 
 main()
