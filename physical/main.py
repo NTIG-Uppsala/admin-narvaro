@@ -7,11 +7,10 @@ import json
 import ntptime
 import gc
 
-here_button_pin = Pin(2, Pin.IN)
-not_here_button_pin = Pin(3, Pin.IN)
-pin_status_here = Pin(20, Pin.OUT)
-pin_status_not_here = Pin(21, Pin.OUT)
-# wifi_active_pin = Pin(20, Pin.OUT)
+available_button = Pin(2, Pin.IN)
+not_available_button = Pin(3, Pin.IN)
+available_led = Pin(20, Pin.OUT)
+not_available_led = Pin(21, Pin.OUT)
 
 # Set up WLAN
 wlan = network.WLAN(network.STA_IF)
@@ -129,27 +128,29 @@ def set_user_status(status):
 
 
 def button_handler():
-    global pin_status_here, pin_status_not_here, here_button_pin, not_here_button_pin, current_status
+    global available_led, not_available_led, available_button, not_available_button, current_status
 
     any_button_pressed = False
 
     if (
-        not_here_button_pin.value()
+        not_available_button.value()
         and not any_button_pressed
         and current_status == True
     ):
-        add_to_log("not here button pressed")
+        add_to_log("not available button pressed")
         any_button_pressed = True
-        pin_status_not_here.value(1)
-        pin_status_here.value(0)
+        not_available_led.value(1)
+        available_led.value(0)
         current_status = False
         set_user_status(current_status)
         return True
-    elif here_button_pin.value() and not any_button_pressed and current_status == False:
-        add_to_log("here button pressed")
+    elif (
+        available_button.value() and not any_button_pressed and current_status == False
+    ):
+        add_to_log("available button pressed")
         any_button_pressed = True
-        pin_status_not_here.value(0)
-        pin_status_here.value(1)
+        not_available_led.value(0)
+        available_led.value(1)
         current_status = True
         set_user_status(current_status)
         return True
@@ -159,16 +160,16 @@ def button_handler():
 
 
 def toggle_leds_state():
-    pin_status_here.value(not pin_status_here.value())
-    pin_status_not_here.value(not pin_status_not_here.value())
+    available_led.value(not available_led.value())
+    not_available_led.value(not not_available_led.value())
 
 
 def wifi_connect():
     wlan.connect(WIFI_SSID, WIFI_PASSWORD)
 
     def set_leds_state(state):
-        pin_status_here.value(state)
-        pin_status_not_here.value(state)
+        available_led.value(state)
+        not_available_led.value(state)
 
     set_leds_state(0)
     led_timer.init(
@@ -245,18 +246,18 @@ def main():
 
                 # Change leds
                 if current_status:
-                    pin_status_here.value(1)
-                    pin_status_not_here.value(0)
+                    available_led.value(1)
+                    not_available_led.value(0)
                 else:
-                    pin_status_here.value(0)
-                    pin_status_not_here.value(1)
+                    available_led.value(0)
+                    not_available_led.value(1)
 
         except Exception as e:
             add_to_log(str(e))
             # If something goes wrong, start alternate blinking leds
             start_time = time.time()
-            pin_status_not_here.value(1)
-            pin_status_here.value(0)
+            not_available_led.value(1)
+            available_led.value(0)
 
             led_timer.init(
                 period=blinking_interval_ms,
