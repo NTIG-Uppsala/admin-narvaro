@@ -1,7 +1,9 @@
 # Admin närvaro
 In this project a system for registering attendance for administrators at NTI gymnasiet Uppsala. This system is intended to be used by the school's admin department.
 
-## [Codingstandard](https://docs.google.com/document/d/131W1bUSoyt6cgcMWJ0351T7rCdNp8Y3KoZeaQxhfvpE/)
+## Style guide
+
+[Black Formatter](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter) is used to format Python files.
 
 ## [Development environment](https://docs.google.com/document/d/1a-pp_Vd-XVFjH9qxnXjHDsL0S8OLv-I7n9eCeU7P8Pw/)
 
