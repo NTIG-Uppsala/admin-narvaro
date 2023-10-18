@@ -11,6 +11,8 @@ not_available_button = Pin(3, Pin.IN)
 available_led = Pin(20, Pin.OUT)
 not_available_led = Pin(21, Pin.OUT)
 
+button_last_pressed = 0
+
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 
@@ -123,36 +125,31 @@ def set_user_status(status):
     response.close()
 
 
-def button_handler():
-    global user_available
+def button_press_interrupt(pin):
+    global user_available, button_last_pressed
 
-    any_button_pressed = False
+    button_cooldown_seconds = 7
 
-    if (
-        not_available_button.value()
-        and not any_button_pressed
-        and user_available == True
-    ):
-        add_to_log("not available button pressed")
-        any_button_pressed = True
-        not_available_led.value(1)
-        available_led.value(0)
-        user_available = False
-        set_user_status(user_available)
-        return True
-    elif (
-        available_button.value() and not any_button_pressed and user_available == False
-    ):
-        add_to_log("available button pressed")
-        any_button_pressed = True
-        not_available_led.value(0)
+    if time.time() < button_last_pressed + button_cooldown_seconds:
+        return
+
+    button_last_pressed = time.time()
+
+    if pin == available_button:
         available_led.value(1)
+        not_available_led.value(0)
         user_available = True
         set_user_status(user_available)
-        return True
-    else:
-        any_button_pressed = False
-    return False
+    elif pin == not_available_button:
+        available_led.value(0)
+        not_available_led.value(1)
+        user_available = False
+        set_user_status(user_available)
+
+
+# Handles interrupts
+available_button.irq(trigger=Pin.IRQ_RISING, handler=button_press_interrupt)
+not_available_button.irq(trigger=Pin.IRQ_RISING, handler=button_press_interrupt)
 
 
 def toggle_leds_state():
@@ -227,8 +224,6 @@ def main_loop():
             if (abs(time.time() - user_data_last_fetched)) > get_user_status_interval:
                 user_data_last_fetched = time.time()
                 user_available = get_user_status(user_id)
-
-            button_handler()
 
             # Change leds
             if user_available:
