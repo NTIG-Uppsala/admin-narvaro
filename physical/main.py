@@ -246,7 +246,7 @@ def main():
     try:
         main_loop()
     except Exception as e:
-        add_to_log(str(e))
+        add_to_log("error: " + str(e))
         # If something goes wrong, start alternate blinking leds
         error_raised_time = time.time()
         not_available_led.value(1)
