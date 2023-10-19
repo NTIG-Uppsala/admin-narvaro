@@ -125,7 +125,7 @@ def set_user_status(status):
     response.close()
 
 
-def button_press_interrupt(pin):
+def button_press_interrupt(button_pin):
     global user_available, button_last_pressed
 
     button_cooldown_seconds = 7
@@ -135,12 +135,12 @@ def button_press_interrupt(pin):
 
     button_last_pressed = time.time()
 
-    if pin == available_button:
+    if button_pin == available_button:
         available_led.value(1)
         not_available_led.value(0)
         user_available = True
         set_user_status(user_available)
-    elif pin == not_available_button:
+    elif button_pin == not_available_button:
         available_led.value(0)
         not_available_led.value(1)
         user_available = False
