@@ -97,7 +97,19 @@ def get_self_user_id():
 
 def get_user_status(user_id):
     add_to_log("trying to get user data")
-    response = urequests.get("https://narvaro.ntig.net/api/get/users")
+    try:
+        start_time_seconds = time.time()
+        wait_time_seconds = 10
+        response = urequests.get("https://narvaro.ntig.net/api/get/users")
+        while True:
+            if response:
+                break
+            if time.time() > start_time_seconds + wait_time_seconds:
+                raise Exception()
+    except Exception:
+        add_to_log("failed to get user trying again")
+        get_user_status(user_id)
+
     add_to_log(f"getting users response: {response.status_code}")
     users_json = response.json()
     response.close()
