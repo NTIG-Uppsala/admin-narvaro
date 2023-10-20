@@ -162,17 +162,6 @@ def wifi_connect():
 
     wlan.connect(WIFI_SSID, WIFI_PASSWORD)
 
-    def set_leds_state(state):
-        available_led.value(state)
-        not_available_led.value(state)
-
-    set_leds_state(0)
-    led_timer.init(
-        period=blinking_interval_ms,
-        mode=Timer.PERIODIC,
-        callback=lambda t: toggle_leds_state(),
-    )
-
     max_wait_seconds = 10
     current_wait_seconds = 0
     while current_wait_seconds <= max_wait_seconds and (
@@ -180,8 +169,6 @@ def wifi_connect():
     ):
         current_wait_seconds += 1
         time.sleep(1)
-
-    led_timer.deinit()
 
     add_to_log(f"internal adress: {wlan.ifconfig()}")
 
@@ -249,19 +236,10 @@ def main():
         add_to_log("error: " + str(e))
         # If something goes wrong, start alternate blinking leds
         error_raised_time = time.time()
-        not_available_led.value(1)
-        available_led.value(0)
-
-        led_timer.init(
-            period=blinking_interval_ms,
-            mode=Timer.PERIODIC,
-            callback=lambda t: toggle_leds_state(),
-        )
 
         while time.time() - error_raised_time < 10:
             pass
         reset()
-        led_timer.deinit()
 
 
 main()
