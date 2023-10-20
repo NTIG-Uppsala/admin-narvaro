@@ -13,6 +13,8 @@ not_available_led = Pin(21, Pin.OUT)
 
 button_last_pressed = 0
 
+button_was_pressed_without_wifi = False
+
 wlan = network.WLAN(network.STA_IF)
 wlan.active(True)
 
@@ -96,6 +98,8 @@ def get_self_user_id():
 
 
 def get_user_status(user_id):
+    global button_was_pressed_without_wifi
+
     add_to_log("trying to get user data")
     try:
         start_time_seconds = time.time()
@@ -116,7 +120,11 @@ def get_user_status(user_id):
     status = False
     for user in users_json:
         if user["_id"] == user_id:
-            status = user["status"]
+            if button_was_pressed_without_wifi:
+                status = user_available
+                button_was_pressed_without_wifi = False
+            else:
+                status = user["status"]
             add_to_log(f"user data retrieved: {user['name']}, status: {user['status']}")
             break
     return status
@@ -138,7 +146,7 @@ def set_user_status(status):
 
 
 def button_press_interrupt(button_pin):
-    global user_available, button_last_pressed
+    global user_available, button_last_pressed, button_was_pressed_without_wifi
 
     button_cooldown_seconds = 7
 
@@ -151,12 +159,15 @@ def button_press_interrupt(button_pin):
         available_led.value(1)
         not_available_led.value(0)
         user_available = True
-        set_user_status(user_available)
     elif button_pin == not_available_button:
         available_led.value(0)
         not_available_led.value(1)
         user_available = False
+
+    if wlan.status() == network.STAT_GOT_IP:
         set_user_status(user_available)
+    else:
+        button_was_pressed_without_wifi = True
 
 
 # Handles interrupts
@@ -223,6 +234,7 @@ def main_loop():
             if (abs(time.time() - user_data_last_fetched)) > get_user_status_interval:
                 user_data_last_fetched = time.time()
                 user_available = get_user_status(user_id)
+                set_user_status(user_available)
 
             # Change leds
             if user_available:
