@@ -159,18 +159,15 @@ def button_press_interrupt(button_pin):
         available_led.value(1)
         not_available_led.value(0)
         user_available = True
-        if wlan.status() == network.STAT_GOT_IP:
-            set_user_status(user_available)
-        else:
-            button_was_pressed_without_wifi = True
     elif button_pin == not_available_button:
         available_led.value(0)
         not_available_led.value(1)
         user_available = False
-        if wlan.status() == network.STAT_GOT_IP:
-            set_user_status(user_available)
-        else:
-            button_was_pressed_without_wifi = True
+
+    if wlan.status() == network.STAT_GOT_IP:
+        set_user_status(user_available)
+    else:
+        button_was_pressed_without_wifi = True
 
 
 # Handles interrupts
