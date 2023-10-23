@@ -158,6 +158,13 @@ def set_user_status(status):
 def button_press_interrupt(button_pin):
     global user_available, button_last_pressed, button_was_pressed_without_wifi
 
+    def set_status_if_connected():
+        global user_available, button_was_pressed_without_wifi
+        if wlan.status() == network.STAT_GOT_IP:
+            set_user_status(user_available)
+        else:
+            button_was_pressed_without_wifi = True
+
     button_cooldown_seconds = 7
 
     if time.time() < button_last_pressed + button_cooldown_seconds:
@@ -165,19 +172,18 @@ def button_press_interrupt(button_pin):
 
     button_last_pressed = time.time()
 
-    if button_pin == available_button:
+    if button_pin == available_button and available_led.value() == 0:
+        add_to_log("here button pressed")
         available_led.value(1)
         not_available_led.value(0)
         user_available = True
-    elif button_pin == not_available_button:
+        set_status_if_connected()
+    elif button_pin == not_available_button and not_available_led.value() == 0:
+        add_to_log("not here button pressed")
         available_led.value(0)
         not_available_led.value(1)
         user_available = False
-
-    if wlan.status() == network.STAT_GOT_IP:
-        set_user_status(user_available)
-    else:
-        button_was_pressed_without_wifi = True
+        set_status_if_connected()
 
 
 # Handles interrupts
