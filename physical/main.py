@@ -135,14 +135,22 @@ def get_user_status(user_id):
 def set_user_status(status):
     data_to_send = {"status": status}
     add_to_log(f"setting status: {status}")
-    response = urequests.post(
-        "https://narvaro.ntig.net/api/user/setstatus",
-        data=json.dumps(data_to_send),
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {TOKEN}",
-        },
-    )
+    try:
+        wait_time_seconds = 15
+        response = urequests.post(
+            "https://narvaro.ntig.net/api/user/setstatus",
+            data=json.dumps(data_to_send),
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {TOKEN}",
+            },
+            timeout=wait_time_seconds,
+        )
+    except Exception as error:
+        add_to_log(f"failed to get user trying again, exception: {error}")
+        set_user_status(status)
+
+    time.sleep(2)
     add_to_log(f"setting status response: {response.status_code}")
     response.close()
 
