@@ -91,7 +91,12 @@ def get_self_user_id():
     url = "https://narvaro.ntig.net/api/device"
     headers = {"Authorization": "Bearer " + TOKEN}
     add_to_log("trying to get user_id")
-    response = urequests.post(url, headers=headers)
+    try:
+        wait_time_seconds = 15
+        response = urequests.post(url, headers=headers, timeout=wait_time_seconds)
+    except Exception as error:
+        add_to_log(f"failed to get user_id trying again, {error}")
+        get_self_user_id()
     add_to_log(f"getting user_id response: {response.status_code}")
     return_data = response.json()["user_id"]
     response.close()
@@ -104,7 +109,9 @@ def get_user_status(user_id):
     add_to_log("trying to get user data")
     try:
         wait_time_seconds = 10
-        response = urequests.get("https://narvaro.ntig.net/api/get/users", timeout=wait_time_seconds)
+        response = urequests.get(
+            "https://narvaro.ntig.net/api/get/users", timeout=wait_time_seconds
+        )
     except Exception as error:
         add_to_log(f"failed to get user trying again, exception: {error}")
         get_user_status(user_id)
@@ -128,20 +135,35 @@ def get_user_status(user_id):
 def set_user_status(status):
     data_to_send = {"status": status}
     add_to_log(f"setting status: {status}")
-    response = urequests.post(
-        "https://narvaro.ntig.net/api/user/setstatus",
-        data=json.dumps(data_to_send),
-        headers={
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {TOKEN}",
-        },
-    )
+    try:
+        wait_time_seconds = 15
+        response = urequests.post(
+            "https://narvaro.ntig.net/api/user/setstatus",
+            data=json.dumps(data_to_send),
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {TOKEN}",
+            },
+            timeout=wait_time_seconds,
+        )
+    except Exception as error:
+        add_to_log(f"failed to get user trying again, exception: {error}")
+        set_user_status(status)
+
+    time.sleep(2)
     add_to_log(f"setting status response: {response.status_code}")
     response.close()
 
 
 def button_press_interrupt(button_pin):
     global user_available, button_last_pressed, button_was_pressed_without_wifi
+
+    def set_status_if_connected():
+        global user_available, button_was_pressed_without_wifi
+        if wlan.status() == network.STAT_GOT_IP:
+            set_user_status(user_available)
+        else:
+            button_was_pressed_without_wifi = True
 
     button_cooldown_seconds = 7
 
@@ -150,19 +172,18 @@ def button_press_interrupt(button_pin):
 
     button_last_pressed = time.time()
 
-    if button_pin == available_button:
+    if button_pin == available_button and available_led.value() == 0:
+        add_to_log("here button pressed")
         available_led.value(1)
         not_available_led.value(0)
         user_available = True
-    elif button_pin == not_available_button:
+        set_status_if_connected()
+    elif button_pin == not_available_button and not_available_led.value() == 0:
+        add_to_log("not here button pressed")
         available_led.value(0)
         not_available_led.value(1)
         user_available = False
-
-    if wlan.status() == network.STAT_GOT_IP:
-        set_user_status(user_available)
-    else:
-        button_was_pressed_without_wifi = True
+        set_status_if_connected()
 
 
 # Handles interrupts
