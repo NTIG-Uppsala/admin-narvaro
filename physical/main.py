@@ -34,6 +34,7 @@ blinking_interval_ms = 500
 # Create virtual timers
 led_timer = Timer(-1)
 update_time_retry_timer = Timer(-1)
+get_user_repeat_timer = Timer(-1)
 
 
 def load_secrets():
@@ -102,16 +103,10 @@ def get_user_status(user_id):
 
     add_to_log("trying to get user data")
     try:
-        start_time_seconds = time.time()
         wait_time_seconds = 10
-        response = urequests.get("https://narvaro.ntig.net/api/get/users")
-        while True:
-            if response:
-                break
-            if time.time() > start_time_seconds + wait_time_seconds:
-                raise Exception()
-    except Exception:
-        add_to_log("failed to get user trying again")
+        response = urequests.get("https://narvaro.ntig.net/api/get/users", timeout=wait_time_seconds)
+    except Exception as error:
+        add_to_log(f"failed to get user trying again, exception: {error}")
         get_user_status(user_id)
 
     add_to_log(f"getting users response: {response.status_code}")
