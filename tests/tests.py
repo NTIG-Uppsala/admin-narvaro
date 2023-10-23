@@ -21,16 +21,15 @@ class CheckWebsite(unittest.TestCase):
     def test_a_toggle_checkbox(self):
         self.driver.get(self.website_url + "setstatus?auth=kA724hAn0a")
         time.sleep(1)
-        checkbox = self.driver.find_element(By.ID, "slider-653284cad43c535e3026f80a")
-        self.is_checked = not checkbox.is_selected()
-        checkbox.click()
+        checkbox = self.driver.find_element(By.ID, "653284cad43c535e3026f80a")
+        self.__class__.is_checked = checkbox.is_selected()
 
     def test_b_check_status(self):
         self.driver.get(self.website_url)
         time.sleep(3)
         avalibility = self.driver.find_element(By.ID, "653284cad43c535e3026f80a")
 
-        if self.is_checked:
+        if self.__class__.is_checked:
             self.assertEqual(avalibility.text, "Tillgänglig")
         else:
             self.assertEqual(avalibility.text, "Ej tillgänglig")
