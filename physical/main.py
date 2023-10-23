@@ -91,7 +91,12 @@ def get_self_user_id():
     url = "https://narvaro.ntig.net/api/device"
     headers = {"Authorization": "Bearer " + TOKEN}
     add_to_log("trying to get user_id")
-    response = urequests.post(url, headers=headers)
+    try:
+        wait_time_seconds = 15
+        response = urequests.post(url, headers=headers, timeout=wait_time_seconds)
+    except Exception as error:
+        add_to_log(f"failed to get user_id trying again, {error}")
+        get_self_user_id()
     add_to_log(f"getting user_id response: {response.status_code}")
     return_data = response.json()["user_id"]
     response.close()
