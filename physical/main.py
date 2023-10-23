@@ -104,7 +104,9 @@ def get_user_status(user_id):
     add_to_log("trying to get user data")
     try:
         wait_time_seconds = 10
-        response = urequests.get("https://narvaro.ntig.net/api/get/users", timeout=wait_time_seconds)
+        response = urequests.get(
+            "https://narvaro.ntig.net/api/get/users", timeout=wait_time_seconds
+        )
     except Exception as error:
         add_to_log(f"failed to get user trying again, exception: {error}")
         get_user_status(user_id)
