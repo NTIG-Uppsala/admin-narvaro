@@ -99,30 +99,14 @@ def get_self_user_id():
 
 
 def get_user_status(user_id):
-    def get_user_repeat():
-        print("hereere")
-
     global button_was_pressed_without_wifi
 
     add_to_log("trying to get user data")
     try:
-        start_time_seconds = time.time()
         wait_time_seconds = 10
-
-        get_user_repeat_timer.init(
-            mode=Timer.ONE_SHOT,
-            callback=lambda t: get_user_repeat(),
-            period=1000,
-        )
-        print("test")
-        response = urequests.get("https://narvaro.ntig.net/api/get/users")
-        while True:
-            if response:
-                break
-            if time.time() > start_time_seconds + wait_time_seconds:
-                raise Exception()
-    except Exception:
-        add_to_log("failed to get user trying again")
+        response = urequests.get("https://narvaro.ntig.net/api/get/users", timeout=wait_time_seconds)
+    except Exception as error:
+        add_to_log(f"failed to get user trying again, exception: {error}")
         get_user_status(user_id)
 
     add_to_log(f"getting users response: {response.status_code}")
