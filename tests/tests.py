@@ -11,6 +11,7 @@ class CheckWebsite(unittest.TestCase):
     @classmethod
     def setUpClass(self):
         options = webdriver.ChromeOptions()
+        options.add_argument("--headless=new")
         self.driver = webdriver.Chrome(options=options)
 
     @classmethod
