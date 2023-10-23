@@ -17,6 +17,10 @@ body {
     background-color: #160027;
 }
 
+.slider {
+    height: 24px;
+}
+
 a,
 h1,
 h2,
