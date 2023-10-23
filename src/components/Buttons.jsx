@@ -2,7 +2,7 @@ import { PenIcon, AddUserIcon, TrashIcon, BackIcon } from '../components/Icons'
 
 const Button = (props) => {
     return (
-        <button className="bg-transparent border-[3px] p-3 duration-150 hover:bg-slate-100 hover:text-black border-white text-white rounded-md" onClick={props.onClick}>
+        <button className={"bg-transparent border-[3px] p-3 duration-150 hover:bg-slate-100 hover:text-black border-white text-white rounded-md " + props.className} onClick={props.onClick}>
             <div className='flex flex-row gap-5'>
                 {props.children}
             </div>
@@ -30,7 +30,7 @@ export const AddUserButton = ({ handler }) => {
 
 export const EditButton = ({ onClickHandler }) => {
     return (
-        <Button onClick={onClickHandler}>
+        <Button  className="editButton" onClick={onClickHandler}>
             Redigera
             <PenIcon />
         </Button>
@@ -39,7 +39,7 @@ export const EditButton = ({ onClickHandler }) => {
 
 export const BackButton = ({ onClickHandler }) => {
     return (
-        <Button onClick={onClickHandler}>
+        <Button className="backButton" onClick={onClickHandler}>
             Tillbaka
             <BackIcon />
         </Button>
@@ -56,7 +56,7 @@ export const SaveButton = ({ onClickHandler }) => {
 
 export const DeleteButton = ({ onClickHandler }) => {
     return (
-        <Button onClick={onClickHandler}>
+        <Button className="deleteButton" onClick={onClickHandler}>
             Ta bort
             <TrashIcon />
         </Button>
