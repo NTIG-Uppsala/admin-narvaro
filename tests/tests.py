@@ -19,15 +19,15 @@ class CheckWebsite(unittest.TestCase):
         self.driver.quit()
 
     def test_a_toggle_checkbox(self):
-        self.driver.get(self.website_url + "setstatus?auth=kA724hAn0a")
+        self.driver.get(self.website_url + "setstatus?auth=jtgz6rgTGT")
         time.sleep(1)
-        checkbox = self.driver.find_element(By.ID, "653284cad43c535e3026f80a")
+        checkbox = self.driver.find_element(By.ID, "634ea9b368bd856cebfdddc4")
         self.__class__.is_checked = checkbox.is_selected()
 
     def test_b_check_status(self):
         self.driver.get(self.website_url)
         time.sleep(3)
-        avalibility = self.driver.find_element(By.ID, "653284cad43c535e3026f80a")
+        avalibility = self.driver.find_element(By.ID, "634ea9b368bd856cebfdddc4")
 
         if self.__class__.is_checked:
             self.assertEqual(avalibility.text, "Tillgänglig")
