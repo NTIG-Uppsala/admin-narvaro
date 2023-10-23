@@ -5,7 +5,7 @@ import time
 
 
 class CheckWebsite(unittest.TestCase):
-    website_url = "http://localhost:8000/"  # Standard URL
+    website_url = "https://narvaro.ntig.net/"  # Standard URL
     is_checked = None
 
     @classmethod
