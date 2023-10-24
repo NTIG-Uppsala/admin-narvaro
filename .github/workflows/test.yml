@@ -39,7 +39,7 @@ jobs:
           python -m pip install --upgrade pip
           if [ -f tests/test_requirements.txt ]; then pip install -r tests/test_requirements.txt; fi
       - name: Start server
-        run: npm run dev
+        run: npm run dev &
         
       - name: Wait for server to finish starting
         run: wait-on http://localhost:8000 --timeout 60000
