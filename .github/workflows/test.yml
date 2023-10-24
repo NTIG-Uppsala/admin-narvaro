@@ -36,7 +36,7 @@ jobs:
 
       - run: npm run dev &
 
-      - run: curl http://localhost:8000/
+      - run: curl http://127.0.0.1:8000/
       
       - name: Install dependencies
         run: |
