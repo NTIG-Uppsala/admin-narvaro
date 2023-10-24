@@ -41,8 +41,5 @@ jobs:
       - name: Start server
         run: npm run dev &
         
-      - name: Wait for server to finish starting
-        run: wait-on http://localhost:8000 --timeout 60000
-        
-      - name: Run Python tests
-        run: python tests/tests.py
+      - name: Run Python tests when server is ready
+        run: wait-on http://localhost:8000/ && python tests/tests.py
