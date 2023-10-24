@@ -1,9 +1,8 @@
 name: Runs tests
 on:
-  push:
-    branches: ["*"]
   pull_request:
-    branches: ["*"]
+    branches: 
+      - main
 
 env:
   HOST_URL: ${{ secrets.HOST_URL }}
