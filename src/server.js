@@ -37,8 +37,6 @@ nextApp.prepare().then(async () => {
 
     /* Listen on port 8000 */
     http_server.listen(8000, (err) => {
-        console.log(err == true)
-        console.log(err)
         if (err) throw err
         console.log("Server is running on port 8000")
     });
