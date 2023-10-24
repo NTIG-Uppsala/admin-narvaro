@@ -38,6 +38,10 @@ Note:
 Connection strings needs the database name at the end.
 Example: This_is_the_connection_string/database_name.
 
+## Dev database
+
+In order for GitHub Actions tests to work, any IP adresses used by GitHub must be [whitelisted on the dev database](https://www.mongodb.com/docs/atlas/security/ip-access-list/#add-ip-access-list-entries).
+
 ## Run tests
 
 All tests are located in the `test` folder and are named `test_*.py`. To install necessary dependencies run `pip install -r requirements.txt` in the root folder of the project. To run a test run `python test/<filename> <url to be tested>`. The project also has jest tests located in `__tests_/` and can be runned with `npm run test`.
