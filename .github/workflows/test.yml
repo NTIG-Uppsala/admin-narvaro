@@ -38,8 +38,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f tests/test_requirements.txt ]; then pip install -r tests/test_requirements.txt; fi
-
-      - name: Run tests
+      - name: Run Tests scripts on localhost
         run: |
-          npm run dev
+          npm run dev &
           python tests/tests.py
