@@ -16,22 +16,23 @@ const WebPage = (props) => {
     const [people, setPeople] = useState(props.users)
     const Person = (propscomp) => {
         const [latest_change, setLatestChange] = useState(moment(propscomp.latest_change).fromNow());
-
+    
         useEffect(() => {
-            /* Will update the from Last Updated text every minute */
+            /* Will update the "from Last Updated" text every minute */
             let inter = setInterval(() => {
-                setLatestChange(moment(propscomp.latest_change).fromNow())
+                setLatestChange(moment(propscomp.latest_change).fromNow());
             }, 60000);
             return () => clearInterval(inter);
-        }, [])
-
+        }, []);
+    
         useEffect(() => {
-            setLatestChange(moment(propscomp.latest_change).fromNow())
-        }, [propscomp.latest_change])
-
-
+            setLatestChange(moment(propscomp.latest_change).fromNow());
+        }, [propscomp.latest_change]);
+    
+        const isLastChild = propscomp.isLastChild;
+    
         return (
-            <div className={((propscomp.id % 2 == 0) ? "bg-stone-700/50" : "") + " flex flex-row pr-6 pl-6 md:gap-x-32 lg:gap-x-64 justify-between items-center py-6 px-3 md:py-3"}>
+            <div className={((propscomp.id % 2 === 0) ? "bg-stone-700/50" : "") + " flex flex-row pr-6 pl-6 md:gap-x-32 lg:gap-x-64 justify-between items-center py-6 px-3 md:py-3" + (isLastChild ? " rounded-b-lg" : "")}>
                 <div className="text-left mr-5">
                     <p className="text-xl md:text-3xl break-keep">{propscomp.name}</p>
                     <span className="text-xs md:text-sm lg:text-base">{propscomp.role}</span>
@@ -43,8 +44,10 @@ const WebPage = (props) => {
                     <span className="text-xs md:text-sm lg:text-base">Senast Uppdaterad:<br />{latest_change}</span>
                 </div>
             </div>
-        )
+        );
     }
+    
+    
 
     const socket = io();
 
@@ -74,8 +77,12 @@ const WebPage = (props) => {
                         <p className="text-center">Du har inte javascript aktiverat. Detta kan orsaka att webplatsen inte fungerar som den ska</p>
                     </noscript>
                     <div className="flex flex-col md:pt-12">
-                        {people && people.map((item, index) => { return <Person key={index} id={index + 1} {...item} /> })}
-                    </div>
+                        {people && people.map((item, index) => {
+                        const isLastChild = index === people.length - 1;
+                        return <Person key={index} id={index + 1} isLastChild={isLastChild} {...item} />;
+                    })}
+</div>
+
                 </Container>
 
             </div>

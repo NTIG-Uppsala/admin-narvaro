@@ -17,6 +17,10 @@ body {
     background-color: #160027;
 }
 
+.slider {
+    height: 24px;
+}
+
 a,
 h1,
 h2,
@@ -39,4 +43,16 @@ p,
 span,
 input {
     color: whitesmoke
+}
+
+.editButton:hover .penIcon{
+    stroke: #000000;
+}
+
+.backButton:hover .backIcon{
+    stroke: #000000;
+}
+
+.deleteButton:hover .trashIcon{
+    stroke: #000000;
 }

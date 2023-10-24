@@ -38,7 +38,7 @@ const Person = (propscomp) => {
             <div id="name" className="text-left mr-5">
                 <p className="text-lg md:text-3xl">{propscomp.name}</p>
             </div>
-            <div id="slider" className="text-right ml-5">
+            <div id="slider" className="text-right ml-5 slider">
                 <label htmlFor={propscomp._id} className="inline-flex relative items-center cursor-pointer">
                     <input
                         type="checkbox"
