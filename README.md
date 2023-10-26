@@ -6,8 +6,6 @@ In this project a system for registering attendance for administrators at NTI gy
 
 [Black Formatter](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter) is used to format Python files.
 
-## [Development environment](https://docs.google.com/document/d/1a-pp_Vd-XVFjH9qxnXjHDsL0S8OLv-I7n9eCeU7P8Pw/)
-
 ## Project dependencies
 
 This project uses the following dependencies: \
@@ -80,7 +78,7 @@ The index page is the main page where the status of a person can be seen. The pe
 
 The setstatus page is where the status of a person can be set. To visit the setstatus page you need to have a valid uri and providing in the url. All people have a unique uri. The people are also given a group and a privilege. The privilege specifies if the person can only change their own status, all statuses in their group or statuses of all the people.
 
-#### /dashboard (aka the admin panel)
+#### /dashboard (admin panel)
 
 This page is where the admin can configure all people. On the admin panel page every persons name, role, group privilege, uri and physical device can be seen and changes. The dashboard is password protected to prevent unauthorized access. To login to the dashboard the user is prompted with a login screen. The password is then submitted to the backend (`/api/auth/login`) and checked if it matches the password in the database.
 
