@@ -238,7 +238,6 @@ def main_loop():
     while True:
         time.sleep_ms(200)
 
-        # Checks if the wifi is connected
         if wlan.status() != network.STAT_GOT_IP:
             wifi_connect()
         else:
@@ -274,7 +273,6 @@ def main():
         main_loop()
     except Exception as e:
         add_to_log("error: " + str(e))
-        # If something goes wrong, start alternate blinking leds
         error_raised_time = time.time()
 
         while time.time() - error_raised_time < 10:
