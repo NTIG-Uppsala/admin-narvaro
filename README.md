@@ -30,7 +30,7 @@ JWT_SECRET=""
 
 > `MONGODB_URI_DEV` is the connection string to the development database.
 
-> `HOST_URL` is the url of the server which will be used by the server to make requests to itself (eg. https://narvaro.ntig.net/) If this is not set, the backend will throw an error at runtime.
+> `HOST_URL` is the url of the server which will be used by the server to make requests to itself (e.g. https://narvaro.ntig.net/). If this is not set, the backend will throw an error at runtime.
 
 > `JWT_SECRET` the secret used to sign the JWT tokens. Needs to be long to be safe.
 
