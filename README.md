@@ -1,6 +1,6 @@
 # Admin närvaro
 
-In this project a system for registering attendance for administrators at NTI gymnasiet Uppsala. This system is intended to be used by the school's admin department.
+In this project a system for registering attendance for administrators at NTI Gymnasiet Uppsala. This system is intended to be used by the school's admin department.
 
 ## Style guide
 
@@ -52,19 +52,19 @@ To run the project in development mode run `npm run dev` in the root folder of t
 
 To run the project in production mode run `npm run build` followed by `npm run start` in the root folder of the project. The project will then be available at `localhost:8000`. If the project is ran in production mode, the backend will use the production database.
 
-## Run project with docker
+## Run project with Docker
 
-To run the project with docker. The Docker engine needs to be installed and the dependencies that comes with docker.
+To run the project with Docker, Docker Engine must to be installed.
 
-### Build docker image
+### Build Docker image
 
 `docker build . -t <Your name>/admin-narvaro`
 
-### Run docker image
+### Run Docker image
 
 `docker run -p 8080:8080 <Your name>/admin-narvaro`
 
-After the docker image has been built and run, the project can be accessed at `localhost:8080` in the browser.
+After the Docker image has been built and run, the project can be accessed at `localhost:8080` in the browser.
 
 ## API routes and frontend pages
 
