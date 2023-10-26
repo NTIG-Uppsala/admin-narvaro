@@ -38,7 +38,7 @@ get_user_repeat_timer = Timer(-1)
 
 
 def load_secrets():
-    global WIFI_SSID, WIFI_PASSWORD, TOKEN
+    global WIFI_SSID, WIFI_PASSWORD, TOKEN, URL
     secrets_file = open("secrets.json")
     json_string = "".join(secrets_file.readlines())
     secrets_file.close()
@@ -46,6 +46,7 @@ def load_secrets():
     WIFI_SSID = secrets["WIFI_SSID"]
     WIFI_PASSWORD = secrets["WIFI_PASSWORD"]
     TOKEN = secrets["TOKEN"]
+    URL = secrets["URL"]
 
 
 def format_time(datetime):
@@ -88,7 +89,7 @@ def get_temperature_celsius():
 
 
 def get_self_user_id():
-    url = "https://narvaro.ntig.net/api/device"
+    url = URL + "/api/device"
     headers = {"Authorization": "Bearer " + TOKEN}
     add_to_log("trying to get user_id")
     try:
@@ -109,9 +110,7 @@ def get_user_status(user_id):
     add_to_log("trying to get user data")
     try:
         wait_time_seconds = 10
-        response = urequests.get(
-            "https://narvaro.ntig.net/api/get/users", timeout=wait_time_seconds
-        )
+        response = urequests.get(URL + "/api/get/users", timeout=wait_time_seconds)
     except Exception as error:
         add_to_log(f"failed to get user trying again, exception: {error}")
         get_user_status(user_id)
@@ -138,7 +137,7 @@ def set_user_status(status):
     try:
         wait_time_seconds = 15
         response = urequests.post(
-            "https://narvaro.ntig.net/api/user/setstatus",
+            URL + "/api/user/setstatus",
             data=json.dumps(data_to_send),
             headers={
                 "Content-Type": "application/json",
