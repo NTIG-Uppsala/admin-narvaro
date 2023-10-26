@@ -84,7 +84,7 @@ The setstatus page is where the status of a person can be set. To visit the sets
 
 This page is where the admin can configure all people. On the admin panel page every persons name, role, group privilege, uri and physical device can be seen and changes. The dashboard is password protected to prevent unauthorized access. To login to the dashboard the user is prompted with a login screen. The password is then submitted to the backend (`/api/auth/login`) and checked if it matches the password in the database.
 
-### API (/api/)
+### API routes (/api)
 
 #### /auth/login (POST)
 
