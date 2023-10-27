@@ -157,6 +157,7 @@ def set_user_status(status):
 def button_press_interrupt(button_pin):
     global user_available, button_last_pressed_seconds, button_was_pressed_without_wifi
 
+    # This function is only used in "button_press_interrupt"
     def set_status_if_connected():
         global user_available, button_was_pressed_without_wifi
         if wlan.status() == network.STAT_GOT_IP:
@@ -189,11 +190,6 @@ def button_press_interrupt(button_pin):
 # Handles interrupts
 available_button.irq(trigger=Pin.IRQ_RISING, handler=button_press_interrupt)
 not_available_button.irq(trigger=Pin.IRQ_RISING, handler=button_press_interrupt)
-
-
-def toggle_leds_state():
-    available_led.value(not available_led.value())
-    not_available_led.value(not not_available_led.value())
 
 
 def wifi_connect():
