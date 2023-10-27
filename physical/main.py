@@ -191,11 +191,6 @@ available_button.irq(trigger=Pin.IRQ_RISING, handler=button_press_interrupt)
 not_available_button.irq(trigger=Pin.IRQ_RISING, handler=button_press_interrupt)
 
 
-def toggle_leds_state():
-    available_led.value(not available_led.value())
-    not_available_led.value(not not_available_led.value())
-
-
 def wifi_connect():
     add_to_log("trying to connect to wifi")
 
