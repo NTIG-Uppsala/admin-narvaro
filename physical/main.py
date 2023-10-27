@@ -164,13 +164,14 @@ def button_press_interrupt(button_pin):
         else:
             button_was_pressed_without_wifi = True
 
+    # Prevents the button from being pressed too often
     button_cooldown_seconds = 7
 
     if time.time() < button_last_pressed_seconds + button_cooldown_seconds:
         return
 
     button_last_pressed_seconds = time.time()
-
+    # Checks if the button is already pressed
     if button_pin == available_button and available_led.value() == 0:
         add_to_log("available button pressed")
         available_led.value(1)
