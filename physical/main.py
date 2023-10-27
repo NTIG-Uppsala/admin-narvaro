@@ -29,8 +29,6 @@ sensor_temperature = machine.ADC(temperature_pin)
 user_available = False
 is_pressed = False
 
-blinking_interval_ms = 500
-
 # Create virtual timers
 led_timer = Timer(-1)
 update_time_retry_timer = Timer(-1)
