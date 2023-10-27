@@ -172,13 +172,13 @@ def button_press_interrupt(button_pin):
     button_last_pressed_seconds = time.time()
 
     if button_pin == available_button and available_led.value() == 0:
-        add_to_log("here button pressed")
+        add_to_log("available button pressed")
         available_led.value(1)
         not_available_led.value(0)
         user_available = True
         set_status_if_connected()
     elif button_pin == not_available_button and not_available_led.value() == 0:
-        add_to_log("not here button pressed")
+        add_to_log("not available button pressed")
         available_led.value(0)
         not_available_led.value(1)
         user_available = False
