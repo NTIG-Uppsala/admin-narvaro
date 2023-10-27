@@ -157,6 +157,7 @@ def set_user_status(status):
 def button_press_interrupt(button_pin):
     global user_available, button_last_pressed_seconds, button_was_pressed_without_wifi
 
+    # This function is only used in "button_press_interrupt"
     def set_status_if_connected():
         global user_available, button_was_pressed_without_wifi
         if wlan.status() == network.STAT_GOT_IP:
