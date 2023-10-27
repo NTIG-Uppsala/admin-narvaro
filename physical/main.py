@@ -11,7 +11,10 @@ not_available_button = Pin(3, Pin.IN)
 available_led = Pin(20, Pin.OUT)
 not_available_led = Pin(21, Pin.OUT)
 
-button_last_pressed = 0
+temperature_pin = 4
+sensor_temperature = machine.ADC(temperature_pin)
+
+button_last_pressed_seconds = 0
 
 button_was_pressed_without_wifi = False
 
@@ -23,15 +26,12 @@ enable_logs = True
 # Real time clock
 rtc = machine.RTC()
 
-temperature_pin = 4
-sensor_temperature = machine.ADC(temperature_pin)
 
 user_available = False
 is_pressed = False
 
-blinking_interval_ms = 500
-
 # Create virtual timers
+# -1 makes the timer virtual
 led_timer = Timer(-1)
 update_time_retry_timer = Timer(-1)
 get_user_repeat_timer = Timer(-1)
@@ -155,7 +155,7 @@ def set_user_status(status):
 
 
 def button_press_interrupt(button_pin):
-    global user_available, button_last_pressed, button_was_pressed_without_wifi
+    global user_available, button_last_pressed_seconds, button_was_pressed_without_wifi
 
     def set_status_if_connected():
         global user_available, button_was_pressed_without_wifi
@@ -164,21 +164,22 @@ def button_press_interrupt(button_pin):
         else:
             button_was_pressed_without_wifi = True
 
+    # Prevents the button from being pressed too often
     button_cooldown_seconds = 7
 
-    if time.time() < button_last_pressed + button_cooldown_seconds:
+    if time.time() < button_last_pressed_seconds + button_cooldown_seconds:
         return
 
-    button_last_pressed = time.time()
-
+    button_last_pressed_seconds = time.time()
+    # Checks if the button is already pressed
     if button_pin == available_button and available_led.value() == 0:
-        add_to_log("here button pressed")
+        add_to_log("available button pressed")
         available_led.value(1)
         not_available_led.value(0)
         user_available = True
         set_status_if_connected()
     elif button_pin == not_available_button and not_available_led.value() == 0:
-        add_to_log("not here button pressed")
+        add_to_log("not available button pressed")
         available_led.value(0)
         not_available_led.value(1)
         user_available = False
