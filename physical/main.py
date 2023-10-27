@@ -192,24 +192,29 @@ available_button.irq(trigger=Pin.IRQ_RISING, handler=button_press_interrupt)
 not_available_button.irq(trigger=Pin.IRQ_RISING, handler=button_press_interrupt)
 
 
-def wifi_connect():
-    add_to_log("trying to connect to wifi")
-
-    wlan.connect(WIFI_SSID, WIFI_PASSWORD)
-
-    max_wait_seconds = 10
+def wait_for_wifi(wlan, max_wait_seconds):
     current_wait_seconds = 0
+
     while current_wait_seconds <= max_wait_seconds and (
         wlan.status() == network.STAT_IDLE or wlan.status() == network.STAT_CONNECTING
     ):
         current_wait_seconds += 1
         time.sleep(1)
 
-    add_to_log(f"internal adress: {wlan.ifconfig()}")
+    return wlan.status() == network.STAT_GOT_IP
 
-    if wlan.status() == network.STAT_GOT_IP:
+
+def wifi_connect():
+    add_to_log("trying to connect to wifi")
+
+    wlan.connect(WIFI_SSID, WIFI_PASSWORD)
+
+    if wait_for_wifi(wlan, max_wait_seconds=10):
+        add_to_log(f"Internal address: {wlan.ifconfig()}")
         update_time()
-        add_to_log("successfully connected to wifi")
+        add_to_log("Successfully connected to WiFi")
+    else:
+        add_to_log("Failed to connect to WiFi")
 
 
 def update_time():
@@ -244,6 +249,7 @@ def main_loop():
             get_user_status_interval = 900
             if (abs(time.time() - user_data_last_fetched)) > get_user_status_interval:
                 user_data_last_fetched = time.time()
+                # Fetching user status if it was uppdated on the website or if the button was pressed without wifi
                 user_available = get_user_status(user_id)
                 set_user_status(user_available)
 
