@@ -149,7 +149,6 @@ def set_user_status(status):
         add_to_log(f"failed to get user trying again, exception: {error}")
         set_user_status(status)
 
-    time.sleep(2)
     add_to_log(f"setting status response: {response.status_code}")
     response.close()
 
