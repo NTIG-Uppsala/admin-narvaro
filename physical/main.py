@@ -11,6 +11,9 @@ not_available_button = Pin(3, Pin.IN)
 available_led = Pin(20, Pin.OUT)
 not_available_led = Pin(21, Pin.OUT)
 
+temperature_pin = 4
+sensor_temperature = machine.ADC(temperature_pin)
+
 button_last_pressed = 0
 
 button_was_pressed_without_wifi = False
@@ -23,8 +26,6 @@ enable_logs = True
 # Real time clock
 rtc = machine.RTC()
 
-temperature_pin = 4
-sensor_temperature = machine.ADC(temperature_pin)
 
 user_available = False
 is_pressed = False
