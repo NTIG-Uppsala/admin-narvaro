@@ -30,6 +30,7 @@ user_available = False
 is_pressed = False
 
 # Create virtual timers
+# -1 makes the timer virtual
 led_timer = Timer(-1)
 update_time_retry_timer = Timer(-1)
 get_user_repeat_timer = Timer(-1)
