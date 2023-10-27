@@ -14,7 +14,7 @@ not_available_led = Pin(21, Pin.OUT)
 temperature_pin = 4
 sensor_temperature = machine.ADC(temperature_pin)
 
-button_last_pressed = 0
+button_last_pressed_seconds = 0
 
 button_was_pressed_without_wifi = False
 
@@ -155,7 +155,7 @@ def set_user_status(status):
 
 
 def button_press_interrupt(button_pin):
-    global user_available, button_last_pressed, button_was_pressed_without_wifi
+    global user_available, button_last_pressed_seconds, button_was_pressed_without_wifi
 
     def set_status_if_connected():
         global user_available, button_was_pressed_without_wifi
@@ -166,10 +166,10 @@ def button_press_interrupt(button_pin):
 
     button_cooldown_seconds = 7
 
-    if time.time() < button_last_pressed + button_cooldown_seconds:
+    if time.time() < button_last_pressed_seconds + button_cooldown_seconds:
         return
 
-    button_last_pressed = time.time()
+    button_last_pressed_seconds = time.time()
 
     if button_pin == available_button and available_led.value() == 0:
         add_to_log("here button pressed")
