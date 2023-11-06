@@ -23,6 +23,8 @@ wlan.active(True)
 
 enable_logs = True
 
+backup_wifi_in_use = False
+
 # Real time clock
 rtc = machine.RTC()
 
@@ -43,10 +45,15 @@ def load_secrets():
     json_string = "".join(secrets_file.readlines())
     secrets_file.close()
     secrets = json.loads(json_string)
-    WIFI_SSID = secrets["WIFI_SSID"]
-    WIFI_PASSWORD = secrets["WIFI_PASSWORD"]
     TOKEN = secrets["TOKEN"]
     URL = secrets["URL"]
+    print(backup_wifi_in_use)
+    if backup_wifi_in_use == True:
+        WIFI_SSID = secrets["WIFI_SSID_BACKUP"]
+        WIFI_PASSWORD = secrets["WIFI_PASSWORD_BACKUP"]
+    else:
+        WIFI_SSID = secrets["WIFI_SSID"]
+        WIFI_PASSWORD = secrets["WIFI_PASSWORD"]
 
 
 def format_time(datetime):
@@ -213,7 +220,11 @@ def wifi_connect():
         update_time()
         add_to_log("Successfully connected to WiFi")
     else:
-        add_to_log("Failed to connect to WiFi")
+        add_to_log("Failed to connect to WiFi, changing wifi")
+        global backup_wifi_in_use
+        backup_wifi_in_use = not backup_wifi_in_use
+
+        load_secrets()
 
 
 def update_time():
