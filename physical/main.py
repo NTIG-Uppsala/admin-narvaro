@@ -47,7 +47,6 @@ def load_secrets():
     secrets = json.loads(json_string)
     TOKEN = secrets["TOKEN"]
     URL = secrets["URL"]
-    print(backup_wifi_in_use)
     if backup_wifi_in_use == True:
         WIFI_SSID = secrets["WIFI_SSID_BACKUP"]
         WIFI_PASSWORD = secrets["WIFI_PASSWORD_BACKUP"]
