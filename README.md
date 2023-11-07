@@ -80,6 +80,10 @@ After the Docker image has been built and run, the project can be accessed at `l
 
 [Api and frontend pages documentation](https://github.com/NTIG-Uppsala/admin-narvaro/blob/main/Documention/API%26Frontend.md)
 
-## Raspberry Pi Pico W
+## Raspberry Pi Pico W (Physical box)
 
 [Physical box documentation](https://github.com/NTIG-Uppsala/admin-narvaro/blob/main/Documention/PhysicalBox.md)
+
+## Raspberry Pi (Display)
+
+[Display documentation](https://github.com/NTIG-Uppsala/admin-narvaro/blob/main/Documention/RaspberryPi.md)
