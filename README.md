@@ -12,6 +12,10 @@ This project uses the following dependencies: \
 Node v16.17.1 \
 Python 3.10.6
 
+## Coding Standard
+
+All files in javascript is has variable names in English and camelcase. All comments are in English. Indents are 4 spaces long. 
+
 ## env file
 
 The environment file is used to store sensetive data that is included in the project. The file is located in the root folder of the project and should be namned `.env` \
