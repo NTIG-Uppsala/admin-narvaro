@@ -87,7 +87,6 @@ const DashboardItem = (props) => {
       setTimeout(() => setTextCopied(false), 2000);
 
       return new Promise((res, rej) => {
-        // here the magic happens
         document.execCommand("copy") ? res() : rej();
         textArea.remove();
       });
