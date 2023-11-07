@@ -50,7 +50,6 @@ def load_secrets():
     if backup_wifi_in_use == True and "WIFI_SSID_BACKUP" in secrets:
         WIFI_SSID = secrets["WIFI_SSID_BACKUP"]
         WIFI_PASSWORD = secrets["WIFI_PASSWORD_BACKUP"]
-
     else:
         WIFI_SSID = secrets["WIFI_SSID"]
         WIFI_PASSWORD = secrets["WIFI_PASSWORD"]
