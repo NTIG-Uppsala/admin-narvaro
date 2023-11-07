@@ -2,10 +2,6 @@
 
 In this project a system for registering attendance for administrators at NTI Gymnasiet Uppsala. This system is intended to be used by the school's admin department.
 
-## Style guide
-
-[Black Formatter](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter) is used to format Python files.
-
 ## Project dependencies
 
 This project uses the following dependencies: \
@@ -20,7 +16,7 @@ All files in javascript is has variable names in English and camelcase. All comm
 
 ### Python files
 
-All python files has same javascript except variable names in snakecase. All python files are formatted with Black Formatter.
+All python files has same javascript files except variable names in snakecase. All python files are formatted with [Black Formatter](https://marketplace.visualstudio.com/items?itemName=ms-python.black-formatter).
 
 ## env file
 
