@@ -57,7 +57,7 @@ const DashboardItem = (props) => {
   const [personAuthURL, setAuthURL] = useState("");
 
   useEffect(() => {
-    setAuthURL("https://narvaro.ntig.dev/setstatus?auth=");
+    setAuthURL(document.location.origin + "/setstatus?auth=");
   }, []);
 
   const toggleEditing = () => {
@@ -206,14 +206,7 @@ const DashboardItem = (props) => {
             <div>
               <p className="text-2xl uppercase font-bold">Personlig Länk</p>
               <div className="flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5">
-                {person.uri ? (
-                  <p id="personURL">
-                    {personAuthURL}
-                    {person.uri}
-                  </p>
-                ) : (
-                  regenerateUri(true)
-                )}
+                {person.uri ? <p>{personAuthURL}</p> : regenerateUri(true)}
                 <button onClick={regenerateUri}>
                   <RefreshIcon />
                 </button>
