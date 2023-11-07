@@ -14,7 +14,10 @@ Python 3.10.6
 
 ## Coding Standard
 
+### Javascript files
 All files in javascript is has variable names in English and camelcase. All comments are in English. Indents are 4 spaces long. 
+### Python files
+All python files has same javascript except variable names in snakecase. All python files are formatted with Black Formatter.
 
 ## env file
 
