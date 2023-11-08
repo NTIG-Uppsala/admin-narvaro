@@ -206,7 +206,11 @@ const DashboardItem = (props) => {
             <div>
               <p className="text-2xl uppercase font-bold">Personlig Länk</p>
               <div className="flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5">
-                {person.uri ? <p>{personAuthURL}</p> : regenerateUri(true)}
+                {person.uri ? (
+                  <p>{personAuthURL + person.uri}</p>
+                ) : (
+                  regenerateUri(true)
+                )}
                 <button onClick={regenerateUri}>
                   <RefreshIcon />
                 </button>
