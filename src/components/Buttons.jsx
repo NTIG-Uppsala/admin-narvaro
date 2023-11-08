@@ -1,4 +1,4 @@
-import { PenIcon, AddUserIcon, TrashIcon, BackIcon } from '../components/Icons'
+import { PenIcon, AddUserIcon, TrashIcon, BackIcon} from '../components/Icons'
 
 const Button = (props) => {
     return (
@@ -33,6 +33,14 @@ export const EditButton = ({ onClickHandler }) => {
         <Button  className="editButton" onClick={onClickHandler}>
             Redigera
             <PenIcon />
+        </Button>
+    )
+}
+
+export const LogsButton = ({handler}) =>{
+     return(
+        <Button className="logsButton" onClick={handler}>
+            Loggar
         </Button>
     )
 }

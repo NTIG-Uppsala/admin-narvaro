@@ -56,3 +56,8 @@ input {
 .deleteButton:hover .trashIcon{
     stroke: #000000;
 }
+
+.logsButton{
+    padding-left: 30px;
+    padding-right: 30px;
+}

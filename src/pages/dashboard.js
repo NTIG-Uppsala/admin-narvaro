@@ -12,6 +12,7 @@ import {
   BackButton,
   SaveButton,
   DeleteButton,
+  LogsButton,
 } from "../components/Buttons";
 
 import { getCookie } from "cookies-next";
@@ -285,10 +286,16 @@ const DashboardItem = (props) => {
                 {textCopied && <span>Länk kopierad!</span>}
               </div>
             </div>
-            <div className="text-center">
-              <EditButton onClickHandler={toggleEditing} />
+            <div className="flex flex-row justify-center">
+              <div className="basis-1/2 col">
+                <EditButton onClickHandler={toggleEditing} />
+              </div>
+              <div className="col float-right">
+                <LogsButton />
+              </div>
             </div>
           </div>
+          //   </div>
         )}
       </Container>
     </div>
