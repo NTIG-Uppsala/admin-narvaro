@@ -58,7 +58,7 @@ const DashboardItem = (props) => {
   const [personAuthURL, setAuthURL] = useState("");
 
   useEffect(() => {
-    setAuthURL(document.location.origin + "/setstatus?auth=");
+    setAuthURL(document.location.origin + "/setstatus?auth=" + person.uri);
   }, []);
 
   const toggleEditing = () => {
@@ -67,7 +67,7 @@ const DashboardItem = (props) => {
 
   const copyToClipboard = () => {
     // navigator clipboard api needs a secure context (https)
-    let textToCopy = personAuthURL + person.uri;
+    let textToCopy = personAuthURL;
     if (navigator.clipboard && window.isSecureContext) {
       // navigator clipboard api method'
       setTextCopied(true);
@@ -206,11 +206,7 @@ const DashboardItem = (props) => {
             <div>
               <p className="text-2xl uppercase font-bold">Personlig Länk</p>
               <div className="flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5">
-                {person.uri ? (
-                  <p>{personAuthURL + person.uri}</p>
-                ) : (
-                  regenerateUri(true)
-                )}
+                {person.uri ? <p>{personAuthURL}</p> : regenerateUri(true)}
                 <button onClick={regenerateUri}>
                   <RefreshIcon />
                 </button>
@@ -280,10 +276,7 @@ const DashboardItem = (props) => {
             <div className="mb-5">
               <p className="text-2xl uppercase font-bold">Personlig Länk</p>
               <div className="flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5">
-                <p>
-                  {personAuthURL}
-                  {props.uri}
-                </p>
+                <p>{personAuthURL}</p>
                 <button onClick={copyToClipboard}>
                   <CopyIcon />
                 </button>
