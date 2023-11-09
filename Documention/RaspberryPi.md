@@ -31,6 +31,11 @@ nano autostart
 
 ```
 @chromium-browser --kiosk --new-window "URL for your website" --incognito
+@xset -dpms
+@xset s noblank
+@xset s off
+@unclutter -idle 0
+
 ```
 
 4. If needed, go back to the root folder with `cd /`.
@@ -51,6 +56,12 @@ sudo unlink autostart
 ```
 sudo ln -s "direction to the autostart you created" autostart
 ```
+8. Open the command promt and install unclutter:
+```
+sudo apt-get install unclutter
+```
+
+9. Open the menu in the top left corner, go Preferences > Screen Configuration and then right click on the screen to select a rotation.
 
 ### Optional: Viewing Raspberry Pi Output
 
