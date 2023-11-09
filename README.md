@@ -50,6 +50,15 @@ In order for GitHub Actions tests to work, any IP adresses used by GitHub must b
 
 All tests are located in the `test` folder and are named `test_*.py`. To install necessary dependencies run `pip install -r requirements.txt` in the root folder of the project. To run a test run `python test/<filename> <url to be tested>`. The project also has jest tests located in `__tests_/` and can be runned with `npm run test`.
 
+
+To run the login test you have to create a json file with the name testSecrets.json with the following content: 
+```
+{
+    "dashboardPassword":"PASSWORD"
+}
+```
+Replace "PASSWORD" with the dashboard password, MAKE SURE to gitignore the json file. 
+
 ## Running the project
 
 To run the project the dependencies needs to be installed. To install the dependencies run `npm install` in the root folder of the project.
