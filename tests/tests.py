@@ -48,7 +48,7 @@ class CheckWebsite(unittest.TestCase):
             self.assertEqual(avalibility.text, "Ej tillgänglig")
 
     def test_login(self):
-        self.driver.get(self.website_url + "/login")x
+        self.driver.get(self.website_url + "/login")
         password_element = self.driver.find_element(By.ID, "password")
         login_button_element = self.driver.find_element(By.ID, "loginButton")
 
