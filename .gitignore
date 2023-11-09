@@ -305,3 +305,6 @@ cython_debug/
 
 # Secrets file used for physical box
 secrets.json
+
+# Secrets for tests
+testSecrets.json

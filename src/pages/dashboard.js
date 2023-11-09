@@ -206,7 +206,11 @@ const DashboardItem = (props) => {
             <div>
               <p className="text-2xl uppercase font-bold">Personlig Länk</p>
               <div className="flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5">
-                {person.uri ? <p>{personAuthURL}</p> : regenerateUri(true)}
+                {person.uri ? (
+                  <p id="editPersonalLink">{personAuthURL}</p>
+                ) : (
+                  regenerateUri(true)
+                )}
                 <button onClick={regenerateUri}>
                   <RefreshIcon />
                 </button>
@@ -276,7 +280,7 @@ const DashboardItem = (props) => {
             <div className="mb-5">
               <p className="text-2xl uppercase font-bold">Personlig Länk</p>
               <div className="flex flex-row gap-3 bg-transparent text-white border-b-4 w-auto border-white mb-5">
-                <p>{personAuthURL}</p>
+                <p id="personalLink">{personAuthURL}</p>
                 <button onClick={copyToClipboard}>
                   <CopyIcon />
                 </button>
@@ -285,7 +289,7 @@ const DashboardItem = (props) => {
             </div>
             <div className="flex flex-row justify-center">
               <div className="basis-1/2 col">
-                <EditButton onClickHandler={toggleEditing} />
+                <EditButton id="buttonEdit" onClickHandler={toggleEditing} />
               </div>
               <div className="col float-right">
                 <LogsButton />
