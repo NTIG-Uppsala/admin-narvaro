@@ -49,7 +49,11 @@ def load_secrets():
     secrets = json.loads(json_string)
     TOKEN = secrets["TOKEN"]
     URL = secrets["URL"]
-    if backup_wifi_in_use == True and "WIFI_SSID_BACKUP" in secrets:
+    if (
+        backup_wifi_in_use == True
+        and "WIFI_SSID_BACKUP" in secrets
+        and secrets["WIFI_SSID_BACKUP"] != ""
+    ):
         WIFI_SSID = secrets["WIFI_SSID_BACKUP"]
         WIFI_PASSWORD = secrets["WIFI_PASSWORD_BACKUP"]
 
@@ -84,8 +88,8 @@ def add_to_log(message):
     log_message += f"\tRSSI: {wlan.status('rssi')} dBm\n"
     log_message += f"\ttemp: {get_temperature_celsius():.1f}°C\n"
     log_message += f"\tRAM usage: {used_ram_in_procent:.1f}%\n"
-    print("Logged message:", log_message)
     if enable_logs:
+        print("Logged message:", log_message)
         file = open("log.txt", "a")
         file.write(log_message)
         file.close()
