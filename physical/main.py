@@ -5,6 +5,7 @@ import urequests
 import json
 import ntptime
 import gc
+import os
 
 available_button = Pin(2, Pin.IN)
 not_available_button = Pin(3, Pin.IN)
@@ -68,6 +69,10 @@ def format_time(datetime):
 
 
 def add_to_log(message):
+    if os.stat("log.txt")[6] > 300:
+        remove_first_n_lines("log.txt", 5)
+        print("First 5 lines removed from log.txt")
+
     formatted_datetime = format_time(rtc.datetime())
     bytes_per_kibibyte = 1024
     used_ram_kibibytes = gc.mem_alloc() / bytes_per_kibibyte
@@ -77,12 +82,20 @@ def add_to_log(message):
     log_message += f"\t{message}\n"
     log_message += f"\tRSSI: {wlan.status('rssi')} dBm\n"
     log_message += f"\ttemp: {get_temperature_celsius():.1f}°C\n"
-    log_message += f"\tRAM usage: {used_ram_in_procent:.1f}%"
+    log_message += f"\tRAM usage: {used_ram_in_procent:.1f}%\n"
     print("Logged message:", log_message)
     if enable_logs:
         file = open("log.txt", "a")
         file.write(log_message)
         file.close()
+
+
+def remove_first_n_lines(file_path, n):
+    with open(file_path, "r") as file:
+        lines = file.readlines()
+    with open(file_path, "w") as file:
+        for line in lines[n:]:
+            file.write(line)
 
 
 def get_temperature_celsius():
@@ -260,6 +273,7 @@ def main_loop():
         if wlan.status() != network.STAT_GOT_IP:
             wifi_connect()
         else:
+            print(wlan.status())
             if not user_id:
                 user_id = get_self_user_id()
 
