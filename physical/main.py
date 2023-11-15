@@ -69,7 +69,8 @@ def format_time(datetime):
 
 
 def add_to_log(message):
-    if os.stat("log.txt")[6] > 300:
+    # Check if log file is too big
+    if os.stat("log.txt")[6] > 80000:
         remove_first_n_lines("log.txt", 5)
         print("First 5 lines removed from log.txt")
 
@@ -242,7 +243,7 @@ def wifi_connect():
         set_try_wifi = 0
 
         load_secrets()
-        add_to_log(f"Failed to connect to WiFi, changing wifi to, {WIFI_SSID}")
+        add_to_log(f"Failed to connect to WiFi, changing wifi to {WIFI_SSID}")
     else:
         set_try_wifi += 1
         add_to_log("Failed to connect to Wifi, trying again")
@@ -273,7 +274,6 @@ def main_loop():
         if wlan.status() != network.STAT_GOT_IP:
             wifi_connect()
         else:
-            print(wlan.status())
             if not user_id:
                 user_id = get_self_user_id()
 
