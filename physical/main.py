@@ -213,7 +213,7 @@ def wait_for_wifi(wlan, max_wait_seconds):
 
 def wifi_connect():
     global set_try_wifi
-    add_to_log("trying to connect to wifi")
+    add_to_log(f"trying to connect to wifi, {WIFI_SSID}")
 
     wlan.connect(WIFI_SSID, WIFI_PASSWORD)
 
@@ -222,12 +222,13 @@ def wifi_connect():
         update_time()
         add_to_log("Successfully connected to WiFi")
     elif set_try_wifi == 5:
-        add_to_log("Failed to connect to WiFi, changing wifi")
+        print(set_try_wifi)
         global backup_wifi_in_use
         backup_wifi_in_use = not backup_wifi_in_use
         set_try_wifi = 0
 
         load_secrets()
+        add_to_log(f"Failed to connect to WiFi, changing wifi to, {WIFI_SSID}")
     else:
         set_try_wifi += 1
         add_to_log("Failed to connect to Wifi, trying again")
