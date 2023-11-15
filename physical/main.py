@@ -24,6 +24,7 @@ wlan.active(True)
 enable_logs = True
 
 backup_wifi_in_use = False
+set_try_wifi = 0
 
 # Real time clock
 rtc = machine.RTC()
@@ -212,7 +213,8 @@ def wait_for_wifi(wlan, max_wait_seconds):
 
 
 def wifi_connect():
-    add_to_log("trying to connect to wifi")
+    global set_try_wifi
+    add_to_log(f"trying to connect to wifi, {WIFI_SSID}")
 
     wlan.connect(WIFI_SSID, WIFI_PASSWORD)
 
@@ -220,12 +222,17 @@ def wifi_connect():
         add_to_log(f"Internal address: {wlan.ifconfig()}")
         update_time()
         add_to_log("Successfully connected to WiFi")
-    else:
-        add_to_log("Failed to connect to WiFi, changing wifi")
+    elif set_try_wifi == 5:
+        print(set_try_wifi)
         global backup_wifi_in_use
         backup_wifi_in_use = not backup_wifi_in_use
+        set_try_wifi = 0
 
         load_secrets()
+        add_to_log(f"Failed to connect to WiFi, changing wifi to, {WIFI_SSID}")
+    else:
+        set_try_wifi += 1
+        add_to_log("Failed to connect to Wifi, trying again")
 
 
 def update_time():
