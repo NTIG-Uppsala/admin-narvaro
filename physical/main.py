@@ -50,6 +50,7 @@ def load_secrets():
     if backup_wifi_in_use == True and "WIFI_SSID_BACKUP" in secrets:
         WIFI_SSID = secrets["WIFI_SSID_BACKUP"]
         WIFI_PASSWORD = secrets["WIFI_PASSWORD_BACKUP"]
+
     else:
         WIFI_SSID = secrets["WIFI_SSID"]
         WIFI_PASSWORD = secrets["WIFI_PASSWORD"]
@@ -70,11 +71,12 @@ def add_to_log(message):
     bytes_per_kibibyte = 1024
     used_ram_kibibytes = gc.mem_alloc() / bytes_per_kibibyte
     total_ram_kibibytes = (gc.mem_free() + gc.mem_alloc()) / bytes_per_kibibyte
+    used_ram_in_procent = used_ram_kibibytes / total_ram_kibibytes * 100
     log_message = f"{formatted_datetime}:\n"
     log_message += f"\t{message}\n"
-    log_message += f"\tsignal strength: {wlan.status('rssi')} dBm\n"
-    log_message += f"\ttemp: {get_temperature_celsius()}°C\n"
-    log_message += f"\tRAM usage: {used_ram_kibibytes}/{total_ram_kibibytes} KiB\n"
+    log_message += f"\tRSSI: {wlan.status('rssi')} dBm\n"
+    log_message += f"\ttemp: {get_temperature_celsius():.1f}°C\n"
+    log_message += f"\tRAM usage: {used_ram_in_procent:.1f}%"
     print("Logged message:", log_message)
     if enable_logs:
         file = open("log.txt", "a")
