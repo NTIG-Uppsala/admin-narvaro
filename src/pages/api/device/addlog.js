@@ -13,7 +13,8 @@ export default async function handler(req, res) {
     return res.sendStatus(401);
   }
 
-  print(req.body);
+  console.log(req.body);
+  res.sendStatus(200);
 
   try {
     res.status(200);
