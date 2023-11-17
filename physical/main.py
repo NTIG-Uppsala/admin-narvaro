@@ -5,6 +5,7 @@ import urequests
 import json
 import ntptime
 import gc
+import os
 
 available_button = Pin(2, Pin.IN)
 not_available_button = Pin(3, Pin.IN)
@@ -24,9 +25,13 @@ wlan.active(True)
 enable_logs = True
 
 backup_wifi_in_use = False
+set_try_wifi = 0
 
 # Real time clock
 rtc = machine.RTC()
+
+send_logs_to_server_interval_seconds = 100
+last_logs_sent_to_server = 0
 
 
 user_available = False
@@ -34,9 +39,9 @@ is_pressed = False
 
 # Create virtual timers
 # -1 makes the timer virtual
-led_timer = Timer(-1)
 update_time_retry_timer = Timer(-1)
 get_user_repeat_timer = Timer(-1)
+send_logs_to_server_timer = Timer(-1)
 
 
 def load_secrets():
@@ -47,9 +52,10 @@ def load_secrets():
     secrets = json.loads(json_string)
     TOKEN = secrets["TOKEN"]
     URL = secrets["URL"]
-    if backup_wifi_in_use == True and "WIFI_SSID_BACKUP" in secrets:
+    if backup_wifi_in_use == True and "WIFI_SSID_BACKUP" in secrets and secrets["WIFI_SSID_BACKUP"] != "": 
         WIFI_SSID = secrets["WIFI_SSID_BACKUP"]
         WIFI_PASSWORD = secrets["WIFI_PASSWORD_BACKUP"]
+
     else:
         WIFI_SSID = secrets["WIFI_SSID"]
         WIFI_PASSWORD = secrets["WIFI_PASSWORD"]
@@ -65,22 +71,70 @@ def format_time(datetime):
     return f"{year:04d}-{month:02d}-{day:02d} {hour:02d}:{minute:02d}:{second:02d} UTC"
 
 
+def send_logs_to_server():
+    
+    file = open("log.txt","r")
+    logs = file.readlines()
+    file.close()
+    logs = "".join(logs)
+    
+    log = {logs : logs}
+    
+    try:
+        wait_time_seconds = 15
+        response = urequests.post(
+            URL + "/api/device/addlog",
+            data=json.dumps(log),
+            headers={
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {TOKEN}",
+            },
+            timeout=wait_time_seconds,
+        )
+    except Exception as error:
+        add_to_log(f"fail")
+
+    #add_to_log(f"sent log : {response.status_code}")
+
 def add_to_log(message):
+    
+    send_logs_interval_seconds = 1000
+    
+    send_logs_to_server_timer.init(
+            callback=lambda t: send_logs_to_server(),
+            period=1000,
+        )
+
+        
+    
+    
+    if os.stat("log.txt")[6] > 300:
+        remove_first_n_lines("log.txt", 5)
+        print("First 5 lines removed from log.txt")
+
+
     formatted_datetime = format_time(rtc.datetime())
     bytes_per_kibibyte = 1024
     used_ram_kibibytes = gc.mem_alloc() / bytes_per_kibibyte
     total_ram_kibibytes = (gc.mem_free() + gc.mem_alloc()) / bytes_per_kibibyte
+    used_ram_in_procent = used_ram_kibibytes / total_ram_kibibytes * 100
     log_message = f"{formatted_datetime}:\n"
     log_message += f"\t{message}\n"
-    log_message += f"\tsignal strength: {wlan.status('rssi')} dBm\n"
-    log_message += f"\ttemp: {get_temperature_celsius()}°C\n"
-    log_message += f"\tRAM usage: {used_ram_kibibytes}/{total_ram_kibibytes} KiB\n"
-    print("Logged message:", log_message)
+    log_message += f"\tRSSI: {wlan.status('rssi')} dBm\n"
+    log_message += f"\ttemp: {get_temperature_celsius():.1f}°C\n"
+    log_message += f"\tRAM usage: {used_ram_in_procent:.1f}%\n"
     if enable_logs:
+        print("Logged message:", log_message)
         file = open("log.txt", "a")
         file.write(log_message)
         file.close()
 
+def remove_first_n_lines(file_path, n):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+    with open(file_path, 'w') as file:
+        for line in lines[n:]:
+            file.write(line)
 
 def get_temperature_celsius():
     # RP2040 datasheet 4.9.5. Temperature Sensor
@@ -210,7 +264,8 @@ def wait_for_wifi(wlan, max_wait_seconds):
 
 
 def wifi_connect():
-    add_to_log("trying to connect to wifi")
+    global set_try_wifi
+    add_to_log(f"trying to connect to wifi, {WIFI_SSID}")
 
     wlan.connect(WIFI_SSID, WIFI_PASSWORD)
 
@@ -218,12 +273,17 @@ def wifi_connect():
         add_to_log(f"Internal address: {wlan.ifconfig()}")
         update_time()
         add_to_log("Successfully connected to WiFi")
-    else:
-        add_to_log("Failed to connect to WiFi, changing wifi")
+    elif set_try_wifi == 5:
+        print(set_try_wifi)
         global backup_wifi_in_use
         backup_wifi_in_use = not backup_wifi_in_use
+        set_try_wifi = 0
 
         load_secrets()
+        add_to_log(f"Failed to connect to WiFi, changing wifi to, {WIFI_SSID}")
+    else:
+        set_try_wifi += 1
+        add_to_log("Failed to connect to Wifi, trying again")
 
 
 def update_time():
@@ -292,3 +352,4 @@ def main():
 
 
 main()
+

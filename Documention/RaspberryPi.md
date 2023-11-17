@@ -63,6 +63,69 @@ sudo apt-get install unclutter
 
 9. Open the menu in the top left corner, go Preferences > Screen Configuration and then right click on the screen to select a rotation.
 
+### Static IP adress
+
+You may have to make your IP adress static because the raspberry pi can chance the IP adress every time you restart it
+
+To check if DHCPCD is active type
+```
+sudo service dhcpcd status
+```
+
+If active, follow the "setup" part bellow
+
+If not active type this to make it active and then follow the setup part bellow
+```
+sudo service dhcpcd start
+sudo systemctl enable dhcpcd
+```
+
+#### Setup
+
+1. ssh into your raspberry pi:
+
+```
+ssh username@raspberrypi-IP-adress
+```
+
+2. Write the following to enter the config file:
+```
+sudo nano /etc/dhcpcd.conf
+```
+
+3.  
+To get router IP and IP type the following in the ssh
+   ```
+   ip r | grep default
+   ```
+   It will look like this
+      
+![](/Documention/MicrosoftTeams-image%20(1).png)
+   Left one is router IP adress
+
+   Right one is IP adress
+
+4. Write this in the file at the bottom:
+```
+interface [wlan/eth0]
+static ip_address=[ip]
+static routers=[router-ip]
+static domain_name_servers=[router-ip]
+```
+* Interface 
+      
+   If you are connected to a wifi use "wlan"
+   
+   If you are connected via cable use "eth0"
+
+
+5. Reboot your raspberry pi
+   ```
+   sudo reboot
+   ```
+
+
+
 ### Optional: Viewing Raspberry Pi Output
 
 To view the Raspberry Pi output, download [VNC Viewer](https://www.realvnc.com/en/connect/download/viewer/).
