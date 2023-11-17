@@ -13,7 +13,7 @@ export default async function handler(req, res) {
     if (!data.logs) {
       res.sendStatus(400).json({ error: "No user provided" });
     }
-
+    console.log(data);
     console.log(token_payload.data.user_id);
 
     res.sendStatus(200);
