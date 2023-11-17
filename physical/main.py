@@ -107,7 +107,6 @@ def send_logs_to_server():
 def add_to_log(message):
     if os.stat("log.txt")[6] > 80000:
         remove_first_n_lines("log.txt", 5)
-        print("First 5 lines removed from log.txt")
 
     formatted_datetime = format_time(rtc.datetime())
     bytes_per_kibibyte = 1024
@@ -156,6 +155,10 @@ def get_self_user_id():
     except Exception as error:
         add_to_log(f"failed to get user_id trying again, {error}")
         get_self_user_id()
+
+    if response.status_code != 200:
+        add_to_log(f"Server error {response.status_code}, trying again.")
+        main_loop()
     add_to_log(f"getting user_id response: {response.status_code}")
     return_data = response.json()["user_id"]
     response.close()
