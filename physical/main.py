@@ -98,6 +98,9 @@ def send_logs_to_server():
         print(response)
     except:
         add_to_log(f"status response: {response.status_code}")
+        if response.status_code == 200:
+            with open("log.txt", "w") as file:
+                return
         response.close()
 
 
@@ -309,10 +312,11 @@ def main_loop():
             if not user_id:
                 user_id = get_self_user_id()
 
-            send_logs_interval_seconds = 1000
+            send_logs_interval_ms = 7200000  # 2 hours
+
             send_logs_to_server_timer.init(
                 callback=lambda t: send_logs_to_server(),
-                period=1000,
+                period=send_logs_interval_ms,
             )
 
             # Check if the user status has been updated every 15 minutes
