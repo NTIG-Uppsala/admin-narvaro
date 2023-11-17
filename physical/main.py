@@ -52,7 +52,11 @@ def load_secrets():
     secrets = json.loads(json_string)
     TOKEN = secrets["TOKEN"]
     URL = secrets["URL"]
-    if backup_wifi_in_use == True and "WIFI_SSID_BACKUP" in secrets and secrets["WIFI_SSID_BACKUP"] != "": 
+    if (
+        backup_wifi_in_use == True
+        and "WIFI_SSID_BACKUP" in secrets
+        and secrets["WIFI_SSID_BACKUP"] != ""
+    ):
         WIFI_SSID = secrets["WIFI_SSID_BACKUP"]
         WIFI_PASSWORD = secrets["WIFI_PASSWORD_BACKUP"]
 
@@ -72,46 +76,35 @@ def format_time(datetime):
 
 
 def send_logs_to_server():
-    
-    file = open("log.txt","r")
+    file = open("log.txt", "r")
     logs = file.readlines()
+    logs = str(logs)
     file.close()
-    logs = "".join(logs)
-    
-    log = {logs : logs}
-    
+    logs_data = {"logs": logs}
+
+    add_to_log(f"trying to send logs")
     try:
         wait_time_seconds = 15
         response = urequests.post(
-            URL + "/api/device/addlog",
-            data=json.dumps(log),
+            URL + "/api/logs2/addlogs",
+            data=json.dumps(logs_data),
             headers={
                 "Content-Type": "application/json",
                 "Authorization": f"Bearer {TOKEN}",
             },
             timeout=wait_time_seconds,
         )
-    except Exception as error:
-        add_to_log(f"fail")
+        response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
+        print(response)
+    except:
+        add_to_log(f"status response: {response.status_code}")
+        response.close()
 
-    #add_to_log(f"sent log : {response.status_code}")
 
 def add_to_log(message):
-    
-    send_logs_interval_seconds = 1000
-    
-    send_logs_to_server_timer.init(
-            callback=lambda t: send_logs_to_server(),
-            period=1000,
-        )
-
-        
-    
-    
-    if os.stat("log.txt")[6] > 300:
+    if os.stat("log.txt")[6] > 80000:
         remove_first_n_lines("log.txt", 5)
         print("First 5 lines removed from log.txt")
-
 
     formatted_datetime = format_time(rtc.datetime())
     bytes_per_kibibyte = 1024
@@ -129,12 +122,14 @@ def add_to_log(message):
         file.write(log_message)
         file.close()
 
+
 def remove_first_n_lines(file_path, n):
-    with open(file_path, 'r') as file:
+    with open(file_path, "r") as file:
         lines = file.readlines()
-    with open(file_path, 'w') as file:
+    with open(file_path, "w") as file:
         for line in lines[n:]:
             file.write(line)
+
 
 def get_temperature_celsius():
     # RP2040 datasheet 4.9.5. Temperature Sensor
@@ -314,6 +309,12 @@ def main_loop():
             if not user_id:
                 user_id = get_self_user_id()
 
+            send_logs_interval_seconds = 1000
+            send_logs_to_server_timer.init(
+                callback=lambda t: send_logs_to_server(),
+                period=1000,
+            )
+
             # Check if the user status has been updated every 15 minutes
             get_user_status_interval = 900
             if (abs(time.time() - user_data_last_fetched)) > get_user_status_interval:
@@ -352,4 +353,3 @@ def main():
 
 
 main()
-
