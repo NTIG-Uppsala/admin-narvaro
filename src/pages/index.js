@@ -5,6 +5,7 @@ import io from 'socket.io-client';
 import { Container } from '../components/Containers'
 import Background from '../components/Background'
 import Logo from '../components/Logo'
+import Te4logo from '../components/te4logo'
 
 import Head from 'next/head'
 import moment from 'moment';
@@ -69,6 +70,11 @@ const WebPage = (props) => {
             </Head>
             <Background />
             <Logo />
+
+            <Head>
+                <title>TE4</title>
+            </Head>
+            <Te4logo/>
 
             <div className="h-screen w-full grid place-items-center">
                 <Container>
