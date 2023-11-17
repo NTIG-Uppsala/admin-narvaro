@@ -8,17 +8,16 @@ export default async function handler(req, res) {
   const token = authHeader && authHeader.split(" ")[1];
   try {
     let token_payload = await isTokenValid(token);
+
+    const data = req.body;
+    if (!data.logs) {
+      res.sendStatus(400).json({ error: "No user provided" });
+    }
+
+    console.log(token_payload.data.user_id);
+
+    res.sendStatus(200);
   } catch (error) {
     return res.sendStatus(401);
-  }
-
-  console.log(req.body);
-  res.sendStatus(200);
-
-  try {
-    res.status(200);
-  } catch (error) {
-    console.error(error);
-    res.sendStatus(500);
   }
 }
