@@ -34,7 +34,7 @@ nextApp.prepare().then(async () => {
   });
 
   server.use((req, res, next) => {
-    res.status(502).sendFile("./src/errorSite/error.html");
+    res.status(502).sendFile(path.join(__dirname, "errorSite", "error.html"));
   });
 
   /* Handle all requests through next */
