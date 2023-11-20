@@ -33,7 +33,7 @@ nextApp.prepare().then(async () => {
     _next();
   });
 
-  app.use((req, res, next) => {
+  server.use((req, res, next) => {
     res.status(502).sendFile(__dirname + "/public/error.html");
   });
 
