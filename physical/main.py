@@ -105,6 +105,7 @@ def send_logs_to_server():
 
 
 def add_to_log(message):
+    ## Check to see if the log file is too big
     if os.stat("log.txt")[6] > 80000:
         remove_first_n_lines("log.txt", 5)
 
