@@ -10,12 +10,19 @@ import bodyParser from "body-parser";
 import next from "next";
 import http from "http";
 import { Server as SocketServer } from "socket.io";
+import path from "path";
 
 const server = express();
 const http_server = http.createServer(server);
 const io = new SocketServer(http_server);
 
 const nextApp = next({ dev });
+
+// Get the current module's filename
+const __filename = new URL(import.meta.url).pathname;
+
+// Resolve the directory path
+const __dirname = path.dirname(__filename);
 
 nextApp.prepare().then(async () => {
   /* Set up body-parser */
@@ -34,7 +41,7 @@ nextApp.prepare().then(async () => {
   });
 
   server.use((req, res, next) => {
-    res.status(502).sendFile(__dirname, "error.html");
+    res.status(502).sendFile(path.join(__dirname, "error.html"));
   });
 
   /* Handle all requests through next */
