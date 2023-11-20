@@ -10,6 +10,7 @@ import bodyParser from "body-parser";
 import next from "next";
 import http from "http";
 import { Server as SocketServer } from "socket.io";
+import path from "path";
 
 const server = express();
 const http_server = http.createServer(server);
