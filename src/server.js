@@ -10,7 +10,6 @@ import bodyParser from "body-parser";
 import next from "next";
 import http from "http";
 import { Server as SocketServer } from "socket.io";
-import path from "path";
 
 const server = express();
 const http_server = http.createServer(server);
@@ -35,7 +34,7 @@ nextApp.prepare().then(async () => {
   });
 
   server.use((req, res, next) => {
-    res.status(502).sendFile(path.join(__dirname, "errorSite", "error.html"));
+    res.status(502).sendFile(__dirname, "error.html");
   });
 
   /* Handle all requests through next */
