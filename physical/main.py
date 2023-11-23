@@ -86,7 +86,7 @@ def send_logs_to_server():
     try:
         wait_time_seconds = 15
         response = urequests.post(
-            URL + "/api/logs2/addlogs",
+            URL + "/api/log/addlogs",
             data=json.dumps(logs_data),
             headers={
                 "Content-Type": "application/json",
