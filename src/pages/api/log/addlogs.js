@@ -11,10 +11,9 @@ export default async function handler(req, res) {
 
     const data = req.body;
     if (!data.logs) {
-      res.sendStatus(400).json({ error: "No user provided" });
+      res.sendStatus(400).json({ error: "No data provided" });
     }
     console.log(data);
-    console.log(token_payload.data.user_id);
 
     res.sendStatus(200);
   } catch (error) {
