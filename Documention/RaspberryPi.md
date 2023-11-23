@@ -124,7 +124,21 @@ static domain_name_servers=[router-ip]
    sudo reboot
    ```
 
+### Server(PM2)
+Unfortunately we didn´t have time to make documentation about this. But we followed this tutorial which we will link [here](https://www.digitalocean.com/community/tutorials/how-to-set-up-a-node-js-application-for-production-on-ubuntu-18-04#step-3-%E2%80%94-installing-pm2)
 
+### Open error html page if server is down
+Unfortunately we didn´t have time to make documentation about this. But in summary youll need to create a js file that checks if the response_code from the server is correct, for example 200 och 401. If its not correct it opens a error html page that tells you the server is down
+
+After this you have to enter the crontab on your Raspberry Pi with this command
+```
+crontab -e
+```
+
+then you scroll all the way down and type this(ITS AN EXAMPLE)
+```
+* * * * * node /path/to/your/script
+```
 
 ### Optional: Viewing Raspberry Pi Output
 
