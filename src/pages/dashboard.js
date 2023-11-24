@@ -288,12 +288,7 @@ const DashboardItem = (props) => {
               </div>
             </div>
             <div className="flex flex-row justify-center">
-              <div className="basis-1/2 col">
-                <EditButton id="buttonEdit" onClickHandler={toggleEditing} />
-              </div>
-              <div className="col float-right">
-                <LogsButton />
-              </div>
+              <EditButton id="buttonEdit" onClickHandler={toggleEditing} />
             </div>
             //{" "}
           </div>

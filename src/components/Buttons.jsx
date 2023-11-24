@@ -64,10 +64,3 @@ export const DeleteButton = ({ onClickHandler }) => {
     )
 }
 
-export const LogsButton = ({handler}) =>{
-    return(
-       <Button className="logsButton" onClick={handler}>
-           Loggar
-       </Button>
-   )
-}
