@@ -37,13 +37,6 @@ export const EditButton = ({ onClickHandler }) => {
     )
 }
 
-export const LogsButton = ({handler}) =>{
-     return(
-        <Button className="logsButton" onClick={handler}>
-            Loggar
-        </Button>
-    )
-}
 
 export const BackButton = ({ onClickHandler }) => {
     return (
@@ -69,4 +62,12 @@ export const DeleteButton = ({ onClickHandler }) => {
             <TrashIcon />
         </Button>
     )
+}
+
+export const LogsButton = ({handler}) =>{
+    return(
+       <Button className="logsButton" onClick={handler}>
+           Loggar
+       </Button>
+   )
 }

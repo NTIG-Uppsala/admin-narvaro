@@ -33,7 +33,6 @@ rtc = machine.RTC()
 send_logs_to_server_interval_seconds = 100
 last_logs_sent_to_server = 0
 
-
 user_available = False
 is_pressed = False
 
@@ -76,11 +75,12 @@ def format_time(datetime):
 
 
 def send_logs_to_server():
+    global user_name
     file = open("log.txt", "r")
     logs = file.readlines()
     logs = str(logs)
     file.close()
-    logs_data = {"logs": logs}
+    logs_data = {"logs": logs, "id": user_name}
 
     add_to_log(f"trying to send logs")
     try:
@@ -167,7 +167,7 @@ def get_self_user_id():
 
 
 def get_user_status(user_id):
-    global button_was_pressed_without_wifi
+    global button_was_pressed_without_wifi, user_name
 
     add_to_log("trying to get user data")
     try:
@@ -189,6 +189,7 @@ def get_user_status(user_id):
             else:
                 status = user["status"]
             add_to_log(f"user data retrieved: {user['name']}, status: {user['status']}")
+            user_name = user["name"]
             break
     return status
 
@@ -316,13 +317,6 @@ def main_loop():
             if not user_id:
                 user_id = get_self_user_id()
 
-            send_logs_interval_ms = 7200000  # 2 hours
-
-            send_logs_to_server_timer.init(
-                callback=lambda t: send_logs_to_server(),
-                period=send_logs_interval_ms,
-            )
-
             # Check if the user status has been updated every 15 minutes
             get_user_status_interval = 900
             if (abs(time.time() - user_data_last_fetched)) > get_user_status_interval:
@@ -330,6 +324,14 @@ def main_loop():
                 # Fetching user status if it was uppdated on the website or if the button was pressed without wifi
                 user_available = get_user_status(user_id)
                 set_user_status(user_available)
+            send_logs_to_server()
+
+            send_logs_interval_ms = 7200000  # 2 hours
+
+            send_logs_to_server_timer.init(
+                callback=lambda t: send_logs_to_server(),
+                period=send_logs_interval_ms,
+            )
 
             # Change leds
             if user_available:

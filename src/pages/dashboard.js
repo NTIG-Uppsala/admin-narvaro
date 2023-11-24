@@ -295,8 +295,8 @@ const DashboardItem = (props) => {
                 <LogsButton />
               </div>
             </div>
+            //{" "}
           </div>
-          //   </div>
         )}
       </Container>
     </div>
