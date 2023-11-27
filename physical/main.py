@@ -76,14 +76,15 @@ def format_time(datetime):
 
 def send_logs_to_server():
     global user_name
-    file = open("log.txt", "r")
-    logs = file.readlines()
-    logs = str(logs)
-    file.close()
-    logs_data = {"logs": logs, "id": user_name}
-
-    add_to_log(f"trying to send logs")
     try:
+        file = open("log.txt", "r")
+        logs = file.readlines()
+        log = str(logs)
+        file.close()
+
+        logs_data = {"logs": log, "id": user_name}
+
+        add_to_log("Trying to send logs")
         wait_time_seconds = 15
         response = urequests.post(
             URL + "/api/log/addlogs",
@@ -94,18 +95,20 @@ def send_logs_to_server():
             },
             timeout=wait_time_seconds,
         )
-        response.raise_for_status()  # Raises an HTTPError for bad responses (4xx or 5xx)
-        print(response)
-    except:
-        add_to_log(f"status response: {response.status_code}")
+
+        print(response.text)  # Print the response text for debugging
+        add_to_log(f"Status response: {response.status_code}")
+
         if response.status_code == 200:
-            with open("log.txt", "w") as file:
-                return
-        response.close()
+            with open("log.txt", "w"):
+                pass  # This will effectively truncate the file
+
+    except Exception as e:
+        add_to_log(f"Error sending logs to server: {str(e)}")
 
 
 def add_to_log(message):
-    ## Check to see if the log file is too big
+    ## Check to see if the log file is bigger then 80000 bytes.
     if os.stat("log.txt")[6] > 80000:
         remove_first_n_lines("log.txt", 5)
 
@@ -308,6 +311,8 @@ def main_loop():
     user_data_last_fetched = 0
     user_id = None
 
+    send_logs_last = 0
+
     while True:
         time.sleep_ms(200)
 
@@ -324,14 +329,12 @@ def main_loop():
                 # Fetching user status if it was uppdated on the website or if the button was pressed without wifi
                 user_available = get_user_status(user_id)
                 set_user_status(user_available)
-            send_logs_to_server()
 
-            send_logs_interval_ms = 7200000  # 2 hours
-
-            send_logs_to_server_timer.init(
-                callback=lambda t: send_logs_to_server(),
-                period=send_logs_interval_ms,
-            )
+            # Send logs to server every hour
+            send_logs_interval = 3600
+            if (abs(time.time() - send_logs_last)) > send_logs_interval:
+                send_logs_last = time.time()
+                send_logs_to_server()
 
             # Change leds
             if user_available:

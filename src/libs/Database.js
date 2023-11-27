@@ -104,7 +104,7 @@ export default class Database {
       ),
       maudenbomlogs: check_if_model_defined("maudenbomlogs", this.logsSchema),
       rosemarieågrenlogs: check_if_model_defined(
-        "rose-marieågrenlogs",
+        "rosemarieågrenlogs",
         this.logsSchema
       ),
     };
