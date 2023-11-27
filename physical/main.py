@@ -88,9 +88,9 @@ def send_logs_to_server():
         wait_time_seconds = 15
         response = urequests.post(
             URL + "/api/log/addlogs",
-            data=json.dumps(logs_data),
+            data=json.dumps(logs_data).encode("utf-8"),
             headers={
-                "Content-Type": "application/json",
+                "Content-Type": "application/json; charset=utf-8",
                 "Authorization": f"Bearer {TOKEN}",
             },
             timeout=wait_time_seconds,
